@@ -26,7 +26,7 @@ const registerMediatorCallback = (err) => {
     throw new Error(`Mediator Registration Failed: Reason ${err}`);
   }
 
-  logger.info("Successfully registered mediator.");
+  console.info("Successfully registered mediator.");
 };
 
 const mediatorConfig = {

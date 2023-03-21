@@ -1,3 +1,5 @@
+require('dotenv/config');
+
 const OPENHIM = {
   username: process.env.OPENHIM_USERNAME || "interop@openhim.org",
   password: process.env.OPENHIM_PASSWORD || "interop-password",
