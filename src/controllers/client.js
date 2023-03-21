@@ -10,73 +10,25 @@ const axiosInstance = axios.create({
   },
 });
 
-//illustration purposes
-const getIdInfoFromEchisPayload = (echisDoc) => {
-  return {
-    identificationType: echisDoc.id_type || "alien-id",
-    identificationNumber: echisDoc.id || "TESTZA12345",
-  };
-};
-
 const searchClientByIdType = async (echisClientDoc) => {
-  const idInformation = getIdInfoFromEchisPayload(echisClientDoc);
-  const idType = idInformation.identificationType;
-  const idNumber = idInformation.identificationNumber;
+  // const idInformation = getIdInfoFromEchisPayload(echisClientDoc);
+  // const idType = idInformation.identificationType;
+  // const idNumber = idInformation.identificationNumber
   const res = await axiosInstance.get(
-    `partners/registry/search/${idType}/${idNumber}`
+    `partners/registry/search/${echisClientDoc?.identifications[0]?.identificationType}/${echisClientDoc?.identifications[0]?.identificationNumber}`
   );
-  console.log(`${res.status}: ${res.statusText}`);
-  return res.data.clientExists && res.data.client.clientNumber;
+  if (res.data.clientExists) {
+    return res.data.clientExists && res.data.client.clientNumber;
+  } else {
+    const response = await updateEchisClient(echisClientDoc);
+    console.log(response);
+    return response;
+  }
 };
 
 const createClientInRegistry = async (client) => {
-  const res = await axiosInstance.post(
-    `partners/registry`,
-    JSON.stringify(client)
-  );
-  console.log(
-    `${res.status}: ${res.statusText} - ${res.data.client.clientNumber}`
-  );
-  return res.data.client.clientNumber;
-};
-
-const samplePayload = {
-  firstName: "Lindor",
-  lastName: "Lindt",
-  dateOfBirth: "2022-12-09",
-  gender: "female",
-  country: "KE",
-  countyOfBirth: "042",
-  residence: {
-    county: "042",
-    subCounty: "kisumu-central",
-    village: "kondele",
-  },
-  identifications: [
-    {
-      countryCode: "KE",
-      identificationType: "national-id",
-      identificationNumber: "TESTKE12345",
-    },
-    {
-      countryCode: "ZA",
-      identificationType: "alien-id",
-      identificationNumber: "TESTZA12345",
-    },
-  ],
-  contact: {
-    primaryPhone: "+254700111111",
-  },
-  nextOfKins: [
-    {
-      name: "Cresta Lindt",
-      relationship: "sister",
-      residence: "kondele",
-      contact: {
-        primaryPhone: "+254700334567",
-      },
-    },
-  ],
+  const res = await axiosInstance.post(`partners/registry`, client);
+  return res.data.clientNumber;
 };
 
 const generateToken = async () => {
@@ -99,7 +51,6 @@ const generateToken = async () => {
     data,
     config
   );
-  console.log(`${res.status}: ${res.statusText} `);
   return res.data.access_token;
 };
 
@@ -122,25 +73,26 @@ axiosInstance.interceptors.response.use(
 );
 
 const updateEchisClient = async (echisPatientDoc) => {
-  const config = {
-    method: "put",
-    maxBodyLength: Infinity,
-    url: "https://dhpstagingapi.health.go.ke/partners/registry/",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    data: data,
-  };
+  // const config = {
+  //   method: "put",
+  //   maxBodyLength: Infinity,
+  //   url: "https://dhpstagingapi.health.go.ke/partners/registry/",
+  //   headers: {
+  //     Authorization: `Bearer ${tokres.data.clientExistsen}`,
+  //     "Content-Type": "application/json",
+  //   },
+  //   data: data,
+  // };
   try {
-    let clientNumber = await searchClientByIdType(echisPatientDoc);
-    if (!clientNumber) {
-      clientNumber = await createClientInRegistry(samplePayload);
-    }
-    return clientNumber;
+    const response = await createClientInRegistry(
+      JSON.stringify(echisPatientDoc)
+    );
+    return response;
+
     //update doc in echis
   } catch (error) {
-    console.log(error.message);
+    console.error(error);
+    return error;
   }
 };
 
@@ -148,3 +100,57 @@ module.exports = {
   updateEchisClient,
   searchClientByIdType,
 };
+
+// const samplePayload = {
+//   firstName: "Maina",
+//   middleName: "And",
+//   lastName: "Kingangi",
+//   dateOfBirth: "2022-12-09",
+//   maritalStatus: "single",
+//   gender: "male",
+//   occupation: "other",
+//   religion: "christian",
+//   educationLevel: "college",
+//   country: "KE",
+//   countyOfBirth: "042",
+//   isAlive: true,
+//   originFacilityKmflCode: "15828",
+//   residence: {
+//     county: "042",
+//     subCounty: "kisumu-central",
+//     ward: "kondele",
+//     village: "kondele",
+//     landMark: "kondele",
+//     address: "kondele",
+//   },
+//   identifications: [
+//     {
+//       countryCode: "KE",
+//       identificationType: "national-id",
+//       identificationNumber: "ALPDD1232143434",
+//     },
+//   ],
+//   contact: {
+//     primaryPhone: "+254700111111",
+//     secondaryPhone: "+254700111111",
+//     emailAddress: "string@gmail.com",
+//   },
+//   nextOfKins: [
+//     {
+//       name: "Cresta Lindt",
+//       relationship: "sibling",
+//       residence: "kondele",
+//       contact: {
+//         primaryPhone: "+254700334567",
+//       },
+//     },
+//   ],
+// };
+
+//illustration purposes
+// const getIdInfoFromEchisPayload = (echisDoc) => {
+//   return {
+//     identificationType: echisDoc.id_type || "alien-id",
+//     identificationNumber: echisDoc.id || "TESTZA12345",
+//   };
+// };
