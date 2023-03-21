@@ -1,5 +1,5 @@
 {
-    "name": "client-registry-echis-server",
+    "name": "echis-mediator",
     "version": "1.0.0",
     "description": "",
     "main": "index.js",

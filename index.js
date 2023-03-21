@@ -6,7 +6,10 @@ const registryRoutes = require('./src/routes/client');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.use('/client', registryRoutes);
+app.use('/client-registry', registryRoutes);
+app.use('/service-request', serviceRequestRoutes);
+app.use('/community-referal', communityReferalRoutes);
+
 const PORT = 9000
 
 app.use(bodyParser.json());
