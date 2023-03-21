@@ -29,6 +29,42 @@ const registerMediatorCallback = (err) => {
   logger.info("Successfully registered mediator.");
 };
 
+const mediatorConfig = {
+    urn: "urn:mediator:echis-mediator",
+    version: "1.0.0",
+    name: "eCHIS Mediator",
+    description: "A mediator for CHIS to handle client registry and referral workflows.",
+    defaultChannelConfig: [
+      {
+        name: "eCHIS Mediator",
+        urlPattern: "^/echis-mediator/.*$",
+        routes: [
+          {
+            name: "eCHIS Mediator",
+            host: "mediator",
+            pathTransform: "s/\\/mediator/",
+            port: 6000,
+            primary: true,
+            type: "http",
+          },
+        ],
+        allow: ["echis"],
+        methods: ["GET", "POST", "PUT", "DELETE"],
+        type: "http",
+      },
+    ],
+    endpoints: [
+      {
+        name: "Mediator",
+        host: "mediator",
+        path: "/",
+        port: "6000",
+        primary: true,
+        type: "http",
+      },
+    ],
+  };
+
 registerMediator(OPENHIM, mediatorConfig, registerMediatorCallback);
 
 app.get("/", (req, res) => {
