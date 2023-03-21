@@ -12,7 +12,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/client', registryRoutes);
 app.use('/referral', referralRoutes);
 
-const PORT = 9000;
+const PORT = 6000;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
