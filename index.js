@@ -22,10 +22,10 @@ app.listen(PORT, () => {
 });
 
 const registerMediatorCallback = (err) => {
-  // if (err) {
-  //   //throw new Error(`Mediator Registration Failed: Reason ${err}`);
-  // }
-  // logger.info("Successfully registered mediator.");
+  if (err) {
+    throw new Error(`Mediator Registration Failed: Reason ${err}`);
+  }
+  console.log("Successfully registered mediator.");
 };
 
 const mediatorConfig = {
