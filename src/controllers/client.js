@@ -47,7 +47,7 @@ const generateToken = async () => {
   };
 
   const res = await axios.post(
-    "https://dhpidentitystagingapi.health.go.ke/connect/token",
+    `${process.env.CLIENT_REGISTRY_URL}/connect/token`,
     data,
     config
   );
