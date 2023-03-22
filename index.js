@@ -1,16 +1,16 @@
-const bodyParser = require('body-parser');
-const express = require('express')
+const bodyParser = require("body-parser");
+const express = require("express");
 const app = express();
 const { registerMediator } = require("openhim-mediator-utils");
 const { OPENHIM } = require("./config");
-const registryRoutes = require('./src/routes/client');
-const referralRoutes = require('./src/routes/referral');
+const registryRoutes = require("./src/routes/client");
+const referralRoutes = require("./src/routes/referral");
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use('/client', registryRoutes);
-app.use('/referral', referralRoutes);
+app.use("/client", registryRoutes);
+app.use("/referral", referralRoutes);
 
 const PORT = 6000;
 
@@ -22,11 +22,10 @@ app.listen(PORT, () => {
 });
 
 const registerMediatorCallback = (err) => {
-  if (err) {
-    throw new Error(`Mediator Registration Failed: Reason ${err}`);
-  }
-
-  console.info("Successfully registered mediator.");
+  // if (err) {
+  //   //throw new Error(`Mediator Registration Failed: Reason ${err}`);
+  // }
+  // logger.info("Successfully registered mediator.");
 };
 
 const mediatorConfig = {
