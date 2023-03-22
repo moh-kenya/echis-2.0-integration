@@ -13,7 +13,7 @@ const generateEchisUpdatePayload = async (echisDoc, clientNumber) => {
   });
 };
 
-const generateClientRegistryPayload = async (echisDoc) => {
+const generateClientRegistryPayload = (echisDoc) => {
   let result = {
     firstName: echisDoc.firstName,
     middleName: echisDoc.middleName,
