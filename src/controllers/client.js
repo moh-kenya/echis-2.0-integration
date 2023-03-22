@@ -85,7 +85,7 @@ const updateEchisClient = async (echisPatientDoc) => {
   // };
   try {
     const response = await createClientInRegistry(
-      JSON.stringify(transformPayload(echisPatientDoc))
+      JSON.stringify(utils.generateClientRegistryPayload(echisPatientDoc))
     );
     return response;
 
@@ -94,55 +94,6 @@ const updateEchisClient = async (echisPatientDoc) => {
     console.error(error);
     return error;
   }
-};
-
-const transformPayload = (source) => {
-  let result = {
-    firstName: source.firstName,
-    middleName: source.middleName,
-    lastName: source.lastName,
-    dateOfBirth: source.dateOfBirth,
-    maritalStatus: source.maritalStatus || "",
-    gender: source.gender,
-    occupation: source.occupation || "",
-    religion: source.religion || "",
-    educationLevel: source.educationLevel || "",
-    country: source.country,
-    countyOfBirth: source.countyOfBirth,
-    isAlive: source.isAlive || true,
-    originFacilityKmflCode: source.originFacilityKmflCode || "",
-    residence: {
-      county: source.residence.county,
-      subCounty: source.residence.subCounty,
-      ward: source.residence.ward || "",
-      village: source.residence.village || "",
-      landMark: source.residence.landMark || "",
-      address: source.residence.address || "",
-    },
-    identifications: [
-      {
-        countryCode: source.identification.countryCode || "",
-        identificationType: source.identification.identificationType,
-        identificationNumber: source.identificationNumber,
-      },
-    ],
-    contact: {
-      primaryPhone: source.contact.primaryPhone,
-      secondaryPhone: source.contact.secondaryPhone,
-      emailAddress: source.contact.emailAddress || "",
-    },
-    nextOfKins: [
-      {
-        name: source.nextOfKin.name,
-        relationship: source.nextOfKin.relationship,
-        residence: source.nextOfKin.residence,
-        contact: {
-          primaryPhone: source.nextOfKin.contact.primaryPhone,
-        },
-      },
-    ],
-  };
-  return result;
 };
 
 module.exports = {
