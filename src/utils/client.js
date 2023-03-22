@@ -38,9 +38,9 @@ const generateClientRegistryPayload = async (echisDoc) => {
     },
     identifications: [
       {
-        countryCode: echisDoc.identification.countryCode || "",
-        identificationType: echisDoc.identification.identificationType,
-        identificationNumber: echisDoc.identificationNumber,
+        countryCode: echisDoc.identifications.countryCode || "",
+        identificationType: echisDoc.identifications.identificationType,
+        identificationNumber: echisDoc.identifications.identificationNumber,
       },
     ],
     contact: {
