@@ -1,5 +1,34 @@
 const { DateTime } = require('luxon');
 
+const sampleEchisReferralPayload = {
+  upi: '854a32fb-50a5-4ade-9c75-fd6e9a88e572',
+  name: 'Ruth Melon',
+  form: 'pregnancy_home_visit',
+  has_lost_pregnancy_within_last_month: '',
+  danger_signs: 'very_pale getting_tired_easily breathlessness',
+  other_danger_sign: '',
+  takes_iron_or_folate_supplements: 'yes',
+  mental_danger_signs: 'staying_away_from_people tearfulness',
+  other_mental_danger_sign: '',
+  observed_mental_danger_signs: 'lack_of_hygiene anxiety irritability',
+  other_observed_mental_danger_signs: '',
+  is_still_pregnant: 'yes',
+  has_started_anc: '',
+  anc_upto_date: 'no',
+  has_lost_pregnancy_within_last_month_subsequent_visit: '',
+  pregnancy_test_result: '',
+  is_pregnant: '',
+  is_on_family_planning: '',
+  period_of_pregnancy: '',
+  known_lmp: '',
+  next_anc_visit_date: '',
+  reported_date: 1679413362551,
+  chu_code: '701583',
+  chu_name: 'Koluoch Community Health Unit',
+  referred_to_facility_code: '17345',
+  referred_to_facility_name: 'Ndege Oriedo Dispensary'  
+};
+
 const serviceRequestPayload = {
   resourceType: 'ServiceRequest',
   status: 'active',
