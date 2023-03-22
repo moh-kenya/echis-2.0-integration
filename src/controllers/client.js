@@ -85,7 +85,7 @@ const updateEchisClient = async (echisPatientDoc) => {
   // };
   try {
     const response = await createClientInRegistry(
-      JSON.stringify(echisPatientDoc)
+      JSON.stringify(utils.generateClientRegistryPayload(echisPatientDoc))
     );
     return response;
 
