@@ -13,10 +13,10 @@ const axiosInstance = axios.create({
 const searchClientByIdType = async (echisClientDoc) => {
   try {
     let identificationType;
-    if (echisClientDoc?.identifications[0]?.identificationType === 'national_id') {
+    if (echisClientDoc?.identifications?.identificationType === 'national_id') {
       identificationType = 'national_id';
     } else {
-      identificationType = echisClientDoc?.identifications[0]?.identificationType;
+      identificationType = echisClientDoc?.identifications?.identificationType;
     }
     const res = await axiosInstance.get(
       `partners/registry/search/${identificationType}/${echisClientDoc?.identifications[0]?.identificationNumber}`
