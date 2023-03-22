@@ -7,6 +7,11 @@ const OPENHIM = {
   trustSelfSigned: true,
 };
 
+const FHIR = {
+  url: process.env.FHIR_URL,
+}
+
 module.exports = {
   OPENHIM,
+  FHIR,
 };

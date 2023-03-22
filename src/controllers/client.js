@@ -1,5 +1,6 @@
 const axios = require("axios");
 const BASE_URL = "https://dhpstagingapi.health.go.ke/";
+const generateToken = require("../utils/auth");
 const qs = require("qs");
 const utils = require("../utils/client");
 
@@ -29,29 +30,6 @@ const searchClientByIdType = async (echisClientDoc) => {
 const createClientInRegistry = async (client) => {
   const res = await axiosInstance.post(`partners/registry`, client);
   return res.data.clientNumber;
-};
-
-const generateToken = async () => {
-  const data = qs.stringify({
-    client_id: "partner.test.client",
-    client_secret: "partnerTestPwd",
-    grant_type: "client_credentials",
-    scope: "DHP.Gateway DHP.Partners",
-  });
-
-  const config = {
-    maxBodyLength: Infinity,
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-  };
-
-  const res = await axios.post(
-    `${process.env.CLIENT_REGISTRY_URL}/connect/token`,
-    data,
-    config
-  );
-  return res.data.access_token;
 };
 
 axiosInstance.interceptors.response.use(
