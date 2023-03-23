@@ -12,18 +12,26 @@ const axiosInstance = axios.create({
 });
 
 const searchClientByIdType = async (echisClientDoc) => {
-  // const idInformation = getIdInfoFromEchisPayload(echisClientDoc);
-  // const idType = idInformation.identificationType;
-  // const idNumber = idInformation.identificationNumber
-  const res = await axiosInstance.get(
-    `partners/registry/search/${echisClientDoc?.identifications[0]?.identificationType}/${echisClientDoc?.identifications[0]?.identificationNumber}`
-  );
-  if (res.data.clientExists) {
-    return res.data.clientExists && res.data.client.clientNumber;
-  } else {
-    const response = await updateEchisClient(echisClientDoc);
-    console.log(response);
-    return response;
+  try {
+    let identificationType;
+    if (echisClientDoc?.identifications?.identificationType === 'national_id') {
+      identificationType = 'national-id';
+    } else {
+      identificationType = echisClientDoc?.identifications?.identificationType;
+    }
+    const res = await axiosInstance.get(
+      `partners/registry/search/${identificationType}/${echisClientDoc?.identifications?.identificationNumber}`
+    );
+    if (res.data.clientExists) {
+      return res.data.clientExists && res.data.client.clientNumber;
+    } else {
+      const response = await updateEchisClient(echisClientDoc);
+      console.log(response);
+      return response;
+    }
+  } catch (error) {
+    console.error(error);
+    return error;
   }
 };
 
@@ -63,7 +71,7 @@ const updateEchisClient = async (echisPatientDoc) => {
   // };
   try {
     const response = await createClientInRegistry(
-      JSON.stringify(echisPatientDoc)
+      JSON.stringify(utils.generateClientRegistryPayload(echisPatientDoc))
     );
     return response;
 
