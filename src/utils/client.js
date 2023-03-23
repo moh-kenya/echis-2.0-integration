@@ -45,9 +45,9 @@ const generateClientRegistryPayload = (echisDoc) => {
     },
     identifications: [
       {
-        countryCode: echisDoc.identification.countryCode || "",
-        identificationType: idMap[echisDoc.identification.identificationType],
-        identificationNumber: echisDoc.identificationNumber,
+        countryCode: echisDoc.identifications.countryCode || "KE",
+        identificationType: idMap[echisDoc.identifications.identificationType] || "national-id",
+        identificationNumber: echisDoc.identifications.identificationNumber,
       },
     ],
     contact: {
@@ -66,10 +66,12 @@ const generateClientRegistryPayload = (echisDoc) => {
       },
     ],
   };
+  console.log(result);
   return result;
 };
 
 module.exports = {
+  idMap,
   getIdInfoFromEchisPayload,
   generateEchisUpdatePayload,
   generateClientRegistryPayload,
