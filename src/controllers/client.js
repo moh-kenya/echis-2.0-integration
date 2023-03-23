@@ -1,6 +1,6 @@
 const axios = require("axios");
 const BASE_URL = "https://dhpstagingapi.health.go.ke/";
-const generateToken = require("../utils/auth");
+const {generateToken} = require("../utils/auth");
 const qs = require("qs");
 const utils = require("../utils/client");
 

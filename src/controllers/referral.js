@@ -1,8 +1,8 @@
-import axios from 'axios';
-import { generateFHIRServiceRequest } from '../utils/referral';
-import { FHIR } from '../../config';
-import { logger } from '../../logger';
-const { url: fhirUrl, username: fhirUsername, password: fhirPassword } = FHIR;
+const axios = require('axios');
+const { generateFHIRServiceRequest } = require('../utils/referral');
+const {generateToken} = require("../utils/auth");
+const { FHIR } = require('../../config');
+const FHIR_URL = FHIR.url;
 
 const createFacilityReferral = async (CHTDataRecordDoc) => {
   try {
@@ -36,7 +36,7 @@ const createFacilityReferral = async (CHTDataRecordDoc) => {
 
     return response;
   } catch (error) {
-    logger.error(error);
+    console.error(error);
 
     if (!error.status) {
       return {status: 400, patient: {message: error.message}};

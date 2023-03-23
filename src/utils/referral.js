@@ -1,15 +1,15 @@
 require("dotenv/config");
-
-const { DateTime } = require('luxon');
 const axios = require("axios");
+const { DateTime } = require('luxon');
+const { FHIR } = require('../../config');
+const FHIR_URL = FHIR.url;
+
 const axiosInstance = axios.create({
-  baseURL: BASE_URL,
+  baseURL: FHIR_URL,
   headers: {
     "Content-Type": "application/json",
   },
 });
-const { FHIR } = require("./config");
-const FHIR_URL = FHIR.url;
 
 axiosInstance.interceptors.response.use(
   (response) => {
@@ -185,7 +185,7 @@ const generateFHIRServiceRequest = (dataRecord) => {
 
 const saveFHIRServiceRequest = async (dataRecord) => {
   const FHIRServiceRequest = generateFHIRServiceRequest(dataRecord);
-  const response = await axiosInstance.post(`${FHIR_URL}/ServiceRequest`, FHIRServiceRequest);
+  const response = await axiosInstance.post(`/ServiceRequest`, FHIRServiceRequest);
   return response;
 };
 
