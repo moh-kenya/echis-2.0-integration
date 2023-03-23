@@ -20,7 +20,7 @@ const idMap = {
   alien_card: "alien-id"
 };
 
-const generateClientRegistryPayload = async (echisDoc) => {
+const generateClientRegistryPayload = (echisDoc) => {
   let result = {
     firstName: echisDoc.firstName,
     middleName: echisDoc.middleName || "",
