@@ -17,8 +17,13 @@ const CHT = {
   password: process.env.CHT_PASSWORD,
 }
 
+const CONFIG = {
+  port: process.env.PORT || 6000
+};
+
 module.exports = {
   OPENHIM,
   FHIR,
   CHT,
+  CONFIG,
 };

@@ -14,8 +14,8 @@ const axiosInstance = axios.create({
 const searchClientByIdType = async (echisClientDoc) => {
   try {
     let identificationType;
-    if (echisClientDoc?.identifications?.identificationType === 'national_id') {
-      identificationType = 'national-id';
+    if (echisClientDoc?.identifications?.identificationType === "national_id") {
+      identificationType = "national_id";
     } else {
       identificationType = echisClientDoc?.identifications?.identificationType;
     }
