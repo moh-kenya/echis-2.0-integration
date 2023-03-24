@@ -5,7 +5,6 @@ services:
     container_name: mediator
     ports:
       - "22000:6000"
-    environment:
-      - "OPENHIM_USERNAME=${OPENHIM_USERNAME}"
-      - "OPENHIM_PASSWORD=${OPENHIM_PASSWORD}"
-      - "OPENHIM_API_URL=${OPENHIM_API_URL}"
+    env_file:
+      - .env
+    
