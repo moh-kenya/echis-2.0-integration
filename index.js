@@ -5,12 +5,14 @@ const { registerMediator } = require("openhim-mediator-utils");
 const { OPENHIM, CONFIG } = require("./config");
 const registryRoutes = require("./src/routes/client");
 const referralRoutes = require("./src/routes/referral");
+const aggregateRoutes = require("./src/routes/aggregate");
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use("/client", registryRoutes);
 app.use("/referral", referralRoutes);
+app.use("/aggregate", aggregateRoutes);
 
 const PORT = CONFIG.port;
 
