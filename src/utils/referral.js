@@ -66,46 +66,50 @@ const serviceRequestPayload = {
     {
       coding: [
         {
-          system: 'https://nhdd-api.health.go.ke/orgs/MOH-KENYA/sources/nhdd/',
-          code: '25273',
-          display: 'PIH HUM Ortho Procedures'
+          system: 'http://nhdd-api.health.go.ke/orgs/MOH-KENYA/sources/nhdd/',
+          code: '28414',
+          display: 'Patient referred for medical consultation'
         }
       ],
-      text: 'Procedure'
+      text: 'Consultation'
     }
   ],
-  code: {
-    coding: [
-      {
-        system: 'https://nhdd-api.health.go.ke/orgs/MOH-KENYA/sources/nhdd/',
-        code: '25116',
-        display: 'Manipulation of knee joint under anesthesia'
-      }
-    ],
-    text: 'Manipulation of knee joint under anesthesia'
-  },
   priority: 'urgent',
   subject: {
-    reference: 'Patient/MOH1664351915',
-    display: 'John Doe'
+    reference: 'http://dhpstagingapi.health.go.ke/visit/registry/search/upi/MOH1664351915',
+    type: 'Patient',
+    display: 'MOH1664351915'
   },
-  occurrenceDateTime: '2016-09-27',
-  authoredOn: '2016-09-20',
+  occurrencePeriod: {
+    resourceType: 'Period',
+    start: '2023-03-20',
+    end: '2023-03-23'
+  },
+  authoredOn: '2023-03-20',
   requester: {
-    reference: 'PractitionerRole/123456'
+    reference: 'http://nhdd-api.health.go.ke/orgs/MOH-KENYA/sources/nhdd/13023',
+    type: 'Organization',
+    display: '<chu code>'
   },
   performer: [
     {
-      reference: 'Organization/13023'
+      reference: 'http://nhdd-api.health.go.ke/orgs/MOH-KENYA/sources/nhdd/13023',
+      type: 'Organization',
+      display: '<facility kmfl code>'
     }
   ],
   reasonCode: [
     {
       coding: [
         {
-          system: 'https://nhdd-api.health.go.ke/orgs/MOH-KENYA/sources/nhdd/',
-          code: '25652',
-          display: 'Problem Knee'
+          system: 'http://nhdd-api.health.go.ke/orgs/MOH-KENYA/sources/nhdd/',
+          code: '9585',
+          display: 'Severe headache'
+        },
+        {
+          system: 'http://nhdd-api.health.go.ke/orgs/MOH-KENYA/sources/nhdd/',
+          code: '46048',
+          display: 'Decreased fetal movements'
         }
       ]
     }
@@ -123,62 +127,6 @@ const echisNHDDValuesCoding = {
 
 const generateFHIRServiceRequest = (dataRecord) => {
   const FHITServiceRequest = {
-    resourceType: 'ServiceRequest',
-    status: 'active',
-    intent: 'order',
-    category: [
-      {
-        coding: [
-          {
-            system: 'https://nhdd-api.health.go.ke/orgs/MOH-KENYA/sources/nhdd/',
-            code: '25273',
-            display: 'PIH HUM Ortho Procedures'
-          }
-        ],
-        text: 'Procedure'
-      }
-    ],
-    code: {
-      coding: [
-        {
-          system: 'https://nhdd-api.health.go.ke/orgs/MOH-KENYA/sources/nhdd/',
-          code: '25116',
-          display: 'Manipulation of knee joint under anesthesia'
-        }
-      ],
-      text: 'Manipulation of knee joint under anesthesia'
-    },
-    priority: 'urgent',
-    subject: {
-      reference: `Patient/${dataRecord.upi}`,
-      display: dataRecord.name,
-    },
-    occurrenceDateTime: DateTime.fromMillis(dataRecord.reported_date),
-    authoredOn: DateTime.local().toISODate(),
-    requester: {
-      reference: `Organization/${dataRecord.chuCode}`
-    },
-    performer: [
-      {
-        reference: `Organization/${dataRecord.chuCode}`
-      }
-    ],
-    reasonCode: [
-      {
-        coding: [
-          {
-            system: 'https://nhdd-api.health.go.ke/orgs/MOH-KENYA/sources/nhdd/',
-            code: '25652',
-            display: 'Problem Knee'
-          }
-        ]
-      }
-    ],
-    note: [
-      {
-        text: 'Any additional text that needs to be sent'
-      }
-    ]
   }
   return FHITServiceRequest;
 };
