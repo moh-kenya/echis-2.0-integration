@@ -1,13 +1,12 @@
 const { Router } = require('express');
-const { searchClientByIdType } = require('../controllers/client');
-const { createFacilityReferral } = require('../controllers/referral');
+const { createFacilityReferral, createCommunityReferral } = require('../controllers/referral');
 
 const router = Router();
 
 router.post('/community',
   async function(req,res) {
-    // call thw FHIR server here
-    res.send('FHIR server called');
+    const {status, referral} = await createCommunityReferral(req.body);
+    res.status(status).send(referral);
   });
 
 router.post('/facility',

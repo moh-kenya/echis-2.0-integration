@@ -11,7 +11,14 @@ const FHIR = {
   url: process.env.FHIR_URL,
 }
 
+const CHT = {
+  url: process.env.CHT_URL,
+  username: process.env.CHT_USERNAME,
+  password: process.env.CHT_PASSWORD,
+}
+
 module.exports = {
   OPENHIM,
   FHIR,
+  CHT,
 };
