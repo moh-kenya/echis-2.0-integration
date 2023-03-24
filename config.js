@@ -7,11 +7,23 @@ const OPENHIM = {
   trustSelfSigned: true,
 };
 
+const FHIR = {
+  url: process.env.FHIR_URL,
+}
+
+const CHT = {
+  url: process.env.CHT_URL,
+  username: process.env.CHT_USERNAME,
+  password: process.env.CHT_PASSWORD,
+}
+
 const CONFIG = {
   port: process.env.PORT || 6000
 };
 
 module.exports = {
   OPENHIM,
+  FHIR,
+  CHT,
   CONFIG,
 };
