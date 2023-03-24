@@ -14,7 +14,16 @@ const searchClientByIdType = async (echisClientDoc) => {
   try {
     let identificationType;
     if (echisClientDoc?.identifications?.identificationType === "national_id") {
-      identificationType = "national_id";
+      identificationType = "national-id";
+    } else if (
+      echisClientDoc?.identifications?.identificationType ===
+      "birth_certificate"
+    ) {
+      identificationType = "birth-certificate";
+    } else if (
+      echisClientDoc?.identifications?.identificationType === "alien_card"
+    ) {
+      identificationType = "alien-id";
     } else {
       identificationType = echisClientDoc?.identifications?.identificationType;
     }
@@ -29,7 +38,7 @@ const searchClientByIdType = async (echisClientDoc) => {
       return response;
     }
   } catch (error) {
-    console.error(error);
+    //console.error(error);
     return error;
   }
 };
