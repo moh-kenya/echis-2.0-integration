@@ -7,6 +7,11 @@ const OPENHIM = {
   trustSelfSigned: true,
 };
 
+const CONFIG = {
+  port: process.env.PORT || 6000
+};
+
 module.exports = {
   OPENHIM,
+  CONFIG,
 };
