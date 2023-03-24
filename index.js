@@ -2,7 +2,7 @@ const bodyParser = require("body-parser");
 const express = require("express");
 const app = express();
 const { registerMediator } = require("openhim-mediator-utils");
-const { OPENHIM } = require("./config");
+const { OPENHIM, CONFIG } = require("./config");
 const registryRoutes = require("./src/routes/client");
 const referralRoutes = require("./src/routes/referral");
 
@@ -12,7 +12,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/client", registryRoutes);
 app.use("/referral", referralRoutes);
 
-const PORT = 6000;
+const PORT = CONFIG.port;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
