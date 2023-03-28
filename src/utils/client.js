@@ -1,18 +1,3 @@
-const getIdInfoFromEchisPayload = async (echisDoc) => {
-  return {
-    identificationType: "alien-id",
-    identificationNumber: "TESTZA12345",
-  };
-};
-
-const generateEchisUpdatePayload = async (echisDoc, clientNumber) => {
-  return JSON.stringify({
-    _id: echisDoc._id,
-    _rev: echisDoc._rev,
-    upi: clientNumber,
-  });
-};
-
 const idMap = {
   national_id: "national-id",
   birth_certificate: "birth-certificate",
@@ -75,7 +60,5 @@ const generateClientRegistryPayload = (echisDoc) => {
 
 module.exports = {
   idMap,
-  getIdInfoFromEchisPayload,
-  generateEchisUpdatePayload,
   generateClientRegistryPayload,
 };
