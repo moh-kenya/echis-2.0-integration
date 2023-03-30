@@ -1,0 +1,35 @@
+{
+    "urn": "urn:mediator:echisoutboundmediator",
+    "version": "1.0.0",
+    "name": "eCHIS Outbound Mediator",
+    "description": "A mediator for eCHIS to handle outbound eCHIS payloads to the FHIR server.",
+    "defaultChannelConfig": [
+      {
+        "name": "eCHIS Outbound Channel",
+        "urlPattern": "^/echisoutbound/$",
+        "routes": [
+          {
+            "name": "eCHIS Outbound Route",
+            "host": "echisoutbound",
+            "path": "/",
+            "port": "6000",
+            "primary": true,
+            "type": "http"
+          }
+        ],
+        "allow": ["echis"],
+        "methods": ["GET", "POST", "PUT", "DELETE"],
+        "type": "http"
+      }
+    ],
+    "endpoints": [
+      {
+        "name": "eCHIS Outbound Endpoint",
+        "host": "echisOutboundMediator",
+        "path": "/",
+        "port": "6000",
+        "primary": true,
+        "type": "http"
+      }
+    ]
+  }

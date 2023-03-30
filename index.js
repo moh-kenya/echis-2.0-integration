@@ -1,73 +1,22 @@
-const bodyParser = require("body-parser");
+
 const express = require("express");
-const app = express();
+const bodyParser = require("body-parser");
 const { registerMediator } = require("openhim-mediator-utils");
-const { OPENHIM, CONFIG } = require("./config");
-const registryRoutes = require("./src/routes/client");
-const referralRoutes = require("./src/routes/referral");
-const aggregateRoutes = require("./src/routes/aggregate");
 
+var mediatorConfig = require("./mediatorConfig.json");
+var credentials = require("./openhimConfig.json");
+
+var app = express();
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use("/client", registryRoutes);
-app.use("/referral", referralRoutes);
-app.use("/aggregate", aggregateRoutes);
+app.listen(6000, () => {console.log('Server listening on port 6000...')});
 
-const PORT = CONFIG.port;
+// This responds a POST request for the homepage
+app.post('/echisOutboundMediator', function (req, res) {
+   console.log("Got a POST request");
+   console.log(req.body);
+   res.send("echis Outbound Mediator received the post request and sent it to the FHIR server.");
+})
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+registerMediator(credentials, mediatorConfig, err => { if(err){ console.error('Check your config', err); process.exit(1);} });
 
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
-
-const registerMediatorCallback = (err) => {
-  if (err) {
-    throw new Error(`Mediator Registration Failed: Reason ${err}`);
-  }
-  console.info("Successfully registered mediator.");
-};
-
-const mediatorConfig = {
-    urn: "urn:mediator:echis-mediator",
-    version: "1.0.0",
-    name: "eCHIS Mediator",
-    description: "A mediator for CHIS to handle client registry and referral workflows.",
-    defaultChannelConfig: [
-      {
-        name: "eCHIS Mediator",
-        urlPattern: "^/echis-mediator/.*$",
-        routes: [
-          {
-            name: "eCHIS Mediator",
-            host: "https://mediator-staging.health.go.ke",
-            pathTransform: "s/\\/echis-mediator/",
-            port: 22000,
-            primary: true,
-            type: "http",
-          },
-        ],
-        allow: ["echis"],
-        methods: ["GET", "POST", "PUT", "DELETE"],
-        type: "http",
-      },
-    ],
-    endpoints: [
-      {
-        name: "Mediator",
-        host: "https://mediator-staging.health.go.ke",
-        path: "/",
-        port: "22000",
-        primary: true,
-        type: "http",
-      },
-    ],
-  };
-
-registerMediator(OPENHIM, mediatorConfig, registerMediatorCallback);
-
-app.get("/", (req, res) => {
-  res.send("Loaded");
-});
