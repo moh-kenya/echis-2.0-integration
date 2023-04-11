@@ -97,10 +97,7 @@ describe("Post to /client", () => {
         originFacilityKmflCode: "701583",
       });
 
-    expect.stringMatching(
-      response.text,
-      /^([A-Z]{3}\d{1}[A-Z0-9]{7}\d{2}[A-Z]{2})$/
-    );
+    expect(response.text.length).toBeCloseTo(13);
   });
 });
 
@@ -109,10 +106,6 @@ describe("Post to /client", () => {
     const response = await request(index)
       .post("/client")
       .send(randomPayload.payload);
-
-    expect.stringMatching(
-      response.text,
-      /^([A-Z]{3}\d{1}[A-Z0-9]{7}\d{2}[A-Z]{2})$/
-    );
+    expect(response.text.length).toBeCloseTo(13);
   });
 });
