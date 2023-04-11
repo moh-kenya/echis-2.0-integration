@@ -42,7 +42,7 @@ jobs:
       - run:  touch .env            
               echo OPENHIM_USERNAME = "root@openhim.org" >> .env
               echo OPENHIM_PASSWORD = "1cY6&lWnc0#G" >> .env
-              echo OPENHIM_API_URL = "https://interoperabilitylab.uonbi.ac.ke/api/" >> .env
+              echo OPENHIM_API_URL = 'https://interoperabilitylab.uonbi.ac.ke/api/' >> .env
               echo PORT = "6000" >> .env
               echo FHIR_URL = "FHIR_URL" >> .env
               echo FHIR_USERNAME = "FHIR_USERNAME" >> .env
