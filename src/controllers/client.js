@@ -1,13 +1,13 @@
-const axios = require("axios");
-const BASE_URL = "https://dhpstagingapi.health.go.ke/";
-const { generateToken } = require("../utils/auth");
-const qs = require("qs");
-const utils = require("../utils/client");
+const axios = require('axios');
+const BASE_URL = 'https://dhpstagingapi.health.go.ke/';
+const { generateToken } = require('../utils/auth');
+const { CHT } = require('../../config');
+const { idMap, generateClientRegistryPayload } = require('../utils/client');
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 });
 
@@ -22,7 +22,7 @@ const searchClientByIdType = async (echisClientDoc) => {
       clientNumber = res.data.client.clientNumber;
     } else {
       const response = await createClientInRegistry(
-        JSON.stringify(utils.generateClientRegistryPayload(echisClientDoc))
+        JSON.stringify(generateClientRegistryPayload(echisClientDoc))
       );
       clientNumber = response;
     }
@@ -35,17 +35,10 @@ const searchClientByIdType = async (echisClientDoc) => {
 };
 
 const getIdentificationType = (idType) => {
-  let identificationType;
-  if (idType === "national_id") {
-    identificationType = "national-id";
-  } else if (idType === "birth_certificate") {
-    identificationType = "birth-certificate";
-  } else if (idType === "alien_card") {
-    identificationType = "alien-id";
-  } else {
-    identificationType = idType;
+  if (idType in idMap) {
+    return utils.idMap(idType);
   }
-  return identificationType;
+  return idType;
 };
 
 const createClientInRegistry = async (client) => {
@@ -63,7 +56,7 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
       const token = await generateToken();
       axiosInstance.defaults.headers.common[
-        "Authorization"
+        'Authorization'
       ] = `Bearer ${token}`;
       return axiosInstance(originalRequest);
     }
@@ -74,7 +67,11 @@ axiosInstance.interceptors.response.use(
 const echisAxiosInstance = axios.create({
   baseURL: 'https://chis-staging.health.go.ke/',
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
+  },
+  auth: {
+    username: CHT.username,
+    password: CHT.password,
   },
 });
 
