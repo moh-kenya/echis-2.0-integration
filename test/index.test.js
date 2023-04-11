@@ -58,6 +58,49 @@ describe("Post to /client", () => {
   });
 });
 describe("Post to /client", () => {
+  test("Posting Already Existing client should respond with a UPI Like string", async () => {
+    const response = await request(index)
+      .post("/client")
+      .send({
+        firstName: "kfjkf",
+        lastName: "ksdnvok",
+        dateOfBirth: "1991-06-07",
+        gender: "male",
+        country: "KE",
+        countyOfBirth: "042",
+        residence: {
+          county: "044",
+          subCounty: "rongo",
+          village: "south-kamagambo",
+          landMark: "ngere",
+          address: "ngere",
+        },
+        contact: {
+          primaryPhone: "+254789345678",
+          secondaryPhone: "",
+        },
+        nextOfKin: {
+          name: "John Doe",
+          relationship: "uncle",
+          residence: "Nairobi",
+          contact: {
+            primaryPhone: "+254700111111",
+            secondaryPhone: "+254700111111",
+            emailAddress: "hello.world@gmail.com",
+          },
+        },
+        identifications: {
+          identificationType: "national_id",
+          identificationNumber: "987654324",
+        },
+        isAlive: true,
+        originFacilityKmflCode: "701583",
+      });
+    expect(response.text.length).toBeLessThanOrEqual(15);
+    expect(response.text).toMatch(/^MOH/);
+  });
+});
+describe("Post to /client", () => {
   test("Posting Already Existing client respond with a UPI Like String", async () => {
     const response = await request(index)
       .post("/client")
@@ -97,7 +140,8 @@ describe("Post to /client", () => {
         originFacilityKmflCode: "701583",
       });
 
-    expect(response.text.length).toBeCloseTo(13);
+    expect(response.text.length).toBeLessThanOrEqual(15);
+    expect(response.text).toMatch(/^MOH/);
   });
 });
 
@@ -106,6 +150,7 @@ describe("Post to /client", () => {
     const response = await request(index)
       .post("/client")
       .send(randomPayload.payload);
-    expect(response.text.length).toBeCloseTo(13);
+    expect(response.text.length).toBeLessThanOrEqual(15);
+    expect(response.text).toMatch(/^MOH/);
   });
 });
