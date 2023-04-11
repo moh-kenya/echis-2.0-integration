@@ -1,11 +1,11 @@
-const { pool, dataQuery } = require('../utils/aggregate');
-const { DateTime } = require('luxon');
+const {pool, dataQuery} = require('../utils/aggregate');
+const {DateTime} = require('luxon');
 const axios = require('axios');
 
 const getMoh515Data = (request, response) => {
   pool.query(dataQuery, (error, results) => {
     if (error) {
-      throw error
+      throw error;
     }
     let result = results.rows;
     result = result.map(obj => {
@@ -13,42 +13,42 @@ const getMoh515Data = (request, response) => {
       obj.period_start = DateTime.fromJSDate(obj.period_start).plus({days: 1}).startOf('month').toISODate(); //todo: thandle this in postgres
       return  renameKeys(dataElementsMapping, obj);
     });
-    response.send(result)
-    sendMoh515Data(convertToDhis(result))
-  })
+    response.send(result);
+    sendMoh515Data(convertToDhis(result));
+  });
 };
-  
+
 const PeriodDate_year = new Date().getFullYear();
 const PeriodDate_month = new Date().getMonth();
 const PeriodDate_monthString =
 String(PeriodDate_month).length == 1
-? "0" + PeriodDate_month
-: PeriodDate_month;
-const dhisMonth = PeriodDate_year + "" + PeriodDate_monthString;
-const periodStartMonth = PeriodDate_year + "-" +PeriodDate_monthString + "-" + "01"  ;
-let payload = {
+  ? '0' + PeriodDate_month
+  : PeriodDate_month;
+const dhisMonth = PeriodDate_year + '' + PeriodDate_monthString;
+const periodStartMonth = PeriodDate_year + '-' +PeriodDate_monthString + '-' + '01'  ;
+const payload = {
   dryRun: false,
-  dataSet: "ovtKPo15xAg",
-  attributeOptionCombo: "",
+  dataSet: 'ovtKPo15xAg',
+  attributeOptionCombo: '',
   dataValues: [],
 };
 
 const convertToDhis = (dataI) => {
-  console.log(dataI)
+  console.log(dataI);
   data_le = dataI.length;
   if (data_le < 1) {
-    return { response: "No dataI" };
+    return {response: 'No dataI'};
   } else {
     const header = Object.keys(dataI[0]);
     const pePosition = header.indexOf(
-      header.find((ele) => ele.toLowerCase().includes("period"))
+      header.find((ele) => ele.toLowerCase().includes('period'))
     );
     const chuCode = header.indexOf(
-      header.find((ele) => ele.toLowerCase().includes("chu_code"))
+      header.find((ele) => ele.toLowerCase().includes('chu_code'))
     );
     const dataStart =
       header.indexOf(
-        header.find((ele) => ele.toLowerCase().includes("facility_join_field"))
+        header.find((ele) => ele.toLowerCase().includes('facility_join_field'))
       ) + 1;
     const rowEnd = header.length;
 
@@ -59,12 +59,12 @@ const convertToDhis = (dataI) => {
     if (currentRowData != undefined) {
       currentRowData.map((rowData) => {
         for (let i = dataStart; i < rowEnd; i++) {
-          dataEle = header[i]
+          dataEle = header[i];
           valuesData = {
             period: dhisMonth,
             orgUnit: rowData.chu_code,
             dataElement: dataEle,
-            categoryOptionCombo: "",
+            categoryOptionCombo: '',
             value: rowData[dataEle],
           };
           payload.dataValues.push(valuesData);
@@ -84,15 +84,15 @@ const convertToDhis = (dataI) => {
       payload
     });
   }
-  
+
   return payload;
 };
 
 const sendMoh515Data = async (data) => {
-  const res = await axios.post(`https://interoperabilitylab.uonbi.ac.ke/interop/mediator/emiddleware`, data, {
-    auth: {username: `<username>`, password: `<password>`},
+  const res = await axios.post('https://interoperabilitylab.uonbi.ac.ke/interop/mediator/emiddleware', data, {
+    auth: {username: '<username>', password: '<password>'},
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   });
   return res;
@@ -106,9 +106,10 @@ const renameKeys = (keysMap, obj) =>
   Object.keys(obj).reduce(
     (acc, key) => {
       return {
-      ...acc,
-      ...{ [keysMap[key] || key]: obj[key] }
-    }},
+        ...acc,
+        ...{[keysMap[key] || key]: obj[key]}
+      };
+    },
     {}
   );
 //todo: this dataElementsMapping mapping to be done in the database
@@ -196,7 +197,7 @@ const dataElementsMapping = {
   count_community_action_days: 'ybfaTwL9yBA',
   count_community_monthly_meetings: 'aod6Gz2QUg2'
 };
-  
+
 module.exports = {
   getMoh515Data
 };
