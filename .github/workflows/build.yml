@@ -28,9 +28,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
         env:
-            OPENHIM_USERNAME: ${{ secrets.OPENHIM_USERNAME }}
-            OPENHIM_PASSWORD: ${{ secrets.OPENHIM_PASSWORD }}
-            OPENHIM_API_URL: ${{ secrets.OPENHIM_API_URL }}
+            OPENHIM_USERNAME: "root@openhim.org"
+            OPENHIM_PASSWORD: "1cY6&lWnc0#G"
+            OPENHIM_API_URL: "https://interoperabilitylab.uonbi.ac.ke/api/"
             PORT: ${{ secrets.PORT }}
             FHIR_URL: ${{ secrets.FHIR_URL }}
             FHIR_USERNAME: ${{ secrets.FHIR_USERNAME }}
