@@ -39,7 +39,8 @@ jobs:
             CHT_USERNAME: ${{ secrets.CHT_USERNAME }}
             CHT_PASSWORD: ${{ secrets.CHT_PASSWORD }}
             CLIENT_REGISTRY_URL: ${{ secrets.CLIENT_REGISTRY_URL }}
-      - run:  touch .env            
+      - run:  |
+              touch .env            
               echo OPENHIM_USERNAME = "OPENHIM_USERNAME" >> .env
               echo OPENHIM_PASSWORD = "OPENHIM_PASSWORD" >> .env
               echo OPENHIM_API_URL = "OPENHIM_API_URL" >> .env
@@ -51,6 +52,5 @@ jobs:
               echo CHT_USERNAME = "CHT_USERNAME" >> .env
               echo CHT_PASSWORD = "CHT_PASSWORD" >> .env
               echo CLIENT_REGISTRY_URL = "CLIENT_REGISTRY_URL" >> .env
-      - run: cat .env
-      - run: npm ci
-      - run: npm test
+              npm ci
+              npm test
