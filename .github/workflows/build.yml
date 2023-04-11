@@ -27,11 +27,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - run:  touch .env            
-              echo OPENHIM_USERNAME = ${{ secrets.OPENHIM_USERNAME }} >> .env
-              echo OPENHIM_PASSWORD = ${{ secrets.OPENHIM_PASSWORD }} >> .env
-              echo OPENHIM_API_URL =  ${{ secrets.OPENHIM_API_URL }} >> .env
-              echo PORT = ${{ secrets.PORT }} >> .env
-              echo CLIENT_REGISTRY_URL = ${{ secrets.CLIENT_REGISTRY_URL }} >> .env
+      - run: echo ${{env.OPENHIM_USERNAME}}
+      - run: echo ${{secrets.OPENHIM_PASSWORD}}
       - run: npm ci
       - run: npm test
