@@ -51,5 +51,6 @@ jobs:
               echo CHT_USERNAME = "CHT_USERNAME" >> .env
               echo CHT_PASSWORD = "CHT_PASSWORD" >> .env
               echo CLIENT_REGISTRY_URL = "CLIENT_REGISTRY_URL" >> .env
+              cat .env
       - run: npm ci
       - run: npm test
