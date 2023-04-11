@@ -40,16 +40,16 @@ jobs:
             CHT_PASSWORD: ${{ secrets.CHT_PASSWORD }}
             CLIENT_REGISTRY_URL: ${{ secrets.CLIENT_REGISTRY_URL }}
       - run:  touch .env            
-              echo OPENHIM_USERNAME = "root@openhim.org" >> .env
-              echo OPENHIM_PASSWORD = "1cY6&lWnc0#G" >> .env
-              echo OPENHIM_API_URL = 'https://interoperabilitylab.uonbi.ac.ke/api/' >> .env
-              echo PORT = "6000" >> .env
-              echo FHIR_URL = "FHIR_URL" >> .env
-              echo FHIR_USERNAME = "FHIR_USERNAME" >> .env
-              echo FHIR_PASSWORD = "FHIR_PASSWORD" >> .env
-              echo CHT_URL = "CHT_URL" >> .env
-              echo CHT_USERNAME = "CHT_USERNAME" >> .env
-              echo CHT_PASSWORD = "CHT_PASSWORD" >> .env
-              echo CLIENT_REGISTRY_URL = "CLIENT_REGISTRY_URL" >> .env
+              echo OPENHIM_USERNAME = "$OPENHIM_USERNAME" >> .env
+              echo OPENHIM_PASSWORD = "$OPENHIM_PASSWORD" >> .env
+              echo OPENHIM_API_URL = "$OPENHIM_API_URL" >> .env
+              echo PORT = "$PORT" >> .env
+              echo FHIR_URL = "$FHIR_URL" >> .env
+              echo FHIR_USERNAME = "$FHIR_USERNAME" >> .env
+              echo FHIR_PASSWORD = "$FHIR_PASSWORD" >> .env
+              echo CHT_URL = "$CHT_URL" >> .env
+              echo CHT_USERNAME = "$CHT_USERNAME" >> .env
+              echo CHT_PASSWORD = "$CHT_PASSWORD" >> .env
+              echo CLIENT_REGISTRY_URL = "$CLIENT_REGISTRY_URL" >> .env
       - run: npm ci
       - run: npm test
