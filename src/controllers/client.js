@@ -1,6 +1,6 @@
 const axios = require("axios");
 const BASE_URL = "https://dhpstagingapi.health.go.ke/";
-const {generateToken} = require("../utils/auth");
+const { generateToken } = require("../utils/auth");
 const qs = require("qs");
 const utils = require("../utils/client");
 
@@ -35,7 +35,7 @@ const searchClientByIdType = async (echisClientDoc) => {
       return res.data.clientExists && res.data.client.clientNumber;
     } else {
       const response = await updateEchisClient(echisClientDoc);
-      console.log(response);
+      //console.log(response);
       return response;
     }
   } catch (error) {

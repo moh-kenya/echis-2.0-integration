@@ -69,7 +69,7 @@ const generateClientRegistryPayload = (echisDoc) => {
       },
     ],
   };
-  console.log(result);
+  //console.log(result);
   return result;
 };
 
