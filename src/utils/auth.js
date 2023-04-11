@@ -1,23 +1,23 @@
-const qs = require("qs");
-const axios = require("axios");
+const qs = require('qs');
+const axios = require('axios');
 
 const token = {
   timestamp: null,
   value: null,
-}
+};
 
 const requestNewToken = async () => {
   const data = qs.stringify({
-    client_id: "partner.test.client",
-    client_secret: "partnerTestPwd",
-    grant_type: "client_credentials",
-    scope: "DHP.Gateway DHP.Partners",
+    client_id: 'partner.test.client',
+    client_secret: 'partnerTestPwd',
+    grant_type: 'client_credentials',
+    scope: 'DHP.Gateway DHP.Partners',
   });
 
   const config = {
     maxBodyLength: Infinity,
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
+      'Content-Type': 'application/x-www-form-urlencoded',
     },
   };
 

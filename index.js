@@ -1,5 +1,5 @@
-const bodyParser = require("body-parser");
-const express = require("express");
+const bodyParser = require('body-parser');
+const express = require('express');
 const app = express();
 const { registerMediator } = require("openhim-mediator-utils");
 const { OPENHIM } = require("./config");
@@ -8,14 +8,14 @@ const referralRoutes = require("./src/routes/referral");
 const aggregateRoutes = require("./src/routes/aggregate");
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 
-app.use("/client", registryRoutes);
-app.use("/referral", referralRoutes);
-app.use("/aggregate", aggregateRoutes);
+app.use('/client', registryRoutes);
+app.use('/referral', referralRoutes);
+app.use('/aggregate', aggregateRoutes);
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 
 const registerMediatorCallback = (err) => {
   if (err) {
@@ -47,6 +47,7 @@ const mediatorConfig = {
       allow: ["echis"],
       methods: ["GET", "POST", "PUT", "DELETE"],
       type: "http",
+
     },
   ],
   endpoints: [
