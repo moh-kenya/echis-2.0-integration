@@ -126,4 +126,5 @@ const createTaskReferral = async (serviceRequest) => {
 module.exports = {
   createFacilityReferral,
   createCommunityReferral,
+  createTaskReferral
 };
