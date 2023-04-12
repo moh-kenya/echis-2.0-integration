@@ -134,14 +134,16 @@ const echisNHDDValuesCoding = {
 };
 
 const pregnancyReasonCodes = {
-  generalDangerSigns: 29363,
-  mentalDangerSigns: 5624
+  generalDangerSigns: `29363`,
+  mentalDangerSigns: `5624`
 };
 
 const extractNotes = (data) => {
   let notes = [];
   for (const [key, value] of Object.entries(data)) {
-    notes.push({text: `${key}: ${value}`});
+    if(value){
+      notes.push({text: `${key}: ${value}`});
+    }
   }
   return notes;
 };
@@ -194,12 +196,12 @@ const generateFHIRServiceRequest = (dataRecord) => {
           {
             system: NHDD_URL,
             code: pregnancyReasonCodes.generalDangerSigns,
-            display: dataRecord.screening.danger_signs.concat(' ', dataRecord.screening.other_danger_sign)
+            display: dataRecord.screening._danger_signs
           },
           {
             system: NHDD_URL,
             code: pregnancyReasonCodes.mentalDangerSigns,
-            display: dataRecord.screening.mental_danger_signs.concat(' ', dataRecord.screening.observed_mental_danger_signs)
+            display: dataRecord.screening._mental_danger_signs
           }
         ]
       }
