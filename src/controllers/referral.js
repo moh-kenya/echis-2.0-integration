@@ -81,6 +81,44 @@ const createCommunityReferral = async (serviceRequest) => {
   }
 };
 
+const createTaskReferral = async (serviceRequest) => {
+  try {
+    const axiosInstance = axios.create({
+      baseURL: CHT.url,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      auth: {
+        username: CHT.username,
+        password: CHT.password,
+      },
+    });
+
+    const UPI = serviceRequest?.subject?.reference?.split("/").pop();
+    const { data } = await axiosInstance.get(`medic/_design/medic/_view/contacts_by_upi?key="${UPI}"`);
+    if (data.rows.length > 0) {
+      const patientDoc = data.rows[0].value;
+
+      const body = {
+        _meta: {
+          form: "REFERRAL_FOLLOWUP_AFYA_KE",
+        },
+        patient_uuid: patientDoc._id,
+        subject: patientDoc.subject,
+        authoredOn: patientDoc.authoredOn,
+        notes: patientDoc.notes,
+      };
+
+      const response = await axiosInstance.post(`api/v2/records`, body);
+      return response;
+    }
+    return {status: 200, data: 'done'}
+  } catch (error) {
+    console.error(error);
+    return error;
+  }
+};
+
 module.exports = {
   createFacilityReferral,
   createCommunityReferral,
