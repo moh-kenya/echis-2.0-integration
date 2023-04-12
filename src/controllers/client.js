@@ -81,7 +81,7 @@ const getEchisDocForUpdate = async (docId) => {
 };
 
 const updateEchisDocWithUpi = async (clientUpi, echisDoc) => {
-  echisDoc.client_number = clientUpi;
+  echisDoc.upi = clientUpi;
   const response = await echisAxiosInstance.put(`medic/${docId}`, JSON.stringify(echisDoc));
   return response.data;
 };
