@@ -85,7 +85,6 @@ const updateEchisClient = async (echisPatientDoc) => {
 
     //update doc in echis
   } catch (error) {
-    console.error(error);
     return error;
   }
 };

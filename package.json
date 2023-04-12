@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
+    "start:ms": "node ./test/mock-server/index.js",
     "test": "jest",
     "test-op": "jest --detectOpenHandles"
   },
@@ -23,6 +24,7 @@
     "supertest": "^6.3.3"
   },
   "devDependencies": {
+    "@faker-js/faker": "^7.6.0",
     "nodemon": "^2.0.21"
   }
 }
