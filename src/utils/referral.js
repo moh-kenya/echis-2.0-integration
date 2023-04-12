@@ -35,7 +35,7 @@ axiosInstance.interceptors.response.use(
 const sampleEchisReferralPayload = {
   upi: '854a32fb-50a5-4ade-9c75-fd6e9a88e572',
   name: 'Ruth Melon',
-  form: 'pregnancy_home_visit',
+  service: 'pregnancy_home_visit',
   screening: {
     danger_signs: 'very_pale getting_tired_easily breathlessness',
     other_danger_sign: '',
@@ -216,5 +216,6 @@ const saveFHIRServiceRequest = async (dataRecord) => {
 };
 
 module.exports = {
-  generateFHIRServiceRequest
+  generateFHIRServiceRequest,
+  saveFHIRServiceRequest
 };
