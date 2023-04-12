@@ -8,11 +8,6 @@ router.post('/',
     const clientNumber = await searchClientByIdType(req.body);
     res.send(clientNumber);
   });
-
-// router.post('generate-token',
-//     async function (req, res) {
-//         const clientNumber = await generateToken();
-//         res.send(clientNumber);
-//     });
-
+  
 module.exports = router;
+
