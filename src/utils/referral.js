@@ -1,6 +1,5 @@
 require('dotenv/config');
 const axios = require('axios');
-const {DateTime} = require('luxon');
 const {FHIR} = require('../../config');
 const FHIR_URL = FHIR.url;
 
