@@ -1,5 +1,5 @@
-const { Router } = require('express');
-const { createFacilityReferral, createCommunityReferral } = require('../controllers/referral');
+const {Router} = require('express');
+const {createFacilityReferral, createCommunityReferral} = require('../controllers/referral');
 
 const router = Router();
 
@@ -10,9 +10,9 @@ router.post('/community',
   });
 
 router.post('/facility',
-    async function(req, res) {
-      const {status, referral} = await createFacilityReferral(req.body);
-      res.status(status).send(referral);
+  async function(req, res) {
+    const {status, referral} = await createFacilityReferral(req.body);
+    res.status(status).send(referral);
   });
 
 module.exports = router;

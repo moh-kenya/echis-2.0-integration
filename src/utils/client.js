@@ -21,7 +21,7 @@ const generateClientRegistryPayload = (echisDoc) => {
     isAlive: echisDoc?.isAlive || true,
     originFacilityKmflCode: echisDoc?.originFacilityKmflCode || '',
     residence: {
-      county: echisDoc?.residence.county,
+      county: transformCountyCode(echisDoc?.residence.county),
       subCounty: echisDoc?.residence.subCounty,
       ward: echisDoc?.residence?.ward || '',
       village: echisDoc?.residence?.village || '',
@@ -56,6 +56,10 @@ const generateClientRegistryPayload = (echisDoc) => {
   };
   return result;
 };
+
+const transformCountyCode = (code) => {
+  return code ? code.padStart(3, '0') : 'county-n-a';
+}
 
 module.exports = {
   idMap,
