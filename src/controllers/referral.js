@@ -104,9 +104,14 @@ const createTaskReferral = async (serviceRequest) => {
           form: "REFERRAL_FOLLOWUP_AFYA_KE",
         },
         patient_uuid: patientDoc._id,
-        subject: patientDoc.subject,
-        authoredOn: patientDoc.authoredOn,
-        notes: patientDoc.notes,
+        subject: UPI,
+        authoredOn: serviceRequest?.authoredOn,
+        date_service_offered: serviceRequest?.authoredOn,
+        date_of_visit: serviceRequest?.authoredOn,
+        clinical_instructions: serviceRequest?.notes[0],
+        pharmacy_instructions: serviceRequest?.notes[1],
+        prescription_instructions: serviceRequest?.notes[2],
+        health_facility_contact: serviceRequest?.notes[3]
       };
 
       const response = await axiosInstance.post(`api/v2/records`, body);
