@@ -7,9 +7,16 @@ const pool = new Pool({
   port: 5432,
 });
 
-const dataQuery = 'SELECT * FROM get_moh_515_data(\'chu\', \'3\', \'months\', false) serviceData LEFT JOIN (SELECT * FROM get_moh_515_community_events_data(\'chu\', \'3\', \'months\', false)) as eventsData ON (serviceData.chu_uuid=eventsData.chu_uuid AND serviceData.period_start = eventsData.period_start)\'';
+const OPENHIM_USER = '';
+const OPENHIM_USER_PASSWORD = '';
+const OPENHIM_KHIS_CHANNEL = 'https://interoperabilitylab.uonbi.ac.ke/interop/mediator/emiddleware';
+
+const DATA_QUERY = 'SELECT * FROM get_transformed_moh_515_data(\'chu\', \'1\', \'months\', false);';
 
 module.exports = {
   pool,
-  dataQuery
+  DATA_QUERY,
+  OPENHIM_USER,
+  OPENHIM_USER_PASSWORD,
+  OPENHIM_KHIS_CHANNEL
 };
