@@ -98,6 +98,7 @@ const createTaskReferral = async (serviceRequest) => {
     const { data } = await axiosInstance.get(`medic/_design/medic/_view/contacts_by_upi?key="${UPI}"`);
     if (data.rows.length > 0) {
       const patientDoc = data.rows[0].value;
+      const notesDeserialize = JSON.parse(serviceRequest?.notes);
 
       const body = {
         _meta: {
@@ -108,10 +109,8 @@ const createTaskReferral = async (serviceRequest) => {
         authoredOn: serviceRequest?.authoredOn,
         date_service_offered: serviceRequest?.authoredOn,
         date_of_visit: serviceRequest?.authoredOn,
-        clinical_instructions: serviceRequest?.notes[0],
-        pharmacy_instructions: serviceRequest?.notes[1],
-        prescription_instructions: serviceRequest?.notes[2],
-        health_facility_contact: serviceRequest?.notes[3]
+        follow_up_instruction: JSON.parse(serviceRequest?.notes).follow_up_instruction,
+        contact: JSON.parse(serviceRequest?.notes).contact
       };
 
       const response = await axiosInstance.post(`api/v2/records`, body);
