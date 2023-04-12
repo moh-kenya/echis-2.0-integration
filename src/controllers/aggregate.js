@@ -1,9 +1,9 @@
-const {pool, DATA_QUERY, OPENHIM_USER, OPENHIM_USER_PASSWORD, OPENHIM_KHIS_CHANNEL} = require('../utils/aggregate');
+const {pool, DATA_QUERY, KHIS_USER, KHIS_PASSWORD, OPENHIM_KHIS_CHANNEL} = require('../utils/aggregate');
 const axios = require('axios');
 
 const sendMoh515Data = async (data) => {
   const res = await axios.post(OPENHIM_KHIS_CHANNEL, data, {
-    auth: {username: OPENHIM_USER, password: OPENHIM_USER_PASSWORD},
+    auth: {username: KHIS_USER, password: KHIS_PASSWORD},
     headers: {
       'Content-Type': 'application/json',
     },
