@@ -109,8 +109,8 @@ const createTaskReferral = async (serviceRequest) => {
         authoredOn: serviceRequest?.authoredOn,
         date_service_offered: serviceRequest?.authoredOn,
         date_of_visit: serviceRequest?.authoredOn,
-        follow_up_instruction: JSON.parse(serviceRequest?.note).follow_up_instruction,
-        contact: JSON.parse(serviceRequest?.note).contact
+        follow_up_instruction: serviceRequest?.note.follow_up_instruction,
+        contact: serviceRequest?.note.contact
       };
 
       const response = await axiosInstance.post(`api/v2/records`, body);
