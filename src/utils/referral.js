@@ -1,13 +1,13 @@
-require("dotenv/config");
-const axios = require("axios");
-const { DateTime } = require('luxon');
-const { FHIR } = require('../../config');
+require('dotenv/config');
+const axios = require('axios');
+const {DateTime} = require('luxon');
+const {FHIR} = require('../../config');
 const FHIR_URL = FHIR.url;
 
 const axiosInstance = axios.create({
   baseURL: FHIR_URL,
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 });
 
@@ -21,7 +21,7 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
       const token = await generateToken();
       axiosInstance.defaults.headers.common[
-        "Authorization"
+        'Authorization'
       ] = `Bearer ${token}`;
       return axiosInstance(originalRequest);
     }
@@ -55,7 +55,7 @@ const sampleEchisReferralPayload = {
   chu_code: '701583',
   chu_name: 'Koluoch Community Health Unit',
   referred_to_facility_code: '17345',
-  referred_to_facility_name: 'Ndege Oriedo Dispensary'  
+  referred_to_facility_name: 'Ndege Oriedo Dispensary'
 };
 
 const serviceRequestPayload = {
@@ -127,16 +127,16 @@ const echisNHDDValuesCoding = {
 
 const generateFHIRServiceRequest = (dataRecord) => {
   const FHITServiceRequest = {
-  }
+  };
   return FHITServiceRequest;
 };
 
 const saveFHIRServiceRequest = async (dataRecord) => {
   const FHIRServiceRequest = generateFHIRServiceRequest(dataRecord);
-  const response = await axiosInstance.post(`/ServiceRequest`, FHIRServiceRequest);
+  const response = await axiosInstance.post('/ServiceRequest', FHIRServiceRequest);
   return response;
 };
 
 module.exports = {
   generateFHIRServiceRequest
-}
+};
