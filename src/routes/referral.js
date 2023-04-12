@@ -15,7 +15,7 @@ router.post('/facility',
     res.status(status).send(referral);
   });
 
-router.post('/referral',
+router.post('/taskReferral',
   async function(req,res) {
     const {status, referral} = await createTaskReferral(req.body);
     res.status(status).send(referral);
