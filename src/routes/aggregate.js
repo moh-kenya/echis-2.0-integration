@@ -3,7 +3,7 @@ const {getMoh515Data} = require('../controllers/aggregate');
 
 const router = Router();
 
-router.get('/aggregate',
+router.get('/',
   async (req, res) => {
     await getMoh515Data(req, res);
   });
