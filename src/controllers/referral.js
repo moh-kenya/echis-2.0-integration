@@ -98,7 +98,7 @@ const createTaskReferral = async (serviceRequest) => {
     const { data } = await axiosInstance.get(`medic/_design/medic/_view/contacts_by_upi?key="${UPI}"`);
     if (data.rows.length > 0) {
       const patientDoc = data.rows[0].value;
-      const notesDeserialize = JSON.parse((serviceRequest?.note).replace(/\\/g, "")); //Remove backslash and parse JSON
+      const notesDeserialize = JSON.parse(serviceRequest?.note[0].text); //Remove backslash and parse JSON
 
       const body = {
         _meta: {
