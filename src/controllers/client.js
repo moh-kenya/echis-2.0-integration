@@ -1,7 +1,6 @@
 const axios = require("axios");
 const { generateToken } = require("../utils/auth");
 const utils = require("../utils/client");
-const { generateToken } = require("../utils/auth");
 const { CHT } = require("../../config");
 const { idMap, generateClientRegistryPayload } = require("../utils/client");
 

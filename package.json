@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node index.js",
     "start:ms": "node ./test/mock-server/index.js",
     "test": "TZ=Africa/Nairobi mocha --reporter spec 'test/**/*.spec.js' --timeout 70000 --slow 5000",
     "test-op": "jest --detectOpenHandles"
@@ -19,6 +19,7 @@
     "jest": "^29.5.0",
     "luxon": "^3.3.0",
     "mocha": "^10.2.0",
+    "node-cron": "^3.0.2",
     "openhim-mediator-utils": "^0.2.4",
     "pg": "^8.10.0",
     "qs": "^6.11.1",
