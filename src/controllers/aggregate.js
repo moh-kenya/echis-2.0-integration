@@ -9,7 +9,6 @@ const sendMoh515Data = async (data) => {
         'Content-Type': 'application/json',
       },
     });
-    console.log(res);
     return res;
   } catch (error) {
     console.error(error);
