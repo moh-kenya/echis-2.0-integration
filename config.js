@@ -21,9 +21,24 @@ const CONFIG = {
   port: process.env.PORT || 6000
 };
 
+const CLIENT_REGISTRY = {
+  url: process.env.CLIENT_REGISTRY_URL,
+};
+
+const NHDD = {
+  url: process.env.NHDD_URL,
+};
+
+const SNOMED_CT = {
+  url: process.env.SNOMED_CT_URL,
+};
+
 module.exports = {
   OPENHIM,
   FHIR,
   CHT,
   CONFIG,
+  CLIENT_REGISTRY,
+  NHDD,
+  SNOMED_CT
 };
