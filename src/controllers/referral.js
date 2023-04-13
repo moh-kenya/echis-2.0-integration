@@ -104,6 +104,7 @@ const createTaskReferral = async (serviceRequest) => {
         _meta: {
           form: "REFERRAL_FOLLOWUP_AFYA_KE",
         },
+        patient_uuid: patientDoc._id,
         patient_id: patientDoc._id,
         subject: UPI,
         authored_on: serviceRequest?.authoredOn,
