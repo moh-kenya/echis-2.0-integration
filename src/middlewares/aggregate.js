@@ -12,7 +12,7 @@ const cronService = () => cron.schedule('*/5 * * * *', () => {
   }
 });
 
-cronService.start();
+cronService().start();
 
 module.exports = {
   cronService
