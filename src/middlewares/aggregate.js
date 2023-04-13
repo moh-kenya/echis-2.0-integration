@@ -1,7 +1,7 @@
 const cron = require('node-cron');
 const axios = require('axios');
 
-cron.schedule('*/5 * * * *', () => {
+const cronService = cron.schedule('*/5 * * * *', () => {
   console.log('running a task every five minutes');
   try {
     const res = axios.get(`/aggregate`);
@@ -11,3 +11,9 @@ cron.schedule('*/5 * * * *', () => {
     return error;
   }
 });
+
+cronService.start();
+
+module.exports = {
+  cronService
+};
