@@ -85,12 +85,35 @@ const createCommunityReferral = async (serviceRequest) => {
 
 const createTaskReferral = async (serviceRequest) => {
   try {
+    let axiosInstance = axios.create({
+      baseURL: FHIR.url,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
+    axiosInstance.interceptors.response.use(
+      (response) => {
+        return response;
+      },
+      async function (error) {
+        const originalRequest = error.config;
+        if (error.response && error.response.status === 401 && !originalRequest._retry) {
+          originalRequest._retry = true;
+          const token = await generateToken();
+          axiosInstance.defaults.headers.common[
+            "Authorization"
+          ] = `Bearer ${token}`;
+          return axiosInstance(originalRequest);
+        }
+        return Promise.reject(error);
+      }
+    );
     const response = await axiosInstance.post(`${FHIR_URL}/ServiceRequest`, JSON.stringify(serviceRequest));
     const location = response.headers.location.split("/");
     console.log(`Service Request Id ${location.at(-3)}`);
 
-    const axiosInstance = axios.create({
+    axiosInstance = axios.create({
       baseURL: CHT.url,
       headers: {
         "Content-Type": "application/json",
