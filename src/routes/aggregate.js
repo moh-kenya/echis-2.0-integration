@@ -3,7 +3,7 @@ const {getMoh515Data} = require('../controllers/aggregate');
 
 const router = Router();
 
-router.get('/',
+router.get('/run',
   async (req, res) => {
     console.info("Aggrigator started")
     await getMoh515Data(req, res);
