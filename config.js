@@ -47,6 +47,12 @@ const SNOMED_CT = {
   url: process.env.SNOMED_CT_URL,
 };
 
+const MEDIATOR = {
+  url: process.env.MEDIATOR_URL,
+  username: process.env.MEDIATOR_USERNAME,
+  password: process.env.MEDIATOR_PASSWORD
+};
+
 module.exports = {
   OPENHIM,
   FHIR,
@@ -56,5 +62,6 @@ module.exports = {
   POSTGRES,
   CLIENT_REGISTRY,
   NHDD,
-  SNOMED_CT
+  SNOMED_CT,
+  MEDIATOR
 };
