@@ -36,7 +36,7 @@ const createFacilityReferral = async (CHTDataRecordDoc) => {
     const location = response.headers.location.split("/");
     console.log(`Service Request Id ${location.at(-3)}`);
 
-    return { status: response, serviceRequestId: location.at(-3)};
+    return { status: response.status, serviceRequestId: location.at(-3)};
   } catch (error) {
     console.error(error);
 

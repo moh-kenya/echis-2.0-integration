@@ -11,8 +11,8 @@ router.post('/community',
 
 router.post('/facility',
   async function(req, res) {
-    const {status, referral} = await createFacilityReferral(req.body);
-    res.status(status).send(referral);
+    const {status, serviceRequestId} = await createFacilityReferral(req.body);
+    res.status(status).send(serviceRequestId);
   });
 
 router.post('/taskReferral',
