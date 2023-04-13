@@ -1,11 +1,12 @@
 require('dotenv/config');
 const { DateTime } = require('luxon');
-const { CLIENT_REGISTRY, NHDD, SNOMED_CT } = require('../../config');
+const { CLIENT_REGISTRY, NHDD, SNOMED_CT, CHT } = require('../../config');
 const NHDD_URL = `${NHDD.url}/orgs/MOH-KENYA/sources`;
 const SNOMED_CT_URL = SNOMED_CT.url;
 const CLIENT_REGISTRY_URL = `${CLIENT_REGISTRY.url}/partners/registry/search/upi`;
 const NHDD_GENERIC_PATH = `${NHDD_URL}/nhdd/concepts/`;
 const NHDD_KMHFL_PATH = `${NHDD_URL}/KMHFL/concepts`;
+const CHT_URL = CHT.url;
 
 const echisNHDDValuesCoding = {
   vaginal_bleeding: {
@@ -138,6 +139,12 @@ const generateFHIRServiceRequest = (dataRecord) => {
   const reportedDate = DateTime.fromMillis(dataRecord.reported_date);
   const FHITServiceRequest = {
     resourceType: `ServiceRequest`,
+    identifier: [
+      {
+        system: `${CHT_URL}/medic/`,
+        value: dataRecord._id
+      }
+    ],
     status: status[0],
     intent: `order`,
     category: [
