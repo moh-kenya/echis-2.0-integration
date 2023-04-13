@@ -34,11 +34,11 @@ const createFacilityReferral = async (CHTDataRecordDoc) => {
     const FHIRServiceRequest = generateFHIRServiceRequest(CHTDataRecordDoc);
     const response = await axiosInstance.post(`${FHIR_URL}/ServiceRequest`, JSON.stringify(FHIRServiceRequest));
 
-    console.log(response.headers)
-/*     const { location } = response.headers;
+    const responseHeaders = response.headers;
+    const location = responseHeaders.Location.split("/");
+
+    console.log(location);
     
-    const serviceRequestId = location.split("/").pop();
-    response.serviceRequestId = serviceRequestId; */
     return response;
   } catch (error) {
     console.error(error);
