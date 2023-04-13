@@ -106,7 +106,7 @@ const createTaskReferral = async (serviceRequest) => {
         },
         patient_id: patientDoc._id,
         subject: UPI,
-        authoredOn: serviceRequest?.authoredOn,
+        authored_on: serviceRequest?.authoredOn,
         date_service_offered: serviceRequest?.authoredOn,
         date_of_visit: serviceRequest?.authoredOn,
         follow_up_instruction: notesDeserialize.follow_up_instruction,
