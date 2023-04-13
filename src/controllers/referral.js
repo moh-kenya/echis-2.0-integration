@@ -85,6 +85,11 @@ const createCommunityReferral = async (serviceRequest) => {
 
 const createTaskReferral = async (serviceRequest) => {
   try {
+
+    const response = await axiosInstance.post(`${FHIR_URL}/ServiceRequest`, JSON.stringify(serviceRequest));
+    const location = response.headers.location.split("/");
+    console.log(`Service Request Id ${location.at(-3)}`);
+
     const axiosInstance = axios.create({
       baseURL: CHT.url,
       headers: {
@@ -118,7 +123,8 @@ const createTaskReferral = async (serviceRequest) => {
       const response = await axiosInstance.post(`api/v2/records`, body);
       return response;
     }
-    return {status: 200, data: 'done'}
+
+    return { status: 200, serviceRequestId: location.at(-3)};
   } catch (error) {
     console.error(error);
     return error;
