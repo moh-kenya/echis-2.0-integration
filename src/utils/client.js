@@ -1,18 +1,3 @@
-const getIdInfoFromEchisPayload = async (echisDoc) => {
-  return {
-    identificationType: "alien-id",
-    identificationNumber: "TESTZA12345",
-  };
-};
-
-const generateEchisUpdatePayload = async (echisDoc, clientNumber) => {
-  return JSON.stringify({
-    _id: echisDoc._id,
-    _rev: echisDoc._rev,
-    upi: clientNumber,
-  });
-};
-
 const idMap = {
   national_id: "national-id",
   birth_certificate: "birth-certificate",
@@ -32,11 +17,11 @@ const generateClientRegistryPayload = (echisDoc) => {
     religion: echisDoc?.religion || "",
     educationLevel: echisDoc?.educationLevel || "",
     country: echisDoc?.country,
-    countyOfBirth: echisDoc?.countyOfBirth,
+    countyOfBirth: echisDoc?.countyOfBirth || "county-n-a",
     isAlive: echisDoc?.isAlive || true,
     originFacilityKmflCode: echisDoc?.originFacilityKmflCode || "",
     residence: {
-      county: echisDoc?.residence.county,
+      county: transformCountyCode(echisDoc?.residence.county),
       subCounty: echisDoc?.residence.subCounty,
       ward: echisDoc?.residence?.ward || "",
       village: echisDoc?.residence?.village || "",
@@ -73,9 +58,11 @@ const generateClientRegistryPayload = (echisDoc) => {
   return result;
 };
 
+const transformCountyCode = (code) => {
+  return code ? code.padStart(3, "0") : "county-n-a";
+};
+
 module.exports = {
   idMap,
-  getIdInfoFromEchisPayload,
-  generateEchisUpdatePayload,
   generateClientRegistryPayload,
 };

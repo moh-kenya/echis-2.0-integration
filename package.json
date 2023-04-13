@@ -6,8 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "start:ms": "node ./test/mock-server/index.js",
-    "test": "npm run test-unit",
-    "test-unit": "TZ=Africa/Nairobi mocha --reporter spec 'test/**/*.spec.js' --timeout 70000 --slow 5000",
+    "test": "TZ=Africa/Nairobi mocha --reporter spec 'test/**/*.spec.js' --timeout 70000 --slow 5000",
     "test-op": "jest --detectOpenHandles"
   },
   "author": "",

@@ -1,7 +1,9 @@
 const axios = require("axios");
 const { generateToken } = require("../utils/auth");
-const qs = require("qs");
 const utils = require("../utils/client");
+const { generateToken } = require("../utils/auth");
+const { CHT } = require("../../config");
+const { idMap, generateClientRegistryPayload } = require("../utils/client");
 
 const axiosInstance = axios.create({
   baseURL: `${process.env.CLIENT_REGISTRY_URL}`,
@@ -12,35 +14,34 @@ const axiosInstance = axios.create({
 
 const searchClientByIdType = async (echisClientDoc) => {
   try {
-    let identificationType;
-    if (echisClientDoc?.identifications?.identificationType === "national_id") {
-      identificationType = "national-id";
-    } else if (
-      echisClientDoc?.identifications?.identificationType ===
-      "birth_certificate"
-    ) {
-      identificationType = "birth-certificate";
-    } else if (
-      echisClientDoc?.identifications?.identificationType === "alien_card"
-    ) {
-      identificationType = "alien-id";
-    } else {
-      identificationType = echisClientDoc?.identifications?.identificationType;
-    }
+    const identificationType = getIdentificationType(
+      echisClientDoc?.identifications?.identificationType
+    );
+    let clientNumber;
     const res = await axiosInstance.get(
       `partners/registry/search/${identificationType}/${echisClientDoc?.identifications?.identificationNumber}`
     );
     if (res.data.clientExists) {
-      return res.data.clientExists && res.data.client.clientNumber;
+      clientNumber = res.data.client.clientNumber;
     } else {
-      const response = await updateEchisClient(echisClientDoc);
-      //console.log(response);
-      return response;
+      const response = await createClientInRegistry(
+        JSON.stringify(generateClientRegistryPayload(echisClientDoc))
+      );
+      clientNumber = response;
     }
+    const echisDoc = await getEchisDocForUpdate(echisClientDoc._id);
+    const echisResponse = await updateEchisDocWithUpi(clientNumber, echisDoc);
+    return echisResponse;
   } catch (error) {
-    //console.error(error);
     return error;
   }
+};
+
+const getIdentificationType = (idType) => {
+  if (idType in idMap) {
+    return utils.idMap(idType);
+  }
+  return idType;
 };
 
 const createClientInRegistry = async (client) => {
@@ -66,33 +67,32 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-const updateEchisClient = async (echisPatientDoc) => {
-  // const config = {
-  //   method: "put",
-  //   maxBodyLength: Infinity,
-  //   url: "https://dhpstagingapi.health.go.ke/partners/registry/",
-  //   headers: {
-  //     Authorization: `Bearer ${tokres.data.clientExistsen}`,
-  //     "Content-Type": "application/json",
-  //   },
-  //   data: data,
-  // };
-  try {
-    const response = await createClientInRegistry(
-      JSON.stringify(utils.generateClientRegistryPayload(echisPatientDoc))
-    );
-    return response;
+const echisAxiosInstance = axios.create({
+  baseURL: "https://chis-staging.health.go.ke/",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  auth: {
+    username: CHT.username,
+    password: CHT.password,
+  },
+});
 
-    //update doc in echis
-  } catch (error) {
-    return error;
-  }
+const getEchisDocForUpdate = async (docId) => {
+  const response = await echisAxiosInstance.get(`medic/${docId}`);
+  return response.data;
 };
 
-module.exports = {
-  updateEchisClient,
-  searchClientByIdType,
+const updateEchisDocWithUpi = async (clientUpi, echisDoc) => {
+  echisDoc.upi = clientUpi;
+  const response = await echisAxiosInstance.put(
+    `medic/${docId}`,
+    JSON.stringify(echisDoc)
+  );
+  return response.data;
 };
+
+module.exports = searchClientByIdType;
 
 // const samplePayload = {
 //   firstName: "Maina",
