@@ -35,11 +35,26 @@ const POSTGRES = {
   port: process.env.POSTGRES_PORT
 };
 
+const CLIENT_REGISTRY = {
+  url: process.env.CLIENT_REGISTRY_URL,
+};
+
+const NHDD = {
+  url: process.env.NHDD_URL,
+};
+
+const SNOMED_CT = {
+  url: process.env.SNOMED_CT_URL,
+};
+
 module.exports = {
   OPENHIM,
   FHIR,
   CHT,
   CONFIG,
   KHIS,
-  POSTGRES
+  POSTGRES,
+  CLIENT_REGISTRY,
+  NHDD,
+  SNOMED_CT
 };
