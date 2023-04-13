@@ -1,19 +1,21 @@
-const axios = require('axios');
-const BASE_URL = 'https://dhpstagingapi.health.go.ke/';
-const { generateToken } = require('../utils/auth');
-const { CHT } = require('../../config');
-const { idMap, generateClientRegistryPayload } = require('../utils/client');
+const axios = require("axios");
+const BASE_URL = "https://dhpstagingapi.health.go.ke/";
+const { generateToken } = require("../utils/auth");
+const { CHT } = require("../../config");
+const { idMap, generateClientRegistryPayload } = require("../utils/client");
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
 const searchClientByIdType = async (echisClientDoc) => {
   try {
-    const identificationType = getIdentificationType(echisClientDoc?.identifications?.identificationType);
+    const identificationType = getIdentificationType(
+      echisClientDoc?.identifications?.identificationType
+    );
     let clientNumber;
     const res = await axiosInstance.get(
       `partners/registry/search/${identificationType}/${echisClientDoc?.identifications?.identificationNumber}`
@@ -56,7 +58,7 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
       const token = await generateToken();
       axiosInstance.defaults.headers.common[
-        'Authorization'
+        "Authorization"
       ] = `Bearer ${token}`;
       return axiosInstance(originalRequest);
     }
@@ -65,9 +67,9 @@ axiosInstance.interceptors.response.use(
 );
 
 const echisAxiosInstance = axios.create({
-  baseURL: 'https://chis-staging.health.go.ke/',
+  baseURL: "https://chis-staging.health.go.ke/",
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
   auth: {
     username: CHT.username,
@@ -82,10 +84,65 @@ const getEchisDocForUpdate = async (docId) => {
 
 const updateEchisDocWithUpi = async (clientUpi, echisDoc) => {
   echisDoc.upi = clientUpi;
-  const response = await echisAxiosInstance.put(`medic/${docId}`, JSON.stringify(echisDoc));
+  const response = await echisAxiosInstance.put(
+    `medic/${docId}`,
+    JSON.stringify(echisDoc)
+  );
   return response.data;
 };
 
-module.exports = {
-  searchClientByIdType,
-};
+module.exports = searchClientByIdType;
+
+// const samplePayload = {
+//   firstName: "Maina",
+//   middleName: "And",
+//   lastName: "Kingangi",
+//   dateOfBirth: "2022-12-09",
+//   maritalStatus: "single",
+//   gender: "male",
+//   occupation: "other",
+//   religion: "christian",
+//   educationLevel: "college",
+//   country: "KE",
+//   countyOfBirth: "042",
+//   isAlive: true,
+//   originFacilityKmflCode: "15828",
+//   residence: {
+//     county: "042",
+//     subCounty: "kisumu-central",
+//     ward: "kondele",
+//     village: "kondele",
+//     landMark: "kondele",
+//     address: "kondele",
+//   },
+//   identifications: [
+//     {
+//       countryCode: "KE",
+//       identificationType: "national-id",
+//       identificationNumber: "ALPDD1232143434",
+//     },
+//   ],
+//   contact: {
+//     primaryPhone: "+254700111111",
+//     secondaryPhone: "+254700111111",
+//     emailAddress: "string@gmail.com",
+//   },
+//   nextOfKins: [
+//     {
+//       name: "Cresta Lindt",
+//       relationship: "sibling",
+//       residence: "kondele",
+//       contact: {
+//         primaryPhone: "+254700334567",
+//       },
+//     },
+//   ],
+// };
+
+//illustration purposes
+// const getIdInfoFromEchisPayload = (echisDoc) => {
+//   return {
+//     identificationType: echisDoc.id_type || "alien-id",
+//     identificationNumber: echisDoc.id || "TESTZA12345",
+//   };
+// };
