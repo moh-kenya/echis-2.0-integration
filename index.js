@@ -6,6 +6,7 @@ const {OPENHIM, CONFIG} = require('./config');
 const registryRoutes = require('./src/routes/client');
 const referralRoutes = require('./src/routes/referral');
 const aggregateRoutes = require('./src/routes/aggregate');
+const {cronService} = require('./src/middlewares/aggregate');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -18,6 +19,7 @@ const PORT = CONFIG.port;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+cronService();
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
