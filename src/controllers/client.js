@@ -1,6 +1,6 @@
 const axios = require("axios");
+const BASE_URL = "https://dhpstagingapi.health.go.ke/";
 const { generateToken } = require("../utils/auth");
-const utils = require("../utils/client");
 const { CHT } = require("../../config");
 const { idMap, generateClientRegistryPayload } = require("../utils/client");
 
@@ -38,7 +38,7 @@ const searchClientByIdType = async (echisClientDoc) => {
 
 const getIdentificationType = (idType) => {
   if (idType in idMap) {
-    return utils.idMap(idType);
+    return idMap[idType];
   }
   return idType;
 };

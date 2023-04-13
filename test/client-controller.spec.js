@@ -28,6 +28,7 @@ describe("Client Registry client creation", () => {
   beforeEach(() => {
     //setting up initial user can modify within the unit tests and default to this after each of the tests
     echisClient = {
+      _id: "test",
       firstName: "kfjkf",
       lastName: "ksdnvok",
       dateOfBirth: "1991-06-07",
@@ -119,7 +120,7 @@ describe("Client Registry client creation", () => {
     });
 
     const result = await runApplication(echisClient);
-
+    console.log(result);
     expect(result).to.have.string("MOH");
     sinon.assert.calledOnce(get);
     //sinon.assert.calledOnce(post);
