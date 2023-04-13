@@ -17,8 +17,11 @@ const sendMoh515Data = async (data) => {
 };
 
 const getMoh515Data = async (_, response) => {
+  console.info("Accessing database");
   pool.query(DATA_QUERY, (error, results) => {
+
     if (error) {
+      console.error(`Error:${error}`);
       throw error;
     }
     const result = results.rows;

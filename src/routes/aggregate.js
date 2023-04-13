@@ -5,6 +5,7 @@ const router = Router();
 
 router.get('/',
   async (req, res) => {
+    console.info("Aggrigator started")
     await getMoh515Data(req, res);
   });
 
