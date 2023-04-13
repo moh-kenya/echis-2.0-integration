@@ -22,6 +22,7 @@ const getMoh515Data = async (_, response) => {
       throw error;
     }
     const result = results.rows;
+    console.log(result);
     response.send(result);
     sendMoh515Data(JSON.stringify({dataValues: result}));
   });
