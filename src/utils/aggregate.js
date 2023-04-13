@@ -14,6 +14,5 @@ const DATA_QUERY = `SELECT * FROM get_transformed_moh_515_data('chu', '1', 'mont
 module.exports = {
   pool,
   DATA_QUERY,
-  KHIS,
-  OPENHIM
+  KHIS
 };
