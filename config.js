@@ -21,6 +21,20 @@ const CONFIG = {
   port: process.env.PORT || 6000
 };
 
+const KHIS = {
+  url: process.env.KHIS_URL,
+  username: process.env.KHIS_USERNAME,
+  password: process.env.KHIS_PASSWORD
+};
+
+const POSTGRES = {
+  host: process.env.POSTGRES_SERVER_URL,
+  username: process.env.POSTGRES_USERNAME,
+  password: process.env.POSTGRES_PASSWORD,
+  database: process.env.POSTGRES_DB_NAME,
+  port: process.env.POSTGRES_PORT
+};
+
 const CLIENT_REGISTRY = {
   url: process.env.CLIENT_REGISTRY_URL,
 };
@@ -38,6 +52,8 @@ module.exports = {
   FHIR,
   CHT,
   CONFIG,
+  KHIS,
+  POSTGRES,
   CLIENT_REGISTRY,
   NHDD,
   SNOMED_CT
