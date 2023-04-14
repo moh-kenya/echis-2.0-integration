@@ -128,12 +128,20 @@ const extractReasonCode = (data) => {
   return [{coding: coding}];
 };
 
-const status = [
+const FHIRServiceRequestStatus = [
   `draft`,
-  `active`,
-  `revoked`,
-  `completed`
+  `revoked`
 ];
+
+const followUpInstruction = {
+  revoked: `Missed visit`,
+  completed: ``
+};
+
+const healthFacilityContact = {
+  revoked: ``,
+  completed: ``
+};
 
 const generateFHIRServiceRequest = (dataRecord) => {
   const reportedDate = DateTime.fromMillis(dataRecord.reported_date);
@@ -145,7 +153,7 @@ const generateFHIRServiceRequest = (dataRecord) => {
         value: dataRecord._id
       }
     ],
-    status: status[0],
+    status: FHIRServiceRequestStatus[0],
     intent: `order`,
     category: [
       {
@@ -190,5 +198,8 @@ const generateFHIRServiceRequest = (dataRecord) => {
 };
 
 module.exports = {
-  generateFHIRServiceRequest
+  generateFHIRServiceRequest,
+  FHIRServiceRequestStatus,
+  followUpInstruction,
+  healthFacilityContact
 };

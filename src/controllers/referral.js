@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { generateFHIRServiceRequest } = require('../utils/referral');
+const { generateFHIRServiceRequest, FHIRServiceRequestStatus, followUpInstruction, healthFacilityContact } = require('../utils/referral');
 const {generateToken} = require("../utils/auth");
 const { FHIR, CHT } = require('../../config');
 const FHIR_URL = FHIR.url;
@@ -85,35 +85,44 @@ const createCommunityReferral = async (serviceRequest) => {
 
 const createTaskReferral = async (serviceRequest) => {
   try {
-    let axiosInstance = axios.create({
-      baseURL: FHIR.url,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    axiosInstance.interceptors.response.use(
-      (response) => {
-        return response;
-      },
-      async function (error) {
-        const originalRequest = error.config;
-        if (error.response && error.response.status === 401 && !originalRequest._retry) {
-          originalRequest._retry = true;
-          const token = await generateToken();
-          axiosInstance.defaults.headers.common[
-            "Authorization"
-          ] = `Bearer ${token}`;
-          return axiosInstance(originalRequest);
+    let serviceRequestId = null;
+    /* 
+      get id of service request from afya ke servicee request, which does not come with a uuid. we use the identifier object to search in fhir server
+    */
+    if(serviceRequest?.status === FHIRServiceRequestStatus[0]){
+      const identifier = serviceRequest?.identifier[0];
+      const searchParam = `${identifier.system}|${identifier.value}`;
+      const axiosInstance = axios.create({
+        baseURL: FHIR.url,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      
+      axiosInstance.interceptors.response.use(
+        (response) => {
+          return response;
+        },
+        async function (error) {
+          const originalRequest = error.config;
+          if (error.response && error.response.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
+            const token = await generateToken();
+            axiosInstance.defaults.headers.common[
+              "Authorization"
+            ] = `Bearer ${token}`;
+            axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+            return axiosInstance(originalRequest);
+          }
+          return Promise.reject(error);
         }
-        return Promise.reject(error);
-      }
-    );
-    const response = await axiosInstance.post(`${FHIR_URL}/ServiceRequest`, JSON.stringify(serviceRequest));
-    const location = response.headers.location.split("/");
-    console.log(`Service Request Id ${location.at(-3)}`);
-
-    axiosInstance = axios.create({
+      );
+      const response = await axiosInstance.post(`${FHIR_URL}/ServiceRequest/_search?identifier=${searchParam}`, ``);
+      serviceRequestId = response[0].resource.id;
+    }
+    // todo: get id of service request from payload that updates service request oriinally from echis
+    serviceRequestId = null;
+    const axiosInstance = axios.create({
       baseURL: CHT.url,
       headers: {
         "Content-Type": "application/json",
@@ -139,8 +148,11 @@ const createTaskReferral = async (serviceRequest) => {
         authored_on: serviceRequest?.authoredOn,
         date_service_offered: serviceRequest?.authoredOn,
         date_of_visit: serviceRequest?.authoredOn,
-        follow_up_instruction: notesDeserialize.follow_up_instruction,
-        health_facility_contact: notesDeserialize.health_facility_contact
+        status: serviceRequest?.status,
+        needs_follow_up: `${FHIRServiceRequestStatus.includes(serviceRequest?.status)}` || `false`,
+        follow_up_instruction: followUpInstruction[serviceRequest?.status] || notesDeserialize.follow_up_instruction,
+        health_facility_contact: healthFacilityContact[serviceRequest?.status] || notesDeserialize.health_facility_contact,
+        fhir_service_request_uuid: serviceRequestId,
       };
 
       const response = await axiosInstance.post(`api/v2/records`, body);
