@@ -1,12 +1,12 @@
 const axios = require("axios");
-const BASE_URL = "https://dhpstagingapi.health.go.ke/";
+const BASE_URL = "https://dhpapi.health.go.ke/";
 const { generateToken } = require("../utils/auth");
 const { CHT } = require("../../config");
 const { idMap, generateClientRegistryPayload } = require("../utils/client");
 const {logger} = require('../utils/logger');
 
 const axiosInstance = axios.create({
-  baseURL: BASE_URL,
+  baseURL: `${process.env.CLIENT_REGISTRY_URL}`,
   headers: {
     "Content-Type": "application/json",
   },
