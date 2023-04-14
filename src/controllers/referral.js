@@ -3,8 +3,9 @@ const { generateFHIRServiceRequest } = require('../utils/referral');
 const {generateToken} = require("../utils/auth");
 const { FHIR, CHT } = require('../../config');
 const FHIR_URL = FHIR.url;
-
+const {logger} = require('../utils/logger');
 const createFacilityReferral = async (CHTDataRecordDoc) => {
+  logger.information("Creating facility referral");
   try {
     const axiosInstance = axios.create({
       baseURL: FHIR.url,
@@ -30,15 +31,16 @@ const createFacilityReferral = async (CHTDataRecordDoc) => {
         return Promise.reject(error);
       }
     );
-
+    logger.information("Generating FHIR ServiceRequest");
     const FHIRServiceRequest = generateFHIRServiceRequest(CHTDataRecordDoc);
+    logger.information("Calling MOH FHIR server");
     const response = await axiosInstance.post(`${FHIR_URL}/ServiceRequest`, JSON.stringify(FHIRServiceRequest));
     const location = response.headers.location.split("/");
-    console.log(`Service Request Id ${location.at(-3)}`);
+    logger.information(`Service Request Id ${location.at(-3)}`);
 
     return { status: response.status, serviceRequestId: location.at(-3)};
   } catch (error) {
-    console.error(error);
+    logger.error(error);
 
     if (!error.status) {
       return {status: 400, patient: {message: error.message}};
@@ -78,7 +80,7 @@ const createCommunityReferral = async (serviceRequest) => {
     }
     return {status: 200, data: 'done'}
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return error;
   }
 };
@@ -111,7 +113,7 @@ const createTaskReferral = async (serviceRequest) => {
     );
     const response = await axiosInstance.post(`${FHIR_URL}/ServiceRequest`, JSON.stringify(serviceRequest));
     const location = response.headers.location.split("/");
-    console.log(`Service Request Id ${location.at(-3)}`);
+    logger.information(`Service Request Id ${location.at(-3)}`);
 
     axiosInstance = axios.create({
       baseURL: CHT.url,
@@ -149,7 +151,7 @@ const createTaskReferral = async (serviceRequest) => {
 
     return { status: 200, serviceRequestId: location.at(-3)};
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return error;
   }
 };
