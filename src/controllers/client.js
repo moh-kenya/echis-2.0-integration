@@ -28,7 +28,7 @@ const searchClientByIdType = async (echisClientDoc) => {
       );
       clientNumber = response;
     }
-    const echisDoc = await getEchisDocForUpdate(echisClientDoc._id);
+    const echisDoc = await getEchisDocForUpdate(echisClientDoc.doc_id);
     const echisResponse = await updateEchisDocWithUpi(clientNumber, echisDoc);
     return echisResponse;
   } catch (error) {
@@ -85,13 +85,15 @@ const getEchisDocForUpdate = async (docId) => {
 const updateEchisDocWithUpi = async (clientUpi, echisDoc) => {
   echisDoc.upi = clientUpi;
   const response = await echisAxiosInstance.put(
-    `medic/${docId}`,
+    `medic/${echisDoc._id}`,
     JSON.stringify(echisDoc)
   );
   return response.data;
 };
 
-module.exports = searchClientByIdType;
+module.exports = {
+  searchClientByIdType,
+};
 
 // const samplePayload = {
 //   firstName: "Maina",

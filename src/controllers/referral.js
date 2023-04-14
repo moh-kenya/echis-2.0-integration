@@ -85,7 +85,35 @@ const createCommunityReferral = async (serviceRequest) => {
 
 const createTaskReferral = async (serviceRequest) => {
   try {
-    const axiosInstance = axios.create({
+    let axiosInstance = axios.create({
+      baseURL: FHIR.url,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    axiosInstance.interceptors.response.use(
+      (response) => {
+        return response;
+      },
+      async function (error) {
+        const originalRequest = error.config;
+        if (error.response && error.response.status === 401 && !originalRequest._retry) {
+          originalRequest._retry = true;
+          const token = await generateToken();
+          axiosInstance.defaults.headers.common[
+            "Authorization"
+          ] = `Bearer ${token}`;
+          return axiosInstance(originalRequest);
+        }
+        return Promise.reject(error);
+      }
+    );
+    const response = await axiosInstance.post(`${FHIR_URL}/ServiceRequest`, JSON.stringify(serviceRequest));
+    const location = response.headers.location.split("/");
+    console.log(`Service Request Id ${location.at(-3)}`);
+
+    axiosInstance = axios.create({
       baseURL: CHT.url,
       headers: {
         "Content-Type": "application/json",
@@ -100,25 +128,26 @@ const createTaskReferral = async (serviceRequest) => {
     const { data } = await axiosInstance.get(`medic/_design/medic/_view/contacts_by_upi?key="${UPI}"`);
     if (data.rows.length > 0) {
       const patientDoc = data.rows[0].value;
-      const notesDeserialize = serviceRequest?.note;
+      const notesDeserialize = JSON.parse(serviceRequest?.note[0].text); //Remove backslash and parse JSON
 
       const body = {
         _meta: {
           form: "REFERRAL_FOLLOWUP_AFYA_KE",
         },
-        patient_uuid: patientDoc._id,
+        patient_id: patientDoc._id,
         subject: UPI,
-        authoredOn: serviceRequest?.authoredOn,
+        authored_on: serviceRequest?.authoredOn,
         date_service_offered: serviceRequest?.authoredOn,
         date_of_visit: serviceRequest?.authoredOn,
-        follow_up_instruction: serviceRequest?.note.follow_up_instruction,
-        contact: serviceRequest?.note.contact
+        follow_up_instruction: notesDeserialize.follow_up_instruction,
+        health_facility_contact: notesDeserialize.health_facility_contact
       };
 
       const response = await axiosInstance.post(`api/v2/records`, body);
       return response;
     }
-    return {status: 200, data: 'done'}
+
+    return { status: 200, serviceRequestId: location.at(-3)};
   } catch (error) {
     console.error(error);
     return error;

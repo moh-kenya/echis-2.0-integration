@@ -1,7 +1,13 @@
 const request = require("supertest");
 const index = require("../index");
+const sinon = require("sinon");
+
 const generateRandomPayload = require("./utils/randomPayload");
 const existingPayload = require("./utils/existingPayload");
+
+const post = sinon.stub();
+const put = sinon.stub();
+const get = sinon.stub();
 
 const randomPayload = generateRandomPayload();
 describe("Get /", () => {
@@ -16,6 +22,97 @@ describe("Get /", () => {
 });
 
 describe("Post to /client", () => {
+  beforeEach(() => {
+    //setting up initial user can modify within the unit tests and default to this after each of the tests
+    echisClient = {
+      firstName: "kfjkf",
+      lastName: "ksdnvok",
+      dateOfBirth: "1991-06-07",
+      gender: "male",
+      country: "KE",
+      countyOfBirth: "042",
+      residence: {
+        county: "044",
+        subCounty: "rongo",
+        village: "south-kamagambo",
+        landMark: "ngere",
+        address: "ngere",
+      },
+      contact: {
+        primaryPhone: "+254789345678",
+        secondaryPhone: "",
+      },
+      nextOfKin: {
+        name: "John Doe",
+        relationship: "uncle",
+        residence: "Nairobi",
+        contact: {
+          primaryPhone: "+254700111111",
+          secondaryPhone: "+254700111111",
+          emailAddress: "hello.world@gmail.com",
+        },
+      },
+      identifications: {
+        identificationType: "national_id",
+        identificationNumber: "987654324",
+      },
+      isAlive: true,
+      originFacilityKmflCode: "701583",
+    };
+
+    existingClient = {
+      clientNumber: "MOHR13K16YL12",
+      firstName: "kfjkf",
+      lastName: "ksdnvok",
+      dateOfBirth: "1991-06-07",
+      gender: "male",
+      country: "KE",
+      countyOfBirth: "042",
+      residence: {
+        county: "044",
+        subCounty: "rongo",
+        village: "south-kamagambo",
+        landMark: "ngere",
+        address: "ngere",
+      },
+      contact: {
+        primaryPhone: "+254789345678",
+        secondaryPhone: "",
+      },
+      nextOfKin: {
+        name: "John Doe",
+        relationship: "uncle",
+        residence: "Nairobi",
+        contact: {
+          primaryPhone: "+254700111111",
+          secondaryPhone: "+254700111111",
+          emailAddress: "hello.world@gmail.com",
+        },
+      },
+      identifications: {
+        identificationType: "national_id",
+        identificationNumber: "987654324",
+      },
+      isAlive: true,
+      originFacilityKmflCode: "701583",
+    };
+  });
+
+  afterEach(() => {
+    sinon.reset();
+  });
+  post.resolves({
+    status: 200,
+    statusText: "OK",
+  });
+
+  get.resolves({
+    data: {
+      clientExists: true,
+      client: existingClient,
+    },
+  });
+
   test("Posting Already Existing client should respond with a 200 status code", async () => {
     const response = await request(index)
       .post("/client")
