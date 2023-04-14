@@ -40,7 +40,7 @@ const createFacilityReferral = async (CHTDataRecordDoc) => {
 
     return { status: response.status, serviceRequestId: location.at(-3)};
   } catch (error) {
-    logger.error(error);
+    logger.error(error.message);
 
     if (!error.status) {
       return {status: 400, patient: {message: error.message}};
