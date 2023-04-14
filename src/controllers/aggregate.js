@@ -1,7 +1,9 @@
 const axios = require('axios');
 const { pool, DATA_QUERY, KHIS } = require('../utils/aggregate');
+const {logger} = require('../utils/logger');
 
 const sendMoh515Data = async (data) => {
+  logger.information("Sending MOH 515");
   try {
     const res = await axios.post(`${KHIS.url}/dataValueSets`, data, {
       auth: {username: KHIS.username, password: KHIS.password},
@@ -9,17 +11,19 @@ const sendMoh515Data = async (data) => {
         'Content-Type': 'application/json',
       },
     });
+
     return res;
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return error;
   }
 };
 
 const getMoh515Data = async (_, response) => {
+  logger.information("Getting MOH 515 data");;
   pool.query(DATA_QUERY, (error, results) => {
     if (error) {
-      console.error(`Error:${error}`);
+      logger.error(error);
       throw error;
     }
     const result = results.rows;
