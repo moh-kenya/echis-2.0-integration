@@ -23,7 +23,6 @@ const createFacilityReferral = async (CHTDataRecordDoc) => {
         if (error.response && error.response.status === 401 && !originalRequest._retry) {
           originalRequest._retry = true;
           const token = await generateToken();
-          logger.information(token);
           axiosInstance.defaults.headers.common[
             "Authorization"
           ] = `Bearer ${token}`;

@@ -1,5 +1,6 @@
 const qs = require("qs");
 const axios = require("axios");
+const {logger} = require('../utils/logger');
 
 const token = {
   timestamp: null,
@@ -30,6 +31,7 @@ const requestNewToken = async () => {
 };
 
 const generateToken = async () => {
+  logger.information(token);
   if (token.timestamp && token.value) {
     const now = new Date();
     const diff = now - token.timestamp;
