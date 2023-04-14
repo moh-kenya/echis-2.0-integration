@@ -1,12 +1,11 @@
 const axios = require("axios");
-const BASE_URL = "https://dhpapi.health.go.ke/";
 const { generateToken } = require("../utils/auth");
-const { CHT } = require("../../config");
+const { CHT, CLIENT_REGISTRY } = require("../../config");
 const { idMap, generateClientRegistryPayload } = require("../utils/client");
 const { logger } = require("../utils/logger");
 
 const axiosInstance = axios.create({
-  baseURL: `${process.env.CLIENT_REGISTRY_URL}`,
+  baseURL: CLIENT_REGISTRY.url,
   headers: {
     "Content-Type": "application/json",
   },
@@ -86,7 +85,7 @@ axiosInstance.interceptors.response.use(
 );
 
 const echisAxiosInstance = axios.create({
-  baseURL: "https://chis-staging.health.go.ke/",
+  baseURL: CHT.url,
   headers: {
     "Content-Type": "application/json",
   },
@@ -114,57 +113,3 @@ const updateEchisDocWithUpi = async (clientUpi, echisDoc) => {
 module.exports = {
   searchClientByIdType,
 };
-
-// const samplePayload = {
-//   firstName: "Maina",
-//   middleName: "And",
-//   lastName: "Kingangi",
-//   dateOfBirth: "2022-12-09",
-//   maritalStatus: "single",
-//   gender: "male",
-//   occupation: "other",
-//   religion: "christian",
-//   educationLevel: "college",
-//   country: "KE",
-//   countyOfBirth: "042",
-//   isAlive: true,
-//   originFacilityKmflCode: "15828",
-//   residence: {
-//     county: "042",
-//     subCounty: "kisumu-central",
-//     ward: "kondele",
-//     village: "kondele",
-//     landMark: "kondele",
-//     address: "kondele",
-//   },
-//   identifications: [
-//     {
-//       countryCode: "KE",
-//       identificationType: "national-id",
-//       identificationNumber: "ALPDD1232143434",
-//     },
-//   ],
-//   contact: {
-//     primaryPhone: "+254700111111",
-//     secondaryPhone: "+254700111111",
-//     emailAddress: "string@gmail.com",
-//   },
-//   nextOfKins: [
-//     {
-//       name: "Cresta Lindt",
-//       relationship: "sibling",
-//       residence: "kondele",
-//       contact: {
-//         primaryPhone: "+254700334567",
-//       },
-//     },
-//   ],
-// };
-
-//illustration purposes
-// const getIdInfoFromEchisPayload = (echisDoc) => {
-//   return {
-//     identificationType: echisDoc.id_type || "alien-id",
-//     identificationNumber: echisDoc.id || "TESTZA12345",
-//   };
-// };

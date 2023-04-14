@@ -6,7 +6,20 @@ const router = Router();
 router.post("/", async function (req, res) {
   logger.information('Calling client route');
   const clientNumber = await searchClientByIdType(req.body);
-  res.send(clientNumber);
+  if (/^MOH/.test(clientNumber)) {
+    res.send(clientNumber);
+  } else {
+    res.status(400).send({
+      error: "Bad Request",
+      message: "The Payload sent is not in the right or expected format.",
+    });
+  }
 });
+
+// router.post('generate-token',
+//     async function (req, res) {
+//         const clientNumber = await generateToken();
+//         res.send(clientNumber);
+//     });
 
 module.exports = router;

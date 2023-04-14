@@ -1,0 +1,195 @@
+{
+	"info": {
+		"_postman_id": "ac4df61a-232a-416e-96c0-fa67881defa6",
+		"name": "Echis<>Client Registry Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18803995"
+	},
+	"item": [
+		{
+			"name": "Wrong Payload Sent to Client Registry Service",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Check if wrong payload returns 400\", ()=>{",
+							"    pm.response.to.have.status(400)",
+							"})",
+							"pm.test(\"Check if wrong payload is an error\", ()=>{",
+							"    pm.response.to.be.error;",
+							"})",
+							"pm.test(\"Check if wrong payload returns has error in the body\", ()=>{",
+							"    pm.response.to.have.jsonBody(\"error\");",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}client",
+					"host": [
+						"{{URL}}client"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Right Payload Sent to Client Registry Service - Existing Client",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Check if not error\", ()=>{",
+							"    pm.response.to.not.be.error;",
+							"    pm.response.to.not.have.jsonBody(\"error\");",
+							"})",
+							"pm.test(\"Check if right payload does not return 400\", ()=>{",
+							"    pm.response.to.not.have.status(400)",
+							"})",
+							"pm.test(\"Check if right payload returns 200\", ()=>{",
+							"    pm.response.to.have.status(200)",
+							"})",
+							"pm.test(\"Check if returns UPI Like String\", ()=>{",
+							"    pm.expect(pm.response.text()).to.match(/^MOH/)",
+							"})",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"firstName\": \"kfjkf\",\n  \"lastName\": \"ksdnvok\",\n  \"dateOfBirth\": \"1991-06-07\",\n  \"gender\": \"male\",\n  \"country\": \"KE\",\n  \"countyOfBirth\": \"042\",\n  \"residence\": {\n    \"county\": \"044\",\n    \"subCounty\": \"rongo\",\n    \"village\": \"south-kamagambo\",\n    \"landMark\": \"ngere\",\n    \"address\": \"ngere\"\n  },\n  \"contact\": {\n    \"primaryPhone\": \"+254789345678\",\n    \"secondaryPhone\": \"\"\n  },\n  \"nextOfKin\": {\n    \"name\": \"John Doe\",\n    \"relationship\": \"uncle\",\n    \"residence\": \"Nairobi\",\n    \"contact\": {\n      \"primaryPhone\": \"+254700111111\",\n      \"secondaryPhone\": \"+254700111111\",\n      \"emailAddress\": \"hello.world@gmail.com\"\n    }\n  },\n  \"identifications\": {\n    \"identificationType\": \"national_id\",\n    \"identificationNumber\": \"987654324\"\n  },\n  \"isAlive\": true,\n  \"originFacilityKmflCode\": \"701583\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}client",
+					"host": [
+						"{{URL}}client"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET from Mock Server - Client NOT found response",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL_MS}}partners/registry/search/:idType/:idNumber",
+					"host": [
+						"{{URL_MS}}partners"
+					],
+					"path": [
+						"registry",
+						"search",
+						":idType",
+						":idNumber"
+					],
+					"variable": [
+						{
+							"key": "idType",
+							"value": "national-id"
+						},
+						{
+							"key": "idNumber",
+							"value": "test-not-found"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET from Mock Server - Client found response",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL_MS}}partners/registry/search/:idType/:idNumber",
+					"host": [
+						"{{URL_MS}}partners"
+					],
+					"path": [
+						"registry",
+						"search",
+						":idType",
+						":idNumber"
+					],
+					"variable": [
+						{
+							"key": "idType",
+							"value": "passport"
+						},
+						{
+							"key": "idNumber",
+							"value": "37488494"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST Client from Mock Server Copy",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"Darien\",\n    \"middleName\": \"Botsford\",\n    \"lastName\": \"Wuckert\",\n    \"dateOfBirth\": \"2023-02-27T23:04:52.105Z\",\n    \"gender\": \"male\",\n    \"country\": \"PK\",\n    \"countyOfBirth\": \"53121\",\n    \"isAlive\": false,\n    \"originFacilityKmflCode\": \"928it\",\n    \"residence\": {\n        \"county\": \"39955\",\n        \"subCounty\": \"South Leslycester\",\n        \"ward\": \"Sasha Creek\",\n        \"village\": \"Ariane Center\",\n        \"landMark\": \"Abbott Greens\",\n        \"address\": \"37692 Craig Crossing\"\n    },\n    \"identifications\": {\n        \"identificationType\": \"national_id\",\n        \"identificationNumber\": \"test\"\n    },\n    \"contact\": {\n        \"primaryPhone\": \"1-999-640-7939 x7765\",\n        \"secondaryPhone\": \"1-658-241-0989 x405\",\n        \"emailAddress\": \"Delfina4@yahoo.com\"\n    },\n    \"nextOfKin\": {\n        \"name\": \"Mae Brakus\",\n        \"relationship\": \"parent\",\n        \"residence\": \"139 Gloria Court\",\n        \"contact\": {\n            \"primaryPhone\": \"937.684.3900 x523\",\n            \"secondaryPhone\": \"(697) 307-8657 x542\",\n            \"emailAddress\": \"Hardy.Boyle@hotmail.com\"\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL_MS}}api/clientRegistry",
+					"host": [
+						"{{URL_MS}}api"
+					],
+					"path": [
+						"clientRegistry"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Bearer TOKEN from Mock Server",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{URL_MS}}api/oauth/token/",
+					"host": [
+						"{{URL_MS}}api"
+					],
+					"path": [
+						"oauth",
+						"token",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
