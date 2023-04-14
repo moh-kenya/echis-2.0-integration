@@ -135,12 +135,12 @@ const FHIRServiceRequestStatus = [
 
 const followUpInstruction = {
   revoked: `Missed visit`,
-  completed: ``
+  completed: `completed`
 };
 
 const healthFacilityContact = {
-  revoked: ``,
-  completed: ``
+  revoked: `revoked`,
+  completed: `completed`
 };
 
 const generateFHIRServiceRequest = (dataRecord) => {
