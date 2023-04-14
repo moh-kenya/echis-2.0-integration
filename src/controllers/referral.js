@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { generateFHIRServiceRequest, FHIRServiceRequestStatus, followUpInstruction, healthFacilityContact } = require('../utils/referral');
+const { generateFHIRServiceRequest, FHIRServiceRequestStatus, followUpInstruction, healthFacilityContact} = require('../utils/referral');
 const {generateToken} = require("../utils/auth");
 const { FHIR, CHT } = require('../../config');
 const FHIR_URL = FHIR.url;
@@ -118,10 +118,9 @@ const createTaskReferral = async (serviceRequest) => {
         }
       );
       const response = await axiosInstance.post(`${FHIR_URL}/ServiceRequest/_search?identifier=${searchParam}`, ``);
-      serviceRequestId = response[0].resource.id;
+      serviceRequestId = response.entry[0].resource.id;
     }
     // todo: get id of service request from payload that updates service request oriinally from echis
-    serviceRequestId = null;
     const axiosInstance = axios.create({
       baseURL: CHT.url,
       headers: {
@@ -152,7 +151,7 @@ const createTaskReferral = async (serviceRequest) => {
         needs_follow_up: `${FHIRServiceRequestStatus.includes(serviceRequest?.status)}` || `false`,
         follow_up_instruction: followUpInstruction[serviceRequest?.status] || notesDeserialize.follow_up_instruction,
         health_facility_contact: healthFacilityContact[serviceRequest?.status] || notesDeserialize.health_facility_contact,
-        fhir_service_request_uuid: serviceRequest?.entry[0].resource.id,
+        fhir_service_request_uuid: serviceRequest?.status === 'draft'? serviceRequestIdserviceRequest?.entry[0].resource.id,
         source_report_uuid: serviceRequest?.entry[0].resource.identifier.value
       };
 
