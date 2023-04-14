@@ -3,7 +3,7 @@ const BASE_URL = "https://dhpapi.health.go.ke/";
 const { generateToken } = require("../utils/auth");
 const { CHT } = require("../../config");
 const { idMap, generateClientRegistryPayload } = require("../utils/client");
-const {logger} = require('../utils/logger');
+const { logger } = require("../utils/logger");
 
 const axiosInstance = axios.create({
   baseURL: `${process.env.CLIENT_REGISTRY_URL}`,
@@ -25,7 +25,7 @@ const searchClientByIdType = async (echisClientDoc) => {
     if (res.data.clientExists) {
       logger.information("Client found");
       clientNumber = res.data.client.clientNumber;
-    } else { 
+    } else {
       logger.information("Client not found");
       logger.information("Creating client in client registry");
       const response = await createClientInRegistry(
@@ -37,8 +37,21 @@ const searchClientByIdType = async (echisClientDoc) => {
     const echisResponse = await updateEchisDocWithUpi(clientNumber, echisDoc);
     return echisResponse;
   } catch (error) {
-    logger.error(error);
-    return error;
+    if (error.response.status === 404) {
+      let clientNumber;
+      logger.information("Client not found");
+      logger.information("Creating client in client registry");
+      const response = await createClientInRegistry(
+        JSON.stringify(generateClientRegistryPayload(echisClientDoc))
+      );
+      clientNumber = response;
+      const echisDoc = await getEchisDocForUpdate(echisClientDoc.doc_id);
+      const echisResponse = await updateEchisDocWithUpi(clientNumber, echisDoc);
+      return echisResponse;
+    } else {
+      logger.error(error);
+      return error;
+    }
   }
 };
 
