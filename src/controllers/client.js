@@ -2,7 +2,7 @@ const axios = require("axios");
 const { generateToken } = require("../utils/auth");
 const { CHT, CLIENT_REGISTRY } = require("../../config");
 const { idMap, generateClientRegistryPayload } = require("../utils/client");
-const {logger} = require('../utils/logger');
+const { logger } = require("../utils/logger");
 
 const axiosInstance = axios.create({
   baseURL: CLIENT_REGISTRY.url,
@@ -36,8 +36,21 @@ const searchClientByIdType = async (echisClientDoc) => {
     const echisResponse = await updateEchisDocWithUpi(clientNumber, echisDoc);
     return echisResponse;
   } catch (error) {
-    logger.error(error);
-    return error;
+    if (error.response.status === 404) {
+      let clientNumber;
+      logger.information("Client not found");
+      logger.information("Creating client in client registry");
+      const response = await createClientInRegistry(
+        JSON.stringify(generateClientRegistryPayload(echisClientDoc))
+      );
+      clientNumber = response;
+      const echisDoc = await getEchisDocForUpdate(echisClientDoc.doc_id);
+      const echisResponse = await updateEchisDocWithUpi(clientNumber, echisDoc);
+      return echisResponse;
+    } else {
+      logger.error(error);
+      return error;
+    }
   }
 };
 
