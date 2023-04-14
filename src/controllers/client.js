@@ -33,18 +33,21 @@ const searchClientByIdType = async (echisClientDoc) => {
       );
       clientNumber = response;
     }
-    console.log(clientNumber);
     const echisDoc = await getEchisDocForUpdate(echisClientDoc.doc_id);
     const echisResponse = await updateEchisDocWithUpi(clientNumber, echisDoc);
     return echisResponse;
   } catch (error) {
     if (error.response.status === 404) {
+      let clientNumber;
       logger.information("Client not found");
       logger.information("Creating client in client registry");
       const response = await createClientInRegistry(
         JSON.stringify(generateClientRegistryPayload(echisClientDoc))
       );
       clientNumber = response;
+      const echisDoc = await getEchisDocForUpdate(echisClientDoc.doc_id);
+      const echisResponse = await updateEchisDocWithUpi(clientNumber, echisDoc);
+      return echisResponse;
     } else {
       logger.error(error);
       return error;
