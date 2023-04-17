@@ -47,12 +47,14 @@ const createFacilityReferral = async (CHTDataRecordDoc) => {
       }
     );
     logger.information("Generating FHIR ServiceRequest");
+    /*
     CHTDataRecordDoc.upi = getSubjectUpi(CHTDataRecordDoc);
     if (!CHTDataRecordDoc.upi) {
       const error = `Attribute not found: UPI`;
       logger.error(error);
       throw error;
     }
+    */
     const FHIRServiceRequest = generateFHIRServiceRequest(CHTDataRecordDoc);
     logger.information(JSON.stringify(FHIRServiceRequest));
     logger.information("Calling MOH FHIR server");
