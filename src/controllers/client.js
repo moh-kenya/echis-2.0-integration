@@ -112,4 +112,7 @@ const updateEchisDocWithUpi = async (clientUpi, echisDoc) => {
 
 module.exports = {
   searchClientByIdType,
+  createClientInRegistry,
+  getEchisDocForUpdate,
+  updateEchisDocWithUpi
 };

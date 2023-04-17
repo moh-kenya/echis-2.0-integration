@@ -4,7 +4,7 @@ const idMap = {
   passport: "passport",
   alien_card: "alien-id",
 };
-
+// todo: update outbound module to serve needs of patient referral too, so tat formatting the payload to reistry is done here.
 const generateClientRegistryPayload = (echisDoc) => {
   let result = {
     firstName: echisDoc?.firstName,
