@@ -122,10 +122,16 @@ const extractNotes = (data) => {
 };
 
 const extractReasonCode = (data) => {
-  let coding = [];
+  let reasonCodes = [];
   const reasons = [...new Set((Object.values(data).map(str => str.split(' '))).flat())].filter(elem => elem !== `none`);
-  reasons.forEach(reason => coding.push(echisNHDDValuesCoding[reason]));
-  return [{coding: coding}];
+  reasons.forEach(reason => {
+    const coding = echisNHDDValuesCoding[reason];
+    return reasonCodes.push({
+      coding: [coding],
+      text: coding.display
+    });
+  });
+  return reasonCodes;
 };
 
 const status = [
@@ -174,13 +180,13 @@ const generateFHIRServiceRequest = (dataRecord) => {
     requester: {
       reference: `${NHDD_KMHFL_PATH}/${dataRecord.chu_code}`,
       type: `Organization`,
-      display: dataRecord.chu_name
+      display: dataRecord.chu_code
     },
     performer: [
       {
         reference: `${NHDD_KMHFL_PATH}/${dataRecord.referred_to_facility_code}`,
         type: `Organization`,
-        display: dataRecord.referred_to_facility_name
+        display: dataRecord.referred_to_facility_code
       }
     ],
     reasonCode: extractReasonCode(dataRecord.screening),
