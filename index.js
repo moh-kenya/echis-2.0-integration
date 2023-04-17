@@ -23,7 +23,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 logger.information("Setting up cron services");
 cronService();
 logger.information("Cron services setup complete");
-app.listen(PORT, () => {
+
+app.listen(CONFIG.port, () => {
   logger.information(`Server listening on port ${PORT}`);
 });
 
