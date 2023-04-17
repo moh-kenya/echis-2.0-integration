@@ -25,7 +25,7 @@ cronService();
 logger.information("Cron services setup complete");
 
 app.listen(CONFIG.port, () => {
-  logger.information(`Server listening on port ${PORT}`);
+  logger.information(`Server listening on port ${CONFIG.port}`);
 });
 
 const registerMediatorCallback = (err) => {
