@@ -15,7 +15,7 @@ const getSubjectUpi = async (dataRecord) => {
     const echisDoc = await getEchisDocForUpdate(dataRecord._patient_id);
     upi = echisDoc.upi;
   }
-  
+
   if(!upi){
     upi = await createClientInRegistry(JSON.stringify(generateClientRegistryPayload(dataRecord)));
     await updateEchisDocWithUpi(upi, dataRecord);
@@ -52,7 +52,7 @@ const createFacilityReferral = async (CHTDataRecordDoc) => {
     );
     logger.information("Generating FHIR ServiceRequest");
     
-    CHTDataRecordDoc.upi = getSubjectUpi(CHTDataRecordDoc);
+    CHTDataRecordDoc.upi = await getSubjectUpi(CHTDataRecordDoc);
     if (!CHTDataRecordDoc.upi) {
       const error = `Attribute not found: UPI`;
       logger.error(error);
