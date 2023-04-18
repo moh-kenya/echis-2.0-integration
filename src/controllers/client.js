@@ -45,12 +45,12 @@ const searchClientByIdType = async (echisClientDoc) => {
       let clientNumber;
       logger.information("Client not found");
       logger.information("Creating client in client registry");
-      const response = await createClientInRegistry(
-        JSON.stringify(generateClientRegistryPayload(echisClientDoc))
-      );
+      const response = await createClientInRegistry(JSON.stringify(generateClientRegistryPayload(echisClientDoc)));
       clientNumber = response;
+
       const echisDoc = await getEchisDocForUpdate(echisClientDoc.doc._id);
       const echisResponse = await updateEchisDocWithUpi(clientNumber, echisDoc);
+      
       return echisResponse;
     } else {
       logger.error(error);
