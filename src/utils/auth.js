@@ -31,7 +31,6 @@ const requestNewToken = async () => {
 };
 
 const generateToken = async () => {
-  logger.information(JSON.stringify(token));
   if (token.timestamp && token.value) {
     const now = new Date();
     const diff = now - token.timestamp;
