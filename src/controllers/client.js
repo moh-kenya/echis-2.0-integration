@@ -18,7 +18,7 @@ const searchClientByIdType = async (echisClientDoc) => {
     );
     let clientNumber;
     logger.information("Echis Document:");
-    logger.information(echisClientDoc);
+    logger.information(JSON.stringify(echisClientDoc));
     logger.information("Calling client registry");
     const res = await axiosInstance.get(`partners/registry/search/${identificationType}/${echisClientDoc?.identifications?.identificationNumber}`);
     if (res.data.clientExists) {
