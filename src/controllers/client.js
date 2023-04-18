@@ -11,7 +11,7 @@ const axiosInstance = axios.create({
   },
 });
 
-const searchClientByIdType = async (echisClientDoc) => {
+const clientFactory = async (echisClientDoc) => {
   try {
     const identificationType = getIdentificationType(echisClientDoc?.doc.identification_type);
 
@@ -109,12 +109,12 @@ const updateEchisDocWithUpi = async (clientUpi, echisDoc) => {
   logger.information("Updating eCHIS document with client registry UPI");
   echisDoc.upi = clientUpi;
   const response = await echisAxiosInstance.put(`medic/${echisDoc._id}`, JSON.stringify(echisDoc));
-  
+
   return response.data;
 };
 
 module.exports = {
-  searchClientByIdType,
+  clientFactory,
   createClientInRegistry,
   getEchisDocForUpdate,
   updateEchisDocWithUpi,
