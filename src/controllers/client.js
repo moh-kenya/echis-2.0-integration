@@ -114,5 +114,6 @@ module.exports = {
   searchClientByIdType,
   createClientInRegistry,
   getEchisDocForUpdate,
-  updateEchisDocWithUpi
+  updateEchisDocWithUpi,
+  generateClientRegistryPayload
 };
