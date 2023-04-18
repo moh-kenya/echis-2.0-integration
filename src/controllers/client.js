@@ -37,7 +37,7 @@ const searchClientByIdType = async (echisClientDoc) => {
 
     const echisDoc = await getEchisDocForUpdate(echisClientDoc.doc._id);
     const echisResponse = await updateEchisDocWithUpi(clientNumber, echisDoc);
-
+    logger.information(`Client update${echisResponse}`)
     return echisResponse;
   } 
   catch (error) {
@@ -50,7 +50,7 @@ const searchClientByIdType = async (echisClientDoc) => {
 
       const echisDoc = await getEchisDocForUpdate(echisClientDoc.doc._id);
       const echisResponse = await updateEchisDocWithUpi(clientNumber, echisDoc);
-      
+
       return echisResponse;
     } else {
       logger.error(error);
@@ -108,10 +108,8 @@ const getEchisDocForUpdate = async (docId) => {
 const updateEchisDocWithUpi = async (clientUpi, echisDoc) => {
   logger.information("Updating eCHIS document with client registry UPI");
   echisDoc.upi = clientUpi;
-  const response = await echisAxiosInstance.put(
-    `medic/${echisDoc._id}`,
-    JSON.stringify(echisDoc)
-  );
+  const response = await echisAxiosInstance.put(`medic/${echisDoc._id}`, JSON.stringify(echisDoc));
+  
   return response.data;
 };
 
