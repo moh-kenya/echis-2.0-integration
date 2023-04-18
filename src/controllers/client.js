@@ -37,7 +37,7 @@ const clientFactory = async (echisClientDoc) => {
 
     const echisDoc = await getEchisDocForUpdate(echisClientDoc.doc._id);
     const echisResponse = await updateEchisDocWithUpi(clientNumber, echisDoc);
-    logger.information(`Client update${echisResponse}`)
+    logger.information(`Client update ${JSON.stringify(echisResponse)}`)
     return echisResponse;
   } 
   catch (error) {
