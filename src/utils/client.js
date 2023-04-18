@@ -1,3 +1,5 @@
+const {logger} = require('../utils/logger');
+
 const counties = [
   { code: 1, name: 'Mombasa' },
   { code: 2, name: 'Kwale' },
@@ -105,7 +107,7 @@ const generateClientRegistryPayload = (echisDoc) => {
       },
     ],
   };
-  console.log(JSON.stringify(result));
+  logger.information(JSON.stringify(result));
   return result;
 };
 
