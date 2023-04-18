@@ -4,7 +4,7 @@ const { generateToken } = require("../utils/auth");
 const { FHIR, CHT } = require('../../config');
 const FHIR_URL = FHIR.url;
 const { logger } = require('../utils/logger');
-const { createClientInRegistry, getEchisDocForUpdate, updateEchisDocWithUpi, generateClientRegistryPayload } = require('../utils/client');
+const { createClientInRegistry, getEchisDocForUpdate, updateEchisDocWithUpi, generateClientRegistryPayload } = require('../controllers/client');
 
 const getSubjectUpi = async (dataRecord) => {
   let upi = dataRecord.upi;
