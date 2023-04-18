@@ -1,10 +1,11 @@
 const axios = require('axios');
-const { generateFHIRServiceRequest } = require('../utils/referral');
+const { generateFHIRServiceRequest, FHIRServiceRequestStatus, generateEchisDataRecord } = require('../utils/referral');
 const { generateToken } = require("../utils/auth");
 const { FHIR, CHT } = require('../../config');
 const FHIR_URL = FHIR.url;
 const { logger } = require('../utils/logger');
 const { createClientInRegistry, getEchisDocForUpdate, updateEchisDocWithUpi, generateClientRegistryPayload } = require('../controllers/client');
+const { DateTime } = require('luxon');
 
 const getSubjectUpi = async (dataRecord) => {
   logger.information("Data record");
@@ -117,34 +118,6 @@ const createCommunityReferral = async (serviceRequest) => {
 const createTaskReferral = async (serviceRequest) => {
   try {
     let axiosInstance = axios.create({
-      baseURL: FHIR.url,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    axiosInstance.interceptors.response.use(
-      (response) => {
-        return response;
-      },
-      async function (error) {
-        const originalRequest = error.config;
-        if (error.response && error.response.status === 401 && !originalRequest._retry) {
-          originalRequest._retry = true;
-          const token = await generateToken();
-          axiosInstance.defaults.headers.common[
-            "Authorization"
-          ] = `Bearer ${token}`;
-          return axiosInstance(originalRequest);
-        }
-        return Promise.reject(error);
-      }
-    );
-    const response = await axiosInstance.post(`${FHIR_URL}/ServiceRequest`, JSON.stringify(serviceRequest));
-    const location = response.headers.location.split("/");
-    logger.information(`Service Request Id ${location.at(-3)}`);
-
-    axiosInstance = axios.create({
       baseURL: CHT.url,
       headers: {
         "Content-Type": "application/json",
@@ -154,31 +127,46 @@ const createTaskReferral = async (serviceRequest) => {
         password: CHT.password,
       },
     });
-
+    // first chekc system is echis
+      // get client UPI
     const UPI = serviceRequest?.subject?.reference?.split("/").pop();
+    // use contacts_by_type_freetext view for upreades sake
     const { data } = await axiosInstance.get(`medic/_design/medic/_view/contacts_by_upi?key="${UPI}"`);
     if (data.rows.length > 0) {
       const patientDoc = data.rows[0].value;
-      const notesDeserialize = JSON.parse(serviceRequest?.note[0].text); //Remove backslash and parse JSON
+      const body = generateEchisDataRecord(serviceRequest, UPI, patientDoc._id);
+      let response = await axiosInstance.post(`api/v2/records`, body);
 
-      const body = {
-        _meta: {
-          form: "REFERRAL_FOLLOWUP_AFYA_KE",
+      // proceed to update status of the request in fhir
+      axiosInstance = axios.create({
+        baseURL: FHIR.url,
+        headers: {
+          "Content-Type": "application/json",
         },
-        patient_id: patientDoc._id,
-        subject: UPI,
-        authored_on: serviceRequest?.authoredOn,
-        date_service_offered: serviceRequest?.authoredOn,
-        date_of_visit: serviceRequest?.authoredOn,
-        follow_up_instruction: notesDeserialize.follow_up_instruction,
-        health_facility_contact: notesDeserialize.health_facility_contact
-      };
-
-      const response = await axiosInstance.post(`api/v2/records`, body);
+      });
+  
+      axiosInstance.interceptors.response.use(
+        (response) => {
+          return response;
+        },
+        async function (error) {
+          const originalRequest = error.config;
+          if (error.response && error.response.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
+            const token = await generateToken();
+            axiosInstance.defaults.headers.common[
+              "Authorization"
+            ] = `Bearer ${token}`;
+            return axiosInstance(originalRequest);
+          }
+          return Promise.reject(error);
+        }
+      );
+      serviceRequest.status = FHIRServiceRequestStatus[2];
+      response = await axiosInstance.put(`${FHIR_URL}/ServiceRequest`, JSON.stringify(serviceRequest));
       return response;
     }
-
-    return { status: 200, serviceRequestId: location.at(-3)};
+    return { status: 200, serviceRequestId: serviceRequest?.id};
   } catch (error) {
     logger.error(error);
     return error;

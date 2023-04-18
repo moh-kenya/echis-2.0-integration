@@ -134,7 +134,7 @@ const extractReasonCode = (data) => {
   return reasonCodes;
 };
 
-const status = [
+const FHIRServiceRequestStatus = [
   `draft`,
   `active`,
   `revoked`,
@@ -151,7 +151,7 @@ const generateFHIRServiceRequest = (dataRecord) => {
         value: dataRecord._id
       }
     ],
-    status: status[0],
+    status: FHIRServiceRequestStatus[0],
     intent: `order`,
     category: [
       {
@@ -195,6 +195,30 @@ const generateFHIRServiceRequest = (dataRecord) => {
   return FHITServiceRequest;
 };
 
+const generateEchisDataRecord = (dataRecord, upi, patientId) => {
+  const notesDeserialize = JSON.parse(dataRecord?.note[0].text);
+  const status = dataRecord.status;
+  const res = {
+    _meta: {
+      form: `REFERRAL_FOLLOWUP_AFYA_KE`,
+    },
+    patient_id: patientId,
+    subject: upi,
+    authored_on: dataRecord?.authoredOn,
+    date_service_offered: dataRecord?.authoredOn,
+    date_of_visit: dataRecord?.authoredOn,
+    follow_up_instruction: notesDeserialize.follow_up_instruction,
+    health_facility_contact: notesDeserialize.health_facility_contact,
+    status: status,
+    fhir_service_request_uuid: dataRecord?.id,
+    source: status !== FHIRServiceRequestStatus[0] ? `afya-ke` : `echis`,
+    source_report_uuid: status !== FHIRServiceRequestStatus[0] ? dataRecord.identifier[0].value : ``
+  }
+  return res;
+};
+
 module.exports = {
-  generateFHIRServiceRequest
+  generateFHIRServiceRequest,
+  FHIRServiceRequestStatus,
+  generateEchisDataRecord
 };
