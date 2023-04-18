@@ -4,16 +4,16 @@ const { generateToken } = require("../utils/auth");
 const { FHIR, CHT } = require('../../config');
 const FHIR_URL = FHIR.url;
 const { logger } = require('../utils/logger');
-const { createClientInRegistry, getEchisDocForUpdate, updateEchisDocWithUpi } = require('../utils/client');
+const { createClientInRegistry, getEchisDocForUpdate, updateEchisDocWithUpi, generateClientRegistryPayload } = require('../utils/client');
 
 const getSubjectUpi = async (dataRecord) => {
   let upi = dataRecord.upi;
   if(!upi){
-    const echisDoc = await getEchisDocForUpdate(dataRecord._patient_uuid);
+    const echisDoc = await getEchisDocForUpdate(dataRecord._patient_id);
     upi = echisDoc.upi;
   }
   if(!upi){
-    upi = await createClientInRegistry(dataRecord);
+    upi = await createClientInRegistry(JSON.stringify(generateClientRegistryPayload(dataRecord)));
     await updateEchisDocWithUpi(upi, dataRecord);
   }
   return upi;
@@ -47,14 +47,14 @@ const createFacilityReferral = async (CHTDataRecordDoc) => {
       }
     );
     logger.information("Generating FHIR ServiceRequest");
-    /*
+    
     CHTDataRecordDoc.upi = getSubjectUpi(CHTDataRecordDoc);
     if (!CHTDataRecordDoc.upi) {
       const error = `Attribute not found: UPI`;
       logger.error(error);
       throw error;
     }
-    */
+    
     const FHIRServiceRequest = generateFHIRServiceRequest(CHTDataRecordDoc);
     logger.information(JSON.stringify(FHIRServiceRequest));
     logger.information("Calling MOH FHIR server");
