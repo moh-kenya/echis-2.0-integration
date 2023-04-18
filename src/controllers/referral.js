@@ -7,6 +7,8 @@ const { logger } = require('../utils/logger');
 const { createClientInRegistry, getEchisDocForUpdate, updateEchisDocWithUpi, generateClientRegistryPayload } = require('../controllers/client');
 
 const getSubjectUpi = async (dataRecord) => {
+  logger.information("Data record");
+  logger.information(JSON.stringify(dataRecord));
   let upi = dataRecord.upi;
   if(!upi){
     const echisDoc = await getEchisDocForUpdate(dataRecord._patient_id);
