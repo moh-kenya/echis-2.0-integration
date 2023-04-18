@@ -13,29 +13,34 @@ const axiosInstance = axios.create({
 
 const searchClientByIdType = async (echisClientDoc) => {
   try {
-    const identificationType = getIdentificationType(
-      echisClientDoc?.identifications?.identificationType
-    );
+    const identificationType = getIdentificationType(echisClientDoc?.doc.identification_type);
+
     let clientNumber;
+
     logger.information("Echis Document:");
     logger.information(JSON.stringify(echisClientDoc));
     logger.information("Calling client registry");
-    const res = await axiosInstance.get(`partners/registry/search/${identificationType}/${echisClientDoc?.identifications?.identificationNumber}`);
+    
+    const res = await axiosInstance.get(`partners/registry/search/${identificationType}/${echisClientDoc?.doc.identification_number}`);
+    
     if (res.data.clientExists) {
       logger.information("Client found");
       clientNumber = res.data.client.clientNumber;
-    } else {
+    } 
+    else {
       logger.information("Client not found");
       logger.information("Creating client in client registry");
-      const response = await createClientInRegistry(
-        JSON.stringify(generateClientRegistryPayload(echisClientDoc))
-      );
+      const response = await createClientInRegistry(JSON.stringify(generateClientRegistryPayload(echisClientDoc)));
+
       clientNumber = response;
     }
-    const echisDoc = await getEchisDocForUpdate(echisClientDoc.doc_id);
+
+    const echisDoc = await getEchisDocForUpdate(echisClientDoc.doc._id);
     const echisResponse = await updateEchisDocWithUpi(clientNumber, echisDoc);
+
     return echisResponse;
-  } catch (error) {
+  } 
+  catch (error) {
     if (error.response.status === 404) {
       let clientNumber;
       logger.information("Client not found");
@@ -44,7 +49,7 @@ const searchClientByIdType = async (echisClientDoc) => {
         JSON.stringify(generateClientRegistryPayload(echisClientDoc))
       );
       clientNumber = response;
-      const echisDoc = await getEchisDocForUpdate(echisClientDoc.doc_id);
+      const echisDoc = await getEchisDocForUpdate(echisClientDoc.doc._id);
       const echisResponse = await updateEchisDocWithUpi(clientNumber, echisDoc);
       return echisResponse;
     } else {
