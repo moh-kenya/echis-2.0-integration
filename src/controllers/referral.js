@@ -116,35 +116,10 @@ const createCommunityReferral = async (serviceRequest) => {
 
 const createTaskReferral = async (serviceRequest) => {
   try {
-    let axiosInstance = axios.create({
-      baseURL: FHIR.url,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const serviceRequestId = serviceRequest?.id;
+    logger.information(`Processing Service Request Id ${serviceRequestId}`);
 
-    axiosInstance.interceptors.response.use(
-      (response) => {
-        return response;
-      },
-      async function (error) {
-        const originalRequest = error.config;
-        if (error.response && error.response.status === 401 && !originalRequest._retry) {
-          originalRequest._retry = true;
-          const token = await generateToken();
-          axiosInstance.defaults.headers.common[
-            "Authorization"
-          ] = `Bearer ${token}`;
-          return axiosInstance(originalRequest);
-        }
-        return Promise.reject(error);
-      }
-    );
-    const response = await axiosInstance.post(`${FHIR_URL}/ServiceRequest`, JSON.stringify(serviceRequest));
-    const location = response.headers.location.split("/");
-    logger.information(`Service Request Id ${location.at(-3)}`);
-
-    axiosInstance = axios.create({
+    const axiosInstance = axios.create({
       baseURL: CHT.url,
       headers: {
         "Content-Type": "application/json",
@@ -156,8 +131,10 @@ const createTaskReferral = async (serviceRequest) => {
     });
 
     const UPI = serviceRequest?.subject?.reference?.split("/").pop();
+    logger.information(`Searching ECHIS Client with UPI ${UPI}`);
     const { data } = await axiosInstance.get(`medic/_design/medic/_view/contacts_by_upi?key="${UPI}"`);
     if (data.rows.length > 0) {
+      logger.information(`Client found. Creating Report in ECHIS...`);
       const patientDoc = data.rows[0].value;
       const notesDeserialize = JSON.parse(serviceRequest?.note[0].text); //Remove backslash and parse JSON
 
@@ -175,10 +152,10 @@ const createTaskReferral = async (serviceRequest) => {
       };
 
       const response = await axiosInstance.post(`api/v2/records`, body);
+      logger.information(`Completed successfully`);
       return response;
     }
-
-    return { status: 200, serviceRequestId: location.at(-3)};
+    return { status: 200, serviceRequestId: serviceRequestId};
   } catch (error) {
     logger.error(error);
     return error;
