@@ -150,7 +150,7 @@ const createTaskReferral = async (serviceRequest) => {
         follow_up_instruction: notesDeserialize.follow_up_instruction,
         health_facility_contact: notesDeserialize.health_facility_contact,
         status: serviceRequest?.status,
-        fhir_service_request_uuid: dataRecord?.id,
+        fhir_service_request_uuid: serviceRequest?.id,
         source: `afya-ke`,
         source_report_uuid: serviceRequest?.identifier[0].value || ``
       };
