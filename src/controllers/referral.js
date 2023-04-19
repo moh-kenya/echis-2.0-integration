@@ -148,7 +148,11 @@ const createTaskReferral = async (serviceRequest) => {
         date_service_offered: serviceRequest?.authoredOn,
         date_of_visit: serviceRequest?.authoredOn,
         follow_up_instruction: notesDeserialize.follow_up_instruction,
-        health_facility_contact: notesDeserialize.health_facility_contact
+        health_facility_contact: notesDeserialize.health_facility_contact,
+        status: serviceRequest?.status,
+        fhir_service_request_uuid: dataRecord?.id,
+        source: `afya-ke`,
+        source_report_uuid: serviceRequest?.identifier[0].value || ``
       };
 
       const response = await axiosInstance.post(`api/v2/records`, body);
