@@ -5,7 +5,7 @@ const {logger} = require('../utils/logger');
 const sendMoh515Data = async (data) => {
   logger.information("Sending MOH 515");
   try {
-    const res = await axios.post(`${KHIS.url}/dataValueSets`, data, {
+    const res = await axios.post(`${KHIS.url}/dataValueSets?orgUnitIdScheme=CODE`, data, {
       auth: {username: KHIS.username, password: KHIS.password},
       headers: {
         'Content-Type': 'application/json',
