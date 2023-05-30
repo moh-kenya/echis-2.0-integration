@@ -112,13 +112,13 @@ const echisNHDDValuesCoding = {
 };
 
 const extractNotes = (data) => {
-  const notes = {};
-  for (const [key, value] of Object.entries(data)) {
+  let notes = [];
+  Object.entries(data).map(([key, value]) => {
     if(value){
-      notes[key] = value;
+      notes.push(`${key.replaceAll('_', ' ').trim()}: ${value}`);
     }
-  }
-  return [{text: `${JSON.stringify(notes)}`}];
+  });
+  return [{text: notes.join(', ')}];
 };
 
 const extractReasonCode = (data) => {
