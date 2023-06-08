@@ -1,10 +1,8 @@
 const bodyParser = require("body-parser");
 const express = require("express");
-const app = express();
-const {registerMediator} = require('openhim-mediator-utils');
+const app = express();;
+const {registerMediator} = require('openhim-mediator-utils')
 const {OPENHIM, CONFIG} = require('./config');
-const clientRoutes = require('./src/routes/client');
-const referralRoutes = require('./src/routes/referral');
 const aggregateRoutes = require('./src/routes/aggregate');
 const {cronService} = require('./src/middlewares/aggregate');
 const {logger} =require('./src/utils/logger');
@@ -13,8 +11,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 logger.information("Setting up routes");
-app.use('/client', clientRoutes);
-app.use('/referral', referralRoutes);
 app.use('/aggregate', aggregateRoutes);
 logger.information("Routes setup complete");
 
@@ -40,7 +36,7 @@ const mediatorConfig = {
   version: "1.0.0",
   name: "eCHIS Mediator",
   description:
-    "A mediator for CHIS to handle client registry and referral workflows.",
+    "A mediator eCHIS to KHIS integration.",
   defaultChannelConfig: [
     {
       name: "eCHIS Mediator",
