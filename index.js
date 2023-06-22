@@ -1,6 +1,6 @@
 const bodyParser = require("body-parser");
 const express = require("express");
-const app = express();;
+const app = express();
 const {registerMediator} = require('openhim-mediator-utils')
 const {OPENHIM, CONFIG} = require('./config');
 const aggregateRoutes = require('./src/routes/aggregate');
