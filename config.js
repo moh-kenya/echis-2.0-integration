@@ -7,16 +7,6 @@ const OPENHIM = {
   trustSelfSigned: true,
 };
 
-const FHIR = {
-  url: process.env.FHIR_URL,
-};
-
-const CHT = {
-  url: process.env.CHT_URL,
-  username: process.env.CHT_USERNAME,
-  password: process.env.CHT_PASSWORD,
-};
-
 const CONFIG = {
   port: process.env.PORT || 6000
 };
@@ -35,18 +25,6 @@ const POSTGRES = {
   port: process.env.POSTGRES_PORT
 };
 
-const CLIENT_REGISTRY = {
-  url: process.env.CLIENT_REGISTRY_URL,
-};
-
-const NHDD = {
-  url: process.env.NHDD_URL,
-};
-
-const SNOMED_CT = {
-  url: process.env.SNOMED_CT_URL,
-};
-
 const MEDIATOR = {
   url: process.env.MEDIATOR_URL,
   username: process.env.MEDIATOR_USERNAME,
@@ -55,13 +33,8 @@ const MEDIATOR = {
 
 module.exports = {
   OPENHIM,
-  FHIR,
-  CHT,
   CONFIG,
   KHIS,
   POSTGRES,
-  CLIENT_REGISTRY,
-  NHDD,
-  SNOMED_CT,
   MEDIATOR
 };
