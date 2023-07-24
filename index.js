@@ -2,7 +2,7 @@ const bodyParser = require("body-parser");
 const express = require("express");
 const app = express();
 const {registerMediator} = require('openhim-mediator-utils')
-const {OPENHIM, CONFIG} = require('./config');
+const {OPENHIM, CONFIG, CHANNEL_CONFIG_ENDPOINTS_URL} = require('./config');
 const aggregateRoutes = require('./src/routes/aggregate');
 const {cronService} = require('./src/middlewares/aggregate');
 const {logger} =require('./src/utils/logger');
@@ -44,7 +44,7 @@ const mediatorConfig = {
       routes: [
         {
           name: "eCHIS Mediator",
-          host: "https://mediator-staging.health.go.ke",
+          host: CHANNEL_CONFIG_ENDPOINTS_URL,
           pathTransform: "s/\\/echis-mediator/",
           port: 22000,
           primary: true,
@@ -59,7 +59,7 @@ const mediatorConfig = {
   endpoints: [
     {
       name: "Mediator",
-      host: "https://mediator-staging.health.go.ke",
+      host: CHANNEL_CONFIG_ENDPOINTS_URL,
       path: "/",
       port: "22000",
       primary: true,

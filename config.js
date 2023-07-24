@@ -31,10 +31,13 @@ const MEDIATOR = {
   password: process.env.MEDIATOR_PASSWORD
 };
 
+const CHANNEL_CONFIG_ENDPOINTS_URL = process.env.CHANNEL_CONFIG_ENDPOINTS_URL;
+
 module.exports = {
   OPENHIM,
   CONFIG,
   KHIS,
   POSTGRES,
-  MEDIATOR
+  MEDIATOR,
+  CHANNEL_CONFIG_ENDPOINTS_URL
 };
