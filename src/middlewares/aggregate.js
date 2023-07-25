@@ -3,7 +3,7 @@ const axios = require('axios');
 const { MEDIATOR } = require('../../config');
 const {logger} =require('../utils/logger');
 
-const cronService = () => cron.schedule('0 0 15 * *', () => {
+const cronService = () => cron.schedule('0 0 5 * *', () => {
   logger.information('Running MoH 515 export');
   try {
     const res = axios.get(`${MEDIATOR.url}/echis-mediator/aggregate/run`, {
