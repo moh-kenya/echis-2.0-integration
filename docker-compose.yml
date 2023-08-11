@@ -2,7 +2,7 @@ version: "3"
 services:
   mediator:
     build: .
-    container_name: mediator
+    container_name: echis-mediator
     ports:
       - "22000:6000"
     env_file:

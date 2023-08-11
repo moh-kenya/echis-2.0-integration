@@ -44,7 +44,7 @@ const mediatorConfig = {
       routes: [
         {
           name: "eCHIS Mediator",
-          host: "https://mediator-staging.health.go.ke",
+          host: "http://45.91.169.147",
           pathTransform: "s/\\/echis-mediator/",
           port: 22000,
           primary: true,
@@ -59,7 +59,7 @@ const mediatorConfig = {
   endpoints: [
     {
       name: "Mediator",
-      host: "https://mediator-staging.health.go.ke",
+      host: "http://45.91.169.14/echis-mediator",
       path: "/",
       port: "22000",
       primary: true,
