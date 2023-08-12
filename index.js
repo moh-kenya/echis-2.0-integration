@@ -6,6 +6,7 @@ const {OPENHIM, CONFIG} = require('./config');
 const aggregateRoutes = require('./src/routes/aggregate');
 const {cronService} = require('./src/middlewares/aggregate');
 const {logger} =require('./src/utils/logger');
+const {getMohData} = require('./src/controllers/aggregate');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -17,7 +18,7 @@ logger.information("Routes setup complete");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 logger.information("Setting up cron services");
-cronService();
+//cronService();
 logger.information("Cron services setup complete");
 
 app.listen(CONFIG.port, () => {
@@ -30,6 +31,10 @@ const registerMediatorCallback = (err) => {
   }
   logger.information('Successfully registered mediator');
 };
+
+//app.post('/echismonthlyreport', function (req, res) {
+//	console.log("Got a POST request from openHIM");
+//});
 
 const mediatorConfig = {
   urn: "urn:mediator:echis-mediator",
@@ -44,10 +49,11 @@ const mediatorConfig = {
       routes: [
         {
           name: "eCHIS Mediator",
-          host: "http://45.91.169.147",
-          //host: "https://mediator-staging.health.go.ke",
-          pathTransform: "s/\\/echis-mediator/",
-          port: 22000,
+          //host: "http://45.91.169.147",
+          host: "echisMonthlyReportMediator",
+          //pathTransform: "s/\\/echis-mediator/",
+          path:"/",
+          port: "6000",
           primary: true,
           type: "http",
         },
@@ -60,10 +66,10 @@ const mediatorConfig = {
   endpoints: [
     {
       name: "Mediator",
-      host: "https://45.91.169.147",
-      //host: "https://mediator-staging.health.go.ke",
+      //host: "http://45.91.169.147/echis-mediator",
+      host: "echismonthlyreport",
       path: "/",
-      port: "22000",
+      port: "6000",
       primary: true,
       type: "http",
     },
