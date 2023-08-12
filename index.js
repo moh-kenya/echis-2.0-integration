@@ -28,7 +28,7 @@ const registerMediatorCallback = (err) => {
   if (err) {
     throw new Error(`Mediator Registration Failed: Reason ${err}`);
   }
-  logger.information('Successfully registered mediator.');
+  logger.information('Successfully registered mediator');
 };
 
 const mediatorConfig = {
@@ -44,7 +44,8 @@ const mediatorConfig = {
       routes: [
         {
           name: "eCHIS Mediator",
-          host: "https://mediator-staging.health.go.ke",
+          host: "http://45.91.169.147",
+          //host: "https://mediator-staging.health.go.ke",
           pathTransform: "s/\\/echis-mediator/",
           port: 22000,
           primary: true,
@@ -59,7 +60,8 @@ const mediatorConfig = {
   endpoints: [
     {
       name: "Mediator",
-      host: "https://mediator-staging.health.go.ke",
+      host: "https://45.91.169.147",
+      //host: "https://mediator-staging.health.go.ke",
       path: "/",
       port: "22000",
       primary: true,

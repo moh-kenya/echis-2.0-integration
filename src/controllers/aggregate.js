@@ -20,7 +20,7 @@ const sendMoh515Data = async (data) => {
 };
 
 const getMoh515Data = async (_, response) => {
-  logger.information("Getting MOH 515 data");;
+  logger.information("Getting MOH 515 data");
   pool.query(DATA_QUERY, (error, results) => {
     if (error) {
       logger.error(error);

@@ -10,8 +10,10 @@ const cronService = () => cron.schedule('0 0 15 * *', () => {
       auth: {username: MEDIATOR.username, password: MEDIATOR.password}
     });
 
+    logger.information('Export successful');
+
     //checkig if cronjob has been able to connect to mediator
-    var resObject = $.extend(resObject,res);
+    var resObject = extend(resObject,res);
     var resString = JSON.stringify(resObject);
     let connError = false;
     if(resString.search(/cause: Error: connect ECONNREFUSED/)){
