@@ -17,8 +17,6 @@ const clientFactory = async (echisClientDoc) => {
       echisClientDoc?.doc.identification_type
     );
 
-    let clientNumber;
-
     logger.information("Echis Document:");
     logger.information(JSON.stringify(echisClientDoc));
     logger.information("Calling client registry");
@@ -30,20 +28,24 @@ const clientFactory = async (echisClientDoc) => {
       .then((res) => {
         if (res.data.clientExists) {
           logger.information("Client found");
-          clientNumber = res.data.client.clientNumber;
-          return updateDocWithUPI(echisClientDoc, clientNumber);
+          return updateDocWithUPI(echisClientDoc, res.data.client.clientNumber);
         } else {
-          logger.information("Client not found");
+          logger.information("Client not found in CR");
           logger.information("Creating client in client registry");
           createClientInRegistry(
             JSON.stringify(generateClientRegistryPayload(echisClientDoc))
-          ).then((response) => {
-            clientNumber = response;
-            return updateDocWithUPI(echisClientDoc, clientNumber);
-          });
+          )
+            .then((response) => {
+              return updateDocWithUPI(echisClientDoc, response);
+            })
+            .catch((error) => {
+              logger.error("Generate Client Registry Payload Failed");
+            });
         }
       })
-      .catch(() => {});
+      .catch((error) => {
+        logger.error("GET Client if in CR Failed");
+      });
   } catch (error) {
     if (error?.response?.status === 404) {
       let clientNumber;
@@ -51,10 +53,14 @@ const clientFactory = async (echisClientDoc) => {
       logger.information("Creating client in client registry");
       createClientInRegistry(
         JSON.stringify(generateClientRegistryPayload(echisClientDoc))
-      ).then((response) => {
-        clientNumber = response;
-        return updateDocWithUPI(echisClientDoc, clientNumber);
-      });
+      )
+        .then((response) => {
+          clientNumber = response;
+          return updateDocWithUPI(echisClientDoc, clientNumber);
+        })
+        .catch((error) => {
+          logger.error("Generate Client Registry Payload Failed");
+        });
     } else {
       logger.error(error);
       return error;
@@ -62,12 +68,20 @@ const clientFactory = async (echisClientDoc) => {
   }
 };
 const updateDocWithUPI = (echisClientDoc, clientNumber) => {
-  getEchisDocForUpdate(echisClientDoc.doc._id).then((echisDoc) => {
-    updateEchisDocWithUpi(clientNumber, echisDoc).then((echisResponse) => {
-      logger.information(`Client update ${JSON.stringify(echisResponse)}`);
-      return echisResponse;
+  getEchisDocForUpdate(echisClientDoc.doc._id)
+    .then((echisDoc) => {
+      updateEchisDocWithUpi(clientNumber, echisDoc)
+        .then((echisResponse) => {
+          logger.information(`Client update ${JSON.stringify(echisResponse)}`);
+          return echisResponse;
+        })
+        .catch((error) => {
+          logger.error("Update eCHIS Doc With UPI Failed");
+        });
+    })
+    .catch((error) => {
+      logger.error("GET eCHIS Doc For Update Failed");
     });
-  });
 };
 
 const getIdentificationType = (idType) => {
@@ -78,8 +92,12 @@ const getIdentificationType = (idType) => {
 };
 
 const createClientInRegistry = async (client) => {
-  const res = await axiosInstance.post(`partners/registry`, client);
-  return res.data.clientNumber;
+  try {
+    const res = await axiosInstance.post(`partners/registry`, client);
+    return res.data.clientNumber;
+  } catch (error) {
+    logger.error("Axios POST Create Client in CR Failed");
+  }
 };
 
 axiosInstance.interceptors.response.use(
@@ -90,11 +108,15 @@ axiosInstance.interceptors.response.use(
     const originalRequest = error.config;
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      const token = await generateToken();
-      axiosInstance.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${token}`;
-      return axiosInstance(originalRequest);
+      try {
+        const token = await generateToken();
+        axiosInstance.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${token}`;
+        return axiosInstance(originalRequest);
+      } catch (error) {
+        logger.error("Generate Token Failed");
+      }
     }
     return Promise.reject(error);
   }
@@ -112,19 +134,26 @@ const echisAxiosInstance = axios.create({
 });
 
 const getEchisDocForUpdate = async (docId) => {
-  const response = await echisAxiosInstance.get(`medic/${docId}`);
-  return response.data;
+  try {
+    const response = await echisAxiosInstance.get(`medic/${docId}`);
+    return response.data;
+  } catch (error) {
+    logger.error("Axios eCHIS GET doc ID Failed");
+  }
 };
 
 const updateEchisDocWithUpi = async (clientUpi, echisDoc) => {
   logger.information("Updating eCHIS document with client registry UPI");
   echisDoc.upi = clientUpi;
-  const response = await echisAxiosInstance.put(
-    `medic/${echisDoc._id}`,
-    JSON.stringify(echisDoc)
-  );
-
-  return response.data;
+  try {
+    const response = await echisAxiosInstance.put(
+      `medic/${echisDoc._id}`,
+      JSON.stringify(echisDoc)
+    );
+    return response.data;
+  } catch (error) {
+    logger.error("Axios eCHIS PUT dpc ID with UPI Failed");
+  }
 };
 
 module.exports = {
