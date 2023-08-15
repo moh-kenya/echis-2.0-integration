@@ -1,5 +1,7 @@
 const bodyParser = require("body-parser");
 const express = require("express");
+const path = require("path");
+
 const app = express();
 const { registerMediator } = require("openhim-mediator-utils");
 const { OPENHIM, CONFIG } = require("./config");
@@ -8,31 +10,46 @@ const referralRoutes = require("./src/routes/referral");
 const aggregateRoutes = require("./src/routes/aggregate");
 const { cronService } = require("./src/middlewares/aggregate");
 const { logger } = require("./src/utils/logger");
+const { messages } = require("./src/utils/messages");
+
+const {
+  ROUTES_SETUP,
+  ROUTES_SETUP_COMPLETE,
+  CRON_SETUP,
+  CRON_SETUP_COMPLETE,
+  SERVER_PORT,
+  MEDIATOR_FAILURE,
+  MEDIATOR_SUCCESS,
+  LOAD_ROOT,
+} = messages;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-logger.information("Setting up routes");
+logger.information(ROUTES_SETUP);
+
 app.use("/client", clientRoutes);
 app.use("/referral", referralRoutes);
 app.use("/aggregate", aggregateRoutes);
-logger.information("Routes setup complete");
+
+logger.information(ROUTES_SETUP_COMPLETE);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-logger.information("Setting up cron services");
+
+logger.information(CRON_SETUP);
 cronService();
-logger.information("Cron services setup complete");
+logger.information(CRON_SETUP_COMPLETE);
 
 app.listen(CONFIG.port, () => {
-  logger.information(`Server listening on port ${CONFIG.port}`);
+  logger.information(`${SERVER_PORT} ${CONFIG.port}`);
 });
 
 const registerMediatorCallback = (err) => {
   if (err) {
-    throw new Error(`Mediator Registration Failed: Reason ${err}`);
+    throw new Error(`${MEDIATOR_FAILURE} ${err}`);
   }
-  logger.information("Successfully registered mediator.");
+  logger.information(MEDIATOR_SUCCESS);
 };
 
 const mediatorConfig = {
@@ -75,12 +92,8 @@ const mediatorConfig = {
 registerMediator(OPENHIM, mediatorConfig, registerMediatorCallback);
 
 app.get("/", (req, res) => {
-  logger.information("Loading the root route");
-  res.send("Loaded");
-});
-
-app.get("/", (req, res) => {
-  res.status(200).send("Loaded");
+  logger.information(LOAD_ROOT);
+  res.status(200).sendFile(path.join(__dirname, "./src/html/", "success.html"));
 });
 
 module.exports = app;

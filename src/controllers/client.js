@@ -3,6 +3,23 @@ const { generateToken } = require("../utils/auth");
 const { CHT, CLIENT_REGISTRY } = require("../../config");
 const { idMap, generateClientRegistryPayload } = require("../utils/client");
 const { logger } = require("../utils/logger");
+const { messages } = require("../utils/messages");
+const {
+  ECHIS_DOCUMENT,
+  CALL_CR,
+  CLIENT_FOUND,
+  CLIENT_NOT_FOUND,
+  CREATE_IN_CR,
+  GEN_CR_FAILURE,
+  GET_CL_CR_FAILURE,
+  UPDATE_ECHIS_DOC_FAILED,
+  GET_ECHIS_DOC_FAILED,
+  AXIOS_POST_CR_FAILED,
+  GEN_TOKEN_FAILURE,
+  AXIOS_GET_DOC_FAILURE,
+  AXIOS_PUT_UPI_FAILURE,
+  CLIENT_UPDATE,
+} = messages;
 
 const axiosInstance = axios.create({
   baseURL: CLIENT_REGISTRY.url,
@@ -17,9 +34,9 @@ const clientFactory = async (echisClientDoc) => {
       echisClientDoc?.doc.identification_type
     );
 
-    logger.information("Echis Document:");
+    logger.information(ECHIS_DOCUMENT);
     logger.information(JSON.stringify(echisClientDoc));
-    logger.information("Calling client registry");
+    logger.information(CALL_CR);
 
     axiosInstance
       .get(
@@ -27,11 +44,11 @@ const clientFactory = async (echisClientDoc) => {
       )
       .then((res) => {
         if (res.data.clientExists) {
-          logger.information("Client found");
+          logger.information(CLIENT_FOUND);
           return updateDocWithUPI(echisClientDoc, res.data.client.clientNumber);
         } else {
-          logger.information("Client not found in CR");
-          logger.information("Creating client in client registry");
+          logger.information(CLIENT_NOT_FOUND);
+          logger.information(CREATE_IN_CR);
           createClientInRegistry(
             JSON.stringify(generateClientRegistryPayload(echisClientDoc))
           )
@@ -39,18 +56,18 @@ const clientFactory = async (echisClientDoc) => {
               return updateDocWithUPI(echisClientDoc, response);
             })
             .catch((error) => {
-              logger.error("Generate Client Registry Payload Failed");
+              logger.error(GEN_CR_FAILURE);
             });
         }
       })
       .catch((error) => {
-        logger.error("GET Client if in CR Failed");
+        logger.error(GET_CL_CR_FAILURE);
       });
   } catch (error) {
     if (error?.response?.status === 404) {
       let clientNumber;
-      logger.information("Client not found");
-      logger.information("Creating client in client registry");
+      logger.information(CLIENT_NOT_FOUND);
+      logger.information(CREATE_IN_CR);
       createClientInRegistry(
         JSON.stringify(generateClientRegistryPayload(echisClientDoc))
       )
@@ -59,7 +76,7 @@ const clientFactory = async (echisClientDoc) => {
           return updateDocWithUPI(echisClientDoc, clientNumber);
         })
         .catch((error) => {
-          logger.error("Generate Client Registry Payload Failed");
+          logger.error(GEN_CR_FAILURE);
         });
     } else {
       logger.error(error);
@@ -72,15 +89,17 @@ const updateDocWithUPI = (echisClientDoc, clientNumber) => {
     .then((echisDoc) => {
       updateEchisDocWithUpi(clientNumber, echisDoc)
         .then((echisResponse) => {
-          logger.information(`Client update ${JSON.stringify(echisResponse)}`);
+          logger.information(
+            `${CLIENT_UPDATE} ${JSON.stringify(echisResponse)}`
+          );
           return echisResponse;
         })
         .catch((error) => {
-          logger.error("Update eCHIS Doc With UPI Failed");
+          logger.error(UPDATE_ECHIS_DOC_FAILED);
         });
     })
     .catch((error) => {
-      logger.error("GET eCHIS Doc For Update Failed");
+      logger.error(GET_ECHIS_DOC_FAILED);
     });
 };
 
@@ -96,7 +115,7 @@ const createClientInRegistry = async (client) => {
     const res = await axiosInstance.post(`partners/registry`, client);
     return res.data.clientNumber;
   } catch (error) {
-    logger.error("Axios POST Create Client in CR Failed");
+    logger.error(AXIOS_POST_CR_FAILED);
   }
 };
 
@@ -115,7 +134,7 @@ axiosInstance.interceptors.response.use(
         ] = `Bearer ${token}`;
         return axiosInstance(originalRequest);
       } catch (error) {
-        logger.error("Generate Token Failed");
+        logger.error(GEN_TOKEN_FAILURE);
       }
     }
     return Promise.reject(error);
@@ -138,12 +157,12 @@ const getEchisDocForUpdate = async (docId) => {
     const response = await echisAxiosInstance.get(`medic/${docId}`);
     return response.data;
   } catch (error) {
-    logger.error("Axios eCHIS GET doc ID Failed");
+    logger.error(AXIOS_GET_DOC_FAILURE);
   }
 };
 
 const updateEchisDocWithUpi = async (clientUpi, echisDoc) => {
-  logger.information("Updating eCHIS document with client registry UPI");
+  logger.information(UPDATE_ECHIS_WITH_UPI);
   echisDoc.upi = clientUpi;
   try {
     const response = await echisAxiosInstance.put(
@@ -152,7 +171,7 @@ const updateEchisDocWithUpi = async (clientUpi, echisDoc) => {
     );
     return response.data;
   } catch (error) {
-    logger.error("Axios eCHIS PUT dpc ID with UPI Failed");
+    logger.error(AXIOS_PUT_UPI_FAILURE);
   }
 };
 
