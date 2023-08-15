@@ -2,9 +2,9 @@
   "name": "echis-mediator",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "forever.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node forever.js",
     "start:ms": "node ./test/mock-server/index.js",
     "test": "TZ=Africa/Nairobi mocha --reporter spec 'test/**/*.spec.js' --timeout 70000 --slow 5000",
     "test-op": "jest --detectOpenHandles"
