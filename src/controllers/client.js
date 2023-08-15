@@ -13,50 +13,61 @@ const axiosInstance = axios.create({
 
 const clientFactory = async (echisClientDoc) => {
   try {
-    const identificationType = getIdentificationType(echisClientDoc?.doc.identification_type);
+    const identificationType = getIdentificationType(
+      echisClientDoc?.doc.identification_type
+    );
 
     let clientNumber;
 
     logger.information("Echis Document:");
     logger.information(JSON.stringify(echisClientDoc));
     logger.information("Calling client registry");
-    
-    const res = await axiosInstance.get(`partners/registry/search/${identificationType}/${echisClientDoc?.doc.identification_number}`);
-    
-    if (res.data.clientExists) {
-      logger.information("Client found");
-      clientNumber = res.data.client.clientNumber;
-    } 
-    else {
-      logger.information("Client not found");
-      logger.information("Creating client in client registry");
-      const response = await createClientInRegistry(JSON.stringify(generateClientRegistryPayload(echisClientDoc)));
 
-      clientNumber = response;
-    }
-
-    const echisDoc = await getEchisDocForUpdate(echisClientDoc.doc._id);
-    const echisResponse = await updateEchisDocWithUpi(clientNumber, echisDoc);
-    logger.information(`Client update ${JSON.stringify(echisResponse)}`)
-    return echisResponse;
-  } 
-  catch (error) {
-    if (error.response.status === 404) {
+    axiosInstance
+      .get(
+        `partners/registry/search/${identificationType}/${echisClientDoc?.doc.identification_number}`
+      )
+      .then((res) => {
+        if (res.data.clientExists) {
+          logger.information("Client found");
+          clientNumber = res.data.client.clientNumber;
+          return updateDocWithUPI(echisClientDoc, clientNumber);
+        } else {
+          logger.information("Client not found");
+          logger.information("Creating client in client registry");
+          createClientInRegistry(
+            JSON.stringify(generateClientRegistryPayload(echisClientDoc))
+          ).then((response) => {
+            clientNumber = response;
+            return updateDocWithUPI(echisClientDoc, clientNumber);
+          });
+        }
+      })
+      .catch(() => {});
+  } catch (error) {
+    if (error?.response?.status === 404) {
       let clientNumber;
       logger.information("Client not found");
       logger.information("Creating client in client registry");
-      const response = await createClientInRegistry(JSON.stringify(generateClientRegistryPayload(echisClientDoc)));
-      clientNumber = response;
-
-      const echisDoc = await getEchisDocForUpdate(echisClientDoc.doc._id);
-      const echisResponse = await updateEchisDocWithUpi(clientNumber, echisDoc);
-
-      return echisResponse;
+      createClientInRegistry(
+        JSON.stringify(generateClientRegistryPayload(echisClientDoc))
+      ).then((response) => {
+        clientNumber = response;
+        return updateDocWithUPI(echisClientDoc, clientNumber);
+      });
     } else {
       logger.error(error);
       return error;
     }
   }
+};
+const updateDocWithUPI = (echisClientDoc, clientNumber) => {
+  getEchisDocForUpdate(echisClientDoc.doc._id).then((echisDoc) => {
+    updateEchisDocWithUpi(clientNumber, echisDoc).then((echisResponse) => {
+      logger.information(`Client update ${JSON.stringify(echisResponse)}`);
+      return echisResponse;
+    });
+  });
 };
 
 const getIdentificationType = (idType) => {
@@ -108,7 +119,10 @@ const getEchisDocForUpdate = async (docId) => {
 const updateEchisDocWithUpi = async (clientUpi, echisDoc) => {
   logger.information("Updating eCHIS document with client registry UPI");
   echisDoc.upi = clientUpi;
-  const response = await echisAxiosInstance.put(`medic/${echisDoc._id}`, JSON.stringify(echisDoc));
+  const response = await echisAxiosInstance.put(
+    `medic/${echisDoc._id}`,
+    JSON.stringify(echisDoc)
+  );
 
   return response.data;
 };
@@ -118,5 +132,5 @@ module.exports = {
   createClientInRegistry,
   getEchisDocForUpdate,
   updateEchisDocWithUpi,
-  generateClientRegistryPayload
+  generateClientRegistryPayload,
 };

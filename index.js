@@ -44,12 +44,12 @@ const mediatorConfig = {
   defaultChannelConfig: [
     {
       name: "eCHIS Mediator",
-      urlPattern: "^/echis-mediator/.*$",
+      urlPattern: "^/echis-mediator-localhost/.*$",
       routes: [
         {
           name: "eCHIS Mediator",
-          host: "https://mediator-staging.health.go.ke",
-          pathTransform: "s/\\/echis-mediator/",
+          host: "https://f150-41-72-197-90.ngrok-free.app",
+          pathTransform: "s/\\/echis-mediator-localhost/",
           port: 22000,
           primary: true,
           type: "http",
@@ -63,7 +63,7 @@ const mediatorConfig = {
   endpoints: [
     {
       name: "Mediator",
-      host: "https://mediator-staging.health.go.ke",
+      host: "https://f150-41-72-197-90.ngrok-free.app",
       path: "/",
       port: "22000",
       primary: true,
