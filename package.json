@@ -16,12 +16,12 @@
     "chai": "^4.3.7",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "forever-monitor": "^3.0.3",
+    "forever-monitor": "^1.5.2",
     "jest": "^29.5.0",
     "luxon": "^3.3.0",
     "mocha": "^10.2.0",
     "node-cron": "^3.0.2",
-    "openhim-mediator-utils": "^0.2.4",
+    "openhim-mediator-utils": "^0.4.0",
     "pg": "^8.10.0",
     "qs": "^6.11.1",
     "rewire": "^6.0.0",
@@ -30,6 +30,6 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",
-    "nodemon": "^2.0.21"
+    "nodemon": "^3.0.1"
   }
 }
