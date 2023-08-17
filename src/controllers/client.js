@@ -19,6 +19,7 @@ const {
   AXIOS_GET_DOC_FAILURE,
   AXIOS_PUT_UPI_FAILURE,
   CLIENT_UPDATE,
+  UPDATE_ECHIS_WITH_UPI,
 } = messages;
 
 const axiosInstance = axios.create({
@@ -38,53 +39,45 @@ const clientFactory = async (echisClientDoc) => {
     logger.information(JSON.stringify(echisClientDoc));
     logger.information(CALL_CR);
 
-    axiosInstance
-      .get(
-        `partners/registry/search/${identificationType}/${echisClientDoc?.doc.identification_number}`
-      )
-      .then((res) => {
-        if (res.data.clientExists) {
-          logger.information(CLIENT_FOUND);
-          return updateDocWithUPI(echisClientDoc, res.data.client.clientNumber);
-        } else {
-          logger.information(CLIENT_NOT_FOUND);
-          logger.information(CREATE_IN_CR);
-          createClientInRegistry(
-            JSON.stringify(generateClientRegistryPayload(echisClientDoc))
-          )
-            .then((response) => {
-              return updateDocWithUPI(echisClientDoc, response);
-            })
-            .catch((error) => {
-              logger.error(GEN_CR_FAILURE);
-            });
-        }
-      })
-      .catch((error) => {
-        logger.error(GET_CL_CR_FAILURE);
-      });
-  } catch (error) {
-    if (error?.response?.status === 404) {
-      let clientNumber;
+    const response = await axiosInstance.get(
+      `partners/registry/search/${identificationType}/${echisClientDoc?.doc.identification_number}`
+    );
+
+    if (response.data.clientExists) {
+      logger.information(CLIENT_FOUND);
+      await updateDocWithUPI(echisClientDoc, response.data.client.clientNumber);
+      return response.data.client.clientNumber;
+    } else {
       logger.information(CLIENT_NOT_FOUND);
       logger.information(CREATE_IN_CR);
-      createClientInRegistry(
+      const createResponse = await createClientInRegistry(
         JSON.stringify(generateClientRegistryPayload(echisClientDoc))
-      )
-        .then((response) => {
-          clientNumber = response;
-          return updateDocWithUPI(echisClientDoc, clientNumber);
-        })
-        .catch((error) => {
-          logger.error(GEN_CR_FAILURE);
-        });
+      );
+      await updateDocWithUPI(echisClientDoc, createResponse);
+      return createResponse;
+    }
+  } catch (error) {
+    if (error?.response?.status === 404) {
+      logger.information(CLIENT_NOT_FOUND);
+      logger.information(CREATE_IN_CR);
+      try {
+        const createResponse = await createClientInRegistry(
+          JSON.stringify(generateClientRegistryPayload(echisClientDoc))
+        );
+        await updateDocWithUPI(echisClientDoc, createResponse);
+        return createResponse;
+      } catch (createError) {
+        logger.error(GEN_CR_FAILURE);
+        throw createError;
+      }
     } else {
       logger.error(error);
-      return error;
+      throw error;
     }
   }
 };
-const updateDocWithUPI = (echisClientDoc, clientNumber) => {
+
+const updateDocWithUPI = async (echisClientDoc, clientNumber) => {
   getEchisDocForUpdate(echisClientDoc.doc._id)
     .then((echisDoc) => {
       updateEchisDocWithUpi(clientNumber, echisDoc)
@@ -96,6 +89,7 @@ const updateDocWithUPI = (echisClientDoc, clientNumber) => {
         })
         .catch((error) => {
           logger.error(UPDATE_ECHIS_DOC_FAILED);
+          logger.error(error);
         });
     })
     .catch((error) => {
