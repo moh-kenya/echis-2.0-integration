@@ -53,7 +53,7 @@ const registerMediatorCallback = (err) => {
 };
 
 const mediatorConfig = {
-  urn: "urn:mediator:echis-mediator",
+  urn: `urn:mediator:${OPENHIM.channel}`,
   version: "1.0.0",
   name: "eCHIS Mediator",
   description:
@@ -61,12 +61,12 @@ const mediatorConfig = {
   defaultChannelConfig: [
     {
       name: "eCHIS Mediator",
-      urlPattern: "^/echis-mediator-localhost/.*$",
+      urlPattern: `^/${OPENHIM.channel}/.*$`,
       routes: [
         {
           name: "eCHIS Mediator",
           host: "https://f150-41-72-197-90.ngrok-free.app",
-          pathTransform: "s/\\/echis-mediator-localhost/",
+          pathTransform: `s/\\/${OPENHIM.channel}/`,
           port: 22000,
           primary: true,
           type: "http",

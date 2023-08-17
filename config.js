@@ -1,10 +1,11 @@
-require('dotenv/config');
+require("dotenv/config");
 
 const OPENHIM = {
-  username: process.env.OPENHIM_USERNAME || 'interop@openhim.org',
-  password: process.env.OPENHIM_PASSWORD || 'interop-password',
-  apiURL: process.env.OPENHIM_API_URL || 'https://openhim-core:8080',
+  username: process.env.OPENHIM_USERNAME || "interop@openhim.org",
+  password: process.env.OPENHIM_PASSWORD || "interop-password",
+  apiURL: process.env.OPENHIM_API_URL || "https://openhim-core:8080",
   trustSelfSigned: true,
+  channel: process.env.OPENHIM_CHANNEL,
 };
 
 const FHIR = {
@@ -18,13 +19,13 @@ const CHT = {
 };
 
 const CONFIG = {
-  port: process.env.PORT || 6000
+  port: process.env.PORT || 6000,
 };
 
 const KHIS = {
   url: process.env.KHIS_URL,
   username: process.env.KHIS_USERNAME,
-  password: process.env.KHIS_PASSWORD
+  password: process.env.KHIS_PASSWORD,
 };
 
 const POSTGRES = {
@@ -32,7 +33,7 @@ const POSTGRES = {
   username: process.env.POSTGRES_USERNAME,
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DB_NAME,
-  port: process.env.POSTGRES_PORT
+  port: process.env.POSTGRES_PORT,
 };
 
 const CLIENT_REGISTRY = {
@@ -50,7 +51,7 @@ const SNOMED_CT = {
 const MEDIATOR = {
   url: process.env.MEDIATOR_URL,
   username: process.env.MEDIATOR_USERNAME,
-  password: process.env.MEDIATOR_PASSWORD
+  password: process.env.MEDIATOR_PASSWORD,
 };
 
 module.exports = {
@@ -63,5 +64,5 @@ module.exports = {
   CLIENT_REGISTRY,
   NHDD,
   SNOMED_CT,
-  MEDIATOR
+  MEDIATOR,
 };
