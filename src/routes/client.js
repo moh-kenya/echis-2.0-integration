@@ -18,9 +18,16 @@ router.post("/", async function (req, res) {
       res.status(200).send(JSON.stringify({ upi: clientNumber }, null, 3));
     } else {
       res.setHeader("Content-Type", "application/json");
-      res
-        .status(400)
-        .send(JSON.stringify({ error: "Failed to GET UPI" }, null, 3));
+      res.status(400).send(
+        JSON.stringify(
+          {
+            error:
+              "UPI Tasks failed. Possible reasons: Could not get UPI or Client details do not match CR details.",
+          },
+          null,
+          3
+        )
+      );
     }
   });
 });

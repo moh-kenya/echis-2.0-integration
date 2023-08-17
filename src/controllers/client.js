@@ -4,6 +4,7 @@ const { CHT, CLIENT_REGISTRY } = require("../../config");
 const { idMap, generateClientRegistryPayload } = require("../utils/client");
 const { logger } = require("../utils/logger");
 const { messages } = require("../utils/messages");
+const natural = require("natural");
 const {
   ECHIS_DOCUMENT,
   CALL_CR,
@@ -20,6 +21,7 @@ const {
   AXIOS_PUT_UPI_FAILURE,
   CLIENT_UPDATE,
   UPDATE_ECHIS_WITH_UPI,
+  UPDATE_ECHIS_WITH_IDENTIFICATION_MISMATCH,
 } = messages;
 
 const axiosInstance = axios.create({
@@ -45,8 +47,33 @@ const clientFactory = async (echisClientDoc) => {
 
     if (response.data.clientExists) {
       logger.information(CLIENT_FOUND);
-      await updateDocWithUPI(echisClientDoc, response.data.client.clientNumber);
-      return response.data.client.clientNumber;
+      const matchProbability = calculateNameSimilarity(
+        [
+          echisClientDoc?.doc.first_name,
+          echisClientDoc?.doc.middle_name,
+          echisClientDoc?.doc.last_name,
+        ].join(" "),
+        [
+          response.data.client.firstName,
+          response.data.client.middleName === "NULL"
+            ? ""
+            : response.data.client.middleName,
+          response.data.client.lastName,
+        ]
+          .filter(Boolean)
+          .join(" ")
+      );
+      if (matchProbability > 0.8) {
+        await updateDocWithUPI(
+          echisClientDoc,
+          response.data.client.clientNumber
+        );
+        return response.data.client.clientNumber;
+      } else if (echisClientDoc?.doc.upi) {
+        return echisClientDoc?.doc.upi;
+      } else {
+        await updateDocWithUpdateError(echisClientDoc);
+      }
     } else {
       logger.information(CLIENT_NOT_FOUND);
       logger.information(CREATE_IN_CR);
@@ -81,6 +108,25 @@ const updateDocWithUPI = async (echisClientDoc, clientNumber) => {
   getEchisDocForUpdate(echisClientDoc.doc._id)
     .then((echisDoc) => {
       updateEchisDocWithUpi(clientNumber, echisDoc)
+        .then((echisResponse) => {
+          logger.information(
+            `${CLIENT_UPDATE} ${JSON.stringify(echisResponse)}`
+          );
+          return echisResponse;
+        })
+        .catch((error) => {
+          logger.error(UPDATE_ECHIS_DOC_FAILED);
+          logger.error(error);
+        });
+    })
+    .catch((error) => {
+      logger.error(GET_ECHIS_DOC_FAILED);
+    });
+};
+const updateDocWithUpdateError = async (echisClientDoc) => {
+  getEchisDocForUpdate(echisClientDoc.doc._id)
+    .then((echisDoc) => {
+      updateEchisDocWithFailedIdentification(echisDoc)
         .then((echisResponse) => {
           logger.information(
             `${CLIENT_UPDATE} ${JSON.stringify(echisResponse)}`
@@ -168,6 +214,32 @@ const updateEchisDocWithUpi = async (clientUpi, echisDoc) => {
     logger.error(AXIOS_PUT_UPI_FAILURE);
   }
 };
+
+const updateEchisDocWithFailedIdentification = async (echisDoc) => {
+  logger.information(UPDATE_ECHIS_WITH_IDENTIFICATION_MISMATCH);
+  echisDoc.details_mismatch = {
+    matched: false,
+    reason: ["Names provided do not match with the ID Provided."],
+  };
+  try {
+    const response = await echisAxiosInstance.put(
+      `medic/${echisDoc._id}`,
+      JSON.stringify(echisDoc)
+    );
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    logger.error(AXIOS_PUT_UPI_FAILURE);
+  }
+};
+
+function calculateNameSimilarity(name1, name2) {
+  const similarity = natural.JaroWinklerDistance(name1, name2, {});
+  const threshold = 0.8;
+  const matchProbability = similarity >= threshold ? similarity : 0;
+
+  return matchProbability;
+}
 
 module.exports = {
   clientFactory,

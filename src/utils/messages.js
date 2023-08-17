@@ -45,6 +45,8 @@ const messages = {
   SERVICE_REQUEST_ID: "Service Request Id",
   START_SERVICE: "Service is starting",
   UPDATE_ECHIS_DOC_FAILED: "Update eCHIS Doc With UPI Failed",
+  UPDATE_ECHIS_WITH_IDENTIFICATION_MISMATCH:
+    "Updating eCHIS Doc that the Provided details do not match",
   UPDATE_ECHIS_WITH_UPI: "Updating eCHIS document with client registry UPI",
 };
 
