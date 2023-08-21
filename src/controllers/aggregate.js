@@ -29,9 +29,9 @@ const getMoh515Data = async (_, response) => {
   pool.query(DATA_QUERY, (error, results) => {
     if (error) {
       if(JSON.stringify(error).search(/connect ECONNREFUSED /)){
-        logger.error("Cannot connect to PostgreSQL databse for attempt");
+        logger.error("Cannot connect to PostgreSQL databse");
         logger.error(error);
-        return response.send("Cannot connect to PostgreSQL databse for attempt");
+        return response.send("Cannot connect to PostgreSQL databse");
       }
       else{
         logger.error("Unknown error, see elaboration below");
