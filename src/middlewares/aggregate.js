@@ -6,7 +6,7 @@ const { messages } = require("../utils/messages");
 const { RUNNING_DHIS_515_EXPORT } = messages;
 
 const cronService = () =>
-  cron.schedule("*/5 * * * *", () => {
+  cron.schedule("0 0 5 * *", () => {
     logger.information(RUNNING_DHIS_515_EXPORT);
     try {
       const res = axios.get(

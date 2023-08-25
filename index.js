@@ -4,7 +4,7 @@ const path = require("path");
 
 const app = express();
 const { registerMediator } = require("openhim-mediator-utils");
-const { OPENHIM, CONFIG } = require("./config");
+const {OPENHIM, CONFIG, CHANNEL_CONFIG_ENDPOINTS_URL} = require('./config');
 const clientRoutes = require("./src/routes/client");
 const referralRoutes = require("./src/routes/referral");
 const aggregateRoutes = require("./src/routes/aggregate");
@@ -57,7 +57,7 @@ const mediatorConfig = {
   version: "1.0.0",
   name: "eCHIS Mediator",
   description:
-    "A mediator for CHIS to handle client registry and referral workflows.",
+    "A mediator eCHIS to KHIS integration.",
   defaultChannelConfig: [
     {
       name: "eCHIS Mediator",
@@ -65,8 +65,8 @@ const mediatorConfig = {
       routes: [
         {
           name: "eCHIS Mediator",
-          host: "https://f150-41-72-197-90.ngrok-free.app",
-          pathTransform: `s/\\/${OPENHIM.channel}/`,
+          host: CHANNEL_CONFIG_ENDPOINTS_URL,
+          pathTransform: `s/\\/${OPENHIM.channel}/`,          
           port: 22000,
           primary: true,
           type: "http",
@@ -80,7 +80,7 @@ const mediatorConfig = {
   endpoints: [
     {
       name: "Mediator",
-      host: "https://f150-41-72-197-90.ngrok-free.app",
+      host: CHANNEL_CONFIG_ENDPOINTS_URL,
       path: "/",
       port: "22000",
       primary: true,
