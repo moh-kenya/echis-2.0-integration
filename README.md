@@ -29,7 +29,7 @@ Once done update the `.env` file with the updated values from the credentials fi
 Once you have installed dependancies and updated the env file, start the main server by running:
 
 ```
-nodemon server.js
+nodemon forever.js
 ```
 
 Once you have started the main server, you may start the mock server by running the following in another terminal tab or window:
