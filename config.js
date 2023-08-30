@@ -31,18 +31,46 @@ const MEDIATOR = {
   username: process.env.MEDIATOR_USERNAME,
   password: process.env.MEDIATOR_PASSWORD,
 };
+const FHIR = {
+  url: process.env.FHIR_URL,
+};
+
+const CHT = {
+  url: process.env.CHT_URL,
+  username: process.env.CHT_USERNAME,
+  password: process.env.CHT_PASSWORD,
+};
+
+const CLIENT_REGISTRY = {
+  url: process.env.CLIENT_REGISTRY_URL,
+};
+
+const NHDD = {
+  url: process.env.NHDD_URL,
+};
+
+const SNOMED_CT = {
+  url: process.env.SNOMED_CT_URL,
+};
+
+const KHMFL = {
+  url: process.env.KHMFL_URL,
+};
 
 const CHANNEL_CONFIG_ENDPOINTS_URL = process.env.CHANNEL_CONFIG_ENDPOINTS_URL;
 
 module.exports = {
-  OPENHIM,
-  CONFIG,
-  KHIS,
-  POSTGRES,
+  CHANNEL_CONFIG_ENDPOINTS_URL,
+  CHT,
   CLIENT_REGISTRY,
+  CONFIG,
+  FHIR,
+  KHIS,
+  KHMFL,
+  MEDIATOR,
+  MEDIATOR,
   NHDD,
+  OPENHIM,
+  POSTGRES,
   SNOMED_CT,
-  MEDIATOR,
-  MEDIATOR,
-  CHANNEL_CONFIG_ENDPOINTS_URL
 };

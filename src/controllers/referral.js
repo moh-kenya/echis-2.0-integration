@@ -2,7 +2,7 @@ const axios = require("axios");
 const { generateFHIRServiceRequest } = require("../utils/referral");
 const { generateToken } = require("../utils/auth");
 const { FHIR, CHT } = require("../../config");
-const FHIR_URL = FHIR.url;
+const FHIR_URL = `${FHIR.url}/fhir-server/api/v4`;
 const { logger } = require("../utils/logger");
 const {
   createClientInRegistry,

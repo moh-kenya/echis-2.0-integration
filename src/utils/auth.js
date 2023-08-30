@@ -23,7 +23,7 @@ const requestNewToken = async () => {
   };
 
   const res = await axios.post(
-    `${process.env.CLIENT_REGISTRY_TOKEN_DEV_URL}/connect/token`,
+    `${process.env.CLIENT_REGISTRY_TOKEN_URL}/connect/token`,
     data,
     config
   );

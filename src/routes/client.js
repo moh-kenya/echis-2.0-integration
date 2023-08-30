@@ -9,24 +9,22 @@ const router = Router();
 
 router.post("/", async function (req, res) {
   logger.information(CLIENT_ROUTE_INIT);
-  clientFactory(req.body).then((clientNumber) => {
+  clientFactory(req.body).then((response) => {
     logger.information(CLIENT_ROUTE_COMPLETED);
-    logger.information(`${GENERATED_NUMBER} ${clientNumber}`);
 
-    if (clientNumber?.startsWith("MOH")) {
+    if (response?.upi) {
+      logger.information(`${GENERATED_NUMBER} ${response}`);
       res.setHeader("Content-Type", "application/json");
-      res.status(200).send(JSON.stringify({ upi: clientNumber }, null, 3));
+      res.status(200).send(JSON.stringify({ upi: response.upi }, null, 3));
     } else {
       res.setHeader("Content-Type", "application/json");
       res.status(400).send(
-        JSON.stringify(
-          {
-            error:
-              "UPI Tasks failed. Possible reasons: Could not get UPI or Client details do not match CR details.",
-          },
-          null,
-          3
-        )
+        response
+          ? response
+          : {
+              error: "ProcessError",
+              message: "Something Failed on our end! Please try again Later.",
+            }
       );
     }
   });

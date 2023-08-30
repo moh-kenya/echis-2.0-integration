@@ -32,6 +32,8 @@ const messages = {
   GET_ECHIS_DOC_FAILED: "GET eCHIS Doc For Update Failed",
   GETTING_MOH_515: "Getting MOH 515 data",
   LOAD_ROOT: "Loading the root route",
+  MALFORMED_REQUEST:
+    "The request payload is malformed. Please check the data format and structure.",
   MEDIATOR_FAILURE: "Mediator Registration Failed. Reason:",
   MEDIATOR_SUCCESS: "Successfully registered mediator",
   PROCESSING_SR_ID: "Processing Service Request Id",

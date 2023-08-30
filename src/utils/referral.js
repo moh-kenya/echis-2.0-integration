@@ -1,7 +1,15 @@
 require("dotenv/config");
 const { DateTime } = require("luxon");
-const { CLIENT_REGISTRY, NHDD, SNOMED_CT, CHT } = require("../../config");
+const {
+  CLIENT_REGISTRY,
+  NHDD,
+  SNOMED_CT,
+  CHT,
+  KHMFL,
+} = require("../../config");
 const NHDD_URL = `${NHDD.url}/orgs/MOH-KENYA/sources`;
+const KHMFL_FACILITY_URL = `${KHMFL.url}/api/facilities/facilities/`;
+const KHMFL_CHUL_URL = `${KHMFL.url}/api/chul/units/`;
 const SNOMED_CT_URL = SNOMED_CT.url;
 const CLIENT_REGISTRY_URL = `${CLIENT_REGISTRY.url}/partners/registry/search/upi`;
 const NHDD_GENERIC_PATH = `${NHDD_URL}/nhdd/concepts/`;
@@ -109,6 +117,21 @@ const echisNHDDValuesCoding = {
     code: `12218`,
     display: `Irritability/agitated`,
   },
+  refer_for_fp: {
+    system: NHDD_GENERIC_PATH,
+    code: `16219`,
+    display: `Referred for family planning services`,
+  },
+  refer_for_sideeffects_fp: {
+    system: NHDD_GENERIC_PATH,
+    code: `22599`,
+    display: `Referred for side effects from family planning method`,
+  },
+  refer_for_medical_consultation: {
+    system: NHDD_GENERIC_PATH,
+    code: `28414`,
+    display: `Patient referred for medical consultation`,
+  },
 };
 
 const extractNotes = (data) => {
@@ -156,13 +179,7 @@ const generateFHIRServiceRequest = (dataRecord) => {
     intent: `order`,
     category: [
       {
-        coding: [
-          {
-            system: NHDD_GENERIC_PATH,
-            code: `28414`,
-            display: `Patient referred for medical consultation`,
-          },
-        ],
+        coding: [echisNHDDValuesCoding.refer_for_medical_consultation],
         text: `Consultation`,
       },
     ],
@@ -171,6 +188,11 @@ const generateFHIRServiceRequest = (dataRecord) => {
       reference: `${CLIENT_REGISTRY_URL}/${dataRecord.upi}`,
       type: `Patient`,
       display: dataRecord.upi,
+      identifier: {
+        use: `official`,
+        system: `${CLIENT_REGISTRY_URL}/${dataRecord.upi}`,
+        value: dataRecord.upi,
+      },
     },
     occurrencePeriod: {
       resourceType: `Period`,
@@ -179,13 +201,13 @@ const generateFHIRServiceRequest = (dataRecord) => {
     },
     authoredOn: reportedDate.toISODate(),
     requester: {
-      reference: `${NHDD_KMHFL_PATH}/${dataRecord.chu_code}`,
+      reference: `${KHMFL_CHUL_URL}?format=JSON&code=${dataRecord.chu_code}`,
       type: `Organization`,
       display: dataRecord.chu_code,
     },
     performer: [
       {
-        reference: `${NHDD_KMHFL_PATH}/${dataRecord.referred_to_facility_code}`,
+        reference: `${KHMFL_FACILITY_URL}?format=JSON&code=${dataRecord.referred_to_facility_code}`,
         type: `Organization`,
         display: dataRecord.referred_to_facility_code,
       },

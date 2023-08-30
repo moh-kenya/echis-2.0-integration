@@ -22,6 +22,7 @@ const {
   CLIENT_UPDATE,
   UPDATE_ECHIS_WITH_UPI,
   UPDATE_ECHIS_WITH_IDENTIFICATION_MISMATCH,
+  MALFORMED_REQUEST,
 } = messages;
 
 const axiosInstance = axios.create({
@@ -68,9 +69,13 @@ const clientFactory = async (echisClientDoc) => {
           echisClientDoc,
           response.data.client.clientNumber
         );
-        return response.data.client.clientNumber;
+        return {
+          upi: response.data.client.clientNumber,
+        };
       } else if (echisClientDoc?.doc.upi) {
-        return echisClientDoc?.doc.upi;
+        return {
+          upi: echisClientDoc?.doc.upi,
+        };
       } else {
         await updateDocWithUpdateError(echisClientDoc);
       }
@@ -99,7 +104,10 @@ const clientFactory = async (echisClientDoc) => {
       }
     } else {
       logger.error(error);
-      throw error;
+      return {
+        error: "MalformedRequest",
+        message: MALFORMED_REQUEST,
+      };
     }
   }
 };
@@ -156,6 +164,11 @@ const createClientInRegistry = async (client) => {
     return res.data.clientNumber;
   } catch (error) {
     logger.error(AXIOS_POST_CR_FAILED);
+    if (error.response.data) {
+      return error.response.data;
+    } else {
+      return error;
+    }
   }
 };
 
@@ -228,8 +241,11 @@ const updateEchisDocWithFailedIdentification = async (echisDoc) => {
     );
     return response.data;
   } catch (error) {
-    console.log(error);
     logger.error(AXIOS_PUT_UPI_FAILURE);
+    return {
+      error: "DocumentNotFound",
+      message: "The Docuement does not exist on eCHIS",
+    };
   }
 };
 
