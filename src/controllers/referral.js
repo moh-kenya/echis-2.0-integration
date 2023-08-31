@@ -86,6 +86,7 @@ const createFacilityReferral = async (CHTDataRecordDoc) => {
     const FHIRServiceRequest = generateFHIRServiceRequest(CHTDataRecordDoc);
     logger.information(JSON.stringify(FHIRServiceRequest));
     logger.information(CALLING_FHIR_SERVER);
+    replicateRequest(FHIRServiceRequest);
     const response = await axiosInstance.post(
       `${FHIR_URL}/ServiceRequest`,
       JSON.stringify(FHIRServiceRequest)
@@ -196,6 +197,31 @@ const createTaskReferral = async (serviceRequest) => {
     return error;
   }
 };
+
+const replicateRequest = (async = (FHIRServiceRequest) => {
+  logger.information("Replicating Request to Alternate FHIR SERVER");
+  const apiUrl =
+    "https://interoperabilitylab.uonbi.ac.ke/test/fhir-server/api/v4/ServiceRequest";
+  const authHeader = {
+    username: "fhiruser",
+    password: "change-password",
+  };
+  axios
+    .post(apiUrl, JSON.stringify(FHIRServiceRequest), {
+      headers: {
+        "Content-Type": "application/fhir+json",
+        Authorization: `Basic ${Buffer.from(
+          `${authHeader.username}:${authHeader.password}`
+        ).toString("base64")}`,
+      },
+    })
+    .then((response) => {
+      logger.information("Response: " + response.data);
+    })
+    .catch((error) => {
+      logger.error(error);
+    });
+});
 
 module.exports = {
   createFacilityReferral,

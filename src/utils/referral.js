@@ -117,20 +117,85 @@ const echisNHDDValuesCoding = {
     code: `12218`,
     display: `Irritability/agitated`,
   },
-  refer_for_fp: {
+  pregnancy_home_visit: {
     system: NHDD_GENERIC_PATH,
-    code: `16219`,
-    display: `Referred for family planning services`,
+    code: `54075`,
+    display: `Antenatal Clinic`,
   },
-  refer_for_sideeffects_fp: {
+  out_patient: {
     system: NHDD_GENERIC_PATH,
-    code: `22599`,
-    display: `Referred for side effects from family planning method`,
+    code: `28023`,
+    display: `Outpatient Department`,
   },
-  refer_for_medical_consultation: {
+  orthopedic: {
     system: NHDD_GENERIC_PATH,
-    code: `28414`,
-    display: `Patient referred for medical consultation`,
+    code: `28175`,
+    display: `Orthopedic Department`,
+  },
+  psych: {
+    system: NHDD_GENERIC_PATH,
+    code: `28183`,
+    display: `Psychiatry Department`,
+  },
+  sgbv: {
+    system: NHDD_GENERIC_PATH,
+    code: `54086`,
+    display: `SGBV Clinic`,
+  },
+  in_patient: {
+    system: NHDD_GENERIC_PATH,
+    code: `15170`,
+    display: `Inpatient Department`,
+  },
+  fp_planning_clinic: {
+    system: NHDD_GENERIC_PATH,
+    code: `54076`,
+    display: `Family Planning Clinic`,
+  },
+  pnc_home_visit: {
+    system: NHDD_GENERIC_PATH,
+    code: `54077`,
+    display: `Postnatal Clinic`,
+  },
+  dental_clinic: {
+    system: NHDD_GENERIC_PATH,
+    code: `54078`,
+    display: `Dental Clinic`,
+  },
+  pnc_home_visit: {
+    system: NHDD_GENERIC_PATH,
+    code: `54077`,
+    display: `Postnatal Clinic`,
+  },
+  gyna: {
+    system: NHDD_GENERIC_PATH,
+    code: `54079`,
+    display: `Gynecology Clinic`,
+  },
+  paeds: {
+    system: NHDD_GENERIC_PATH,
+    code: `54080`,
+    display: `Pediatric Clinic`,
+  },
+  psych: {
+    system: NHDD_GENERIC_PATH,
+    code: `54082`,
+    display: `Physiotherapy Clinic`,
+  },
+  nutrition_clinic: {
+    system: NHDD_GENERIC_PATH,
+    code: `54084`,
+    display: `Nutrition Clinic`,
+  },
+  child_welfare: {
+    system: NHDD_GENERIC_PATH,
+    code: `54085`,
+    display: `Child Welfare Clinic`,
+  },
+  ccc: {
+    system: NHDD_GENERIC_PATH,
+    code: `25067`,
+    display: `CCC`,
   },
 };
 
@@ -175,11 +240,11 @@ const generateFHIRServiceRequest = (dataRecord) => {
         value: dataRecord._id,
       },
     ],
-    status: status[0],
+    status: status[1],
     intent: `order`,
     category: [
       {
-        coding: [echisNHDDValuesCoding.refer_for_medical_consultation],
+        coding: [echisNHDDValuesCoding[dataRecord.service]],
         text: `Consultation`,
       },
     ],
@@ -204,12 +269,22 @@ const generateFHIRServiceRequest = (dataRecord) => {
       reference: `${KHMFL_CHUL_URL}?format=JSON&code=${dataRecord.chu_code}`,
       type: `Organization`,
       display: dataRecord.chu_code,
+      identifier: {
+        use: `official`,
+        system: `${KHMFL_CHUL_URL}?format=JSON&code=${dataRecord.chu_code}`,
+        value: dataRecord.chu_code,
+      },
     },
     performer: [
       {
         reference: `${KHMFL_FACILITY_URL}?format=JSON&code=${dataRecord.referred_to_facility_code}`,
         type: `Organization`,
         display: dataRecord.referred_to_facility_code,
+        identifier: {
+          use: `official`,
+          system: `${KHMFL_FACILITY_URL}?format=JSON&code=${dataRecord.referred_to_facility_code}`,
+          value: dataRecord.referred_to_facility_code,
+        },
       },
     ],
     reasonCode: extractReasonCode(dataRecord.screening),

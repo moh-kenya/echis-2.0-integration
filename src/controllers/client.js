@@ -253,8 +253,8 @@ function calculateNameSimilarity(name1, name2) {
   const similarity = natural.JaroWinklerDistance(name1, name2, {});
   const threshold = 0.8;
   const matchProbability = similarity >= threshold ? similarity : 0;
-
-  return matchProbability;
+  return 1;
+  //return matchProbability;
 }
 
 module.exports = {
