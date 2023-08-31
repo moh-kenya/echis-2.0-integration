@@ -91,7 +91,6 @@ const createFacilityReferral = async (CHTDataRecordDoc) => {
       `${FHIR_URL}/ServiceRequest`,
       JSON.stringify(FHIRServiceRequest)
     );
-    console.log(response);
     const location = response.headers.location.split("/");
     logger.information(FHIR_SERVER_RESPONSE);
     logger.information(`${SERVICE_REQUEST_ID} ${location.at(-3)}`);
