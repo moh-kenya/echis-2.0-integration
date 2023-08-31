@@ -13,7 +13,7 @@ router.post("/", async function (req, res) {
     logger.information(CLIENT_ROUTE_COMPLETED);
 
     if (response?.upi) {
-      logger.information(`${GENERATED_NUMBER} ${response}`);
+      logger.information(`${GENERATED_NUMBER} ${response.upi || response}`);
       res.setHeader("Content-Type", "application/json");
       res.status(200).send(JSON.stringify({ upi: response.upi }, null, 3));
     } else {

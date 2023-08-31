@@ -147,7 +147,7 @@ const echisNHDDValuesCoding = {
     code: `15170`,
     display: `Inpatient Department`,
   },
-  fp_planning_clinic: {
+  family_planning: {
     system: NHDD_GENERIC_PATH,
     code: `54076`,
     display: `Family Planning Clinic`,
