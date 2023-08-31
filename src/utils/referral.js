@@ -197,6 +197,16 @@ const echisNHDDValuesCoding = {
     code: `25067`,
     display: `CCC`,
   },
+  has_fp_side_effects: {
+    system: NHDD_GENERIC_PATH,
+    code: `22599`,
+    display: `Referred for side effects from family planning method`,
+  },
+  interested_in_fp: {
+    system: NHDD_GENERIC_PATH,
+    code: `16219`,
+    display: `Referred for family planning services`,
+  },
 };
 
 const extractNotes = (data) => {
@@ -222,7 +232,7 @@ const extractReasonCode = (data) => {
     const coding = echisNHDDValuesCoding[reason];
     return reasonCodes.push({
       coding: [coding],
-      text: coding.display,
+      text: coding?.display,
     });
   });
   return reasonCodes;
