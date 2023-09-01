@@ -32,17 +32,16 @@ const runAggregateSummary = async () => {
   const serverIsUp = await isDhis2ServerUp();
 
   if(serverIsUp){
-    console.log(`DHIS2 server is up. Processing upload ...`);
+    logger.information(`DHIS2 server is up. Processing upload ...`);
     const rawData = await query(EXTRACT_DATA_QUERY);
     const dataValueSets = await generateDataValueSets(rawData);
     const postResponseArray = await postDataValueSets(dataValueSets, KHIS);
     await query(UPSERT_INGEST_STATUS_QUERY, postResponseArray);
   } else {
-    logger.error('DHIS2 server is down or unreachable.');
+    logger.error(`DHIS2 server is down or unreachable.`);
   };
 };
 
-(async () => {
-  await runAggregateSummary();
-  // await end();
-})();
+module.exports = {
+  runAggregateSummary
+};

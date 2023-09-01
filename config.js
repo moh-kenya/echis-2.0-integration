@@ -12,18 +12,18 @@ const CONFIG = {
 };
 
 const KHIS = {
-  url: 'https://test.hiskenya.org/api',//process.env.KHIS_URL,
-  username: 'echis',//process.env.KHIS_USERNAME,
-  password: 'V1s10n@2030',//process.env.KHIS_PASSWORD
-  statusEndPoint: '/system/info'//process.env.KHIS_STATUS_CHECK_ENDPOINT
+  url: process.env.KHIS_URL,
+  username: process.env.KHIS_USERNAME,
+  password: process.env.KHIS_PASSWORD,
+  statusEndPoint: process.env.KHIS_STATUS_CHECK_ENDPOINT
 };
 
 const DATABASE_PARAMS = {
-  host: 'localhost',//process.env.POSTGRES_SERVER_URL,
-  user: 'postgres',//process.env.POSTGRES_USERNAME,
-  password: '060634625',//process.env.POSTGRES_PASSWORD,
-  database: 'chis_staging',//process.env.POSTGRES_DB_NAME,
-  port: 5432//process.env.POSTGRES_PORT
+  host: process.env.POSTGRES_SERVER_URL,
+  user: process.env.POSTGRES_USERNAME,
+  password: process.env.POSTGRES_PASSWORD,
+  database: process.env.POSTGRES_DB_NAME,
+  port: process.env.POSTGRES_PORT
 };
 
 const MEDIATOR = {

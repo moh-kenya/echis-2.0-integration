@@ -20,7 +20,6 @@ const generateDataValueSets = async (dataObjects) => {
 };
 
 const postDataValueSet = async (dataValueSet, authParams) => {
-  // console.logg(dataValueSet);
   try {
     const response = await axios.post(`${authParams.url}/dataValueSets?orgUnitIdScheme=CODE`, dataValueSet, {
       auth: {username: authParams.username, password: authParams.password},
@@ -46,10 +45,8 @@ const stringifyDataValueSet = (dataValueSet) => JSON.stringify(dataValueSet);
 const postDataValueSets = async (dataValueSets, authParams) => {
   const updateParams = dataValueSets.map((entry) => {
     const payload = stringifyDataValueSet(entry);
-    console.log(payload);
     const isProcessed = postDataValueSet(payload, authParams);
     const { dataSet, orgUnit, period } = entry;
-    console.log([dataSet, orgUnit, period, isProcessed]);
     return [dataSet, orgUnit, period, isProcessed];
   });
 
@@ -59,15 +56,12 @@ const postDataValueSets = async (dataValueSets, authParams) => {
 async function isDhis2ServerUp(serverParams) {
   try {
     const response = await axios.get(`${serverParams.url}${serverParams.statusEndPoint}`, { timeout: 5000 });
-
-    // Check if the response status code is 200, indicating the server is up
     if (response.status === 200) {
       return true;
     } else {
       return false;
     }
   } catch (error) {
-    // An error occurred, indicating the server is down or unreachable
     return false;
   }
 };
