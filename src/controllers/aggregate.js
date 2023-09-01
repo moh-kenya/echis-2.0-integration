@@ -1,37 +1,48 @@
-const axios = require('axios');
-const { pool, DATA_QUERY, KHIS } = require('../utils/aggregate');
-const {logger} = require('../utils/logger');
+const { KHIS } = require('../../config');
 
-const sendMoh515Data = async (data) => {
-  logger.information("Sending MOH 515");
-  try {
-    const res = await axios.post(`${KHIS.url}/dataValueSets?orgUnitIdScheme=CODE`, data, {
-      auth: {username: KHIS.username, password: KHIS.password},
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+const {
+  query,
+  end
+} = require('../utils/db');
 
-    return res;
-  } catch (error) {
-    logger.error(error);
-    return error;
-  }
+const {
+  ANALYTICS_INGEST_TABLE_QUERY,
+  ANALYTICS_DATA_VALUES_TABLE_QUERY,
+  UPSERT_INGEST_TRIGGER_FUNCTION_QUERY,
+  UPSERT_INGEST_TRIGGER_QUERY,
+  EXTRACT_DATA_QUERY,
+  UPSERT_INGEST_STATUS_QUERY,
+  UPSERT_DATA_VALUES_QUERY
+} = require('../postgres/analytics');
+
+const {
+  generateDataValueSets,
+  postDataValueSets,
+  isDhis2ServerUp
+} = require('../utils/khis');
+
+const { logger } = require('../utils/logger');
+
+const prepareDatabase = async (queries) => queries.forEach(async (preparedStatement) => await query(preparedStatement));
+
+const runAggregateSummary = async () => {
+  const queries = [ANALYTICS_INGEST_TABLE_QUERY, ANALYTICS_DATA_VALUES_TABLE_QUERY, UPSERT_INGEST_TRIGGER_FUNCTION_QUERY, UPSERT_INGEST_TRIGGER_QUERY, UPSERT_DATA_VALUES_QUERY];
+  await prepareDatabase(queries);
+
+  const serverIsUp = await isDhis2ServerUp();
+
+  if(serverIsUp){
+    console.log(`DHIS2 server is up. Processing upload ...`);
+    const rawData = await query(EXTRACT_DATA_QUERY);
+    const dataValueSets = await generateDataValueSets(rawData);
+    const postResponseArray = await postDataValueSets(dataValueSets, KHIS);
+    await query(UPSERT_INGEST_STATUS_QUERY, postResponseArray);
+  } else {
+    logger.error('DHIS2 server is down or unreachable.');
+  };
 };
 
-const getMoh515Data = async (_, response) => {
-  logger.information("Getting MOH 515 data");;
-  pool.query(DATA_QUERY, (error, results) => {
-    if (error) {
-      logger.error(error);
-      throw error;
-    }
-    const result = results.rows;
-    response.send(result);
-    sendMoh515Data(JSON.stringify({dataValues: result}));
-  });
-};
-
-module.exports = {
-  getMoh515Data
-};
+(async () => {
+  await runAggregateSummary();
+  // await end();
+})();

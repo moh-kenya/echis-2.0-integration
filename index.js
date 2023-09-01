@@ -2,9 +2,9 @@ const bodyParser = require("body-parser");
 const express = require("express");
 const app = express();
 const {registerMediator} = require('openhim-mediator-utils')
-const {OPENHIM, CONFIG, CHANNEL_CONFIG_ENDPOINTS_URL} = require('./config');
+const {OPENHIM, CONFIG, CHANNEL_CONFIG_ENDPOINTS_URL,CRON_PARAMS} = require('./config');
 const aggregateRoutes = require('./src/routes/aggregate');
-const {cronService} = require('./src/middlewares/aggregate');
+const {executeCron} = require('./src/middlewares/cron');
 const {logger} =require('./src/utils/logger');
 
 app.use(bodyParser.json());
@@ -17,7 +17,7 @@ logger.information("Routes setup complete");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 logger.information("Setting up cron services");
-cronService();
+executeCron(CRON_PARAMS);
 logger.information("Cron services setup complete");
 
 app.listen(CONFIG.port, () => {

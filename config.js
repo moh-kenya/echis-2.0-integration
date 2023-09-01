@@ -12,17 +12,18 @@ const CONFIG = {
 };
 
 const KHIS = {
-  url: process.env.KHIS_URL,
-  username: process.env.KHIS_USERNAME,
-  password: process.env.KHIS_PASSWORD
+  url: 'https://test.hiskenya.org/api',//process.env.KHIS_URL,
+  username: 'echis',//process.env.KHIS_USERNAME,
+  password: 'V1s10n@2030',//process.env.KHIS_PASSWORD
+  statusEndPoint: '/system/info'//process.env.KHIS_STATUS_CHECK_ENDPOINT
 };
 
-const POSTGRES = {
-  host: process.env.POSTGRES_SERVER_URL,
-  username: process.env.POSTGRES_USERNAME,
-  password: process.env.POSTGRES_PASSWORD,
-  database: process.env.POSTGRES_DB_NAME,
-  port: process.env.POSTGRES_PORT
+const DATABASE_PARAMS = {
+  host: 'localhost',//process.env.POSTGRES_SERVER_URL,
+  user: 'postgres',//process.env.POSTGRES_USERNAME,
+  password: '060634625',//process.env.POSTGRES_PASSWORD,
+  database: 'chis_staging',//process.env.POSTGRES_DB_NAME,
+  port: 5432//process.env.POSTGRES_PORT
 };
 
 const MEDIATOR = {
@@ -33,11 +34,21 @@ const MEDIATOR = {
 
 const CHANNEL_CONFIG_ENDPOINTS_URL = process.env.CHANNEL_CONFIG_ENDPOINTS_URL;
 
+const UPSERT_DATA_VALUES_QUERY = process.env.UPSERT_DATA_VALUES_QUERY;
+
+const CRON_PARAMS = {
+  unit: process.env.CRON_UNIT,
+  value: process.env.CRON_VALUE,
+  dayOfMonth: process.env.CRON_DAY_OF_MONTH
+};
+
 module.exports = {
   OPENHIM,
   CONFIG,
   KHIS,
-  POSTGRES,
+  DATABASE_PARAMS,
   MEDIATOR,
-  CHANNEL_CONFIG_ENDPOINTS_URL
+  CHANNEL_CONFIG_ENDPOINTS_URL,
+  UPSERT_DATA_VALUES_QUERY,
+  CRON_PARAMS
 };
