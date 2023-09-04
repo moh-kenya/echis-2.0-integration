@@ -22,6 +22,36 @@ const echisNHDDValuesCoding = {
     code: `49168`,
     display: `Vaginal Bleeding`,
   },
+  heavy_vaginal_bleeding: {
+    system: NHDD_GENERIC_PATH,
+    code: `49168`,
+    display: `Vaginal Bleeding`,
+  },
+  foul_smelling_discharge: {
+    system: NHDD_GENERIC_PATH,
+    code: `18901`,
+    display: `Foul smelling vaginal discharge`,
+  },
+  cracked_and_painful_nipples: {
+    system: NHDD_GENERIC_PATH,
+    code: `2371`,
+    display: `Cracked Nipple Associated with Childbirth`,
+  },
+  convulsions: {
+    system: NHDD_GENERIC_PATH,
+    code: `46463`,
+    display: `Convulsions`,
+  },
+  anxiety_worried_for_no_apparent_reason: {
+    system: NHDD_GENERIC_PATH,
+    code: `37137`,
+    display: `Anxiety`,
+  },
+  irritability_agitated: {
+    system: NHDD_GENERIC_PATH,
+    code: `42203`,
+    display: `Irritability and Anger`,
+  },
   fits: {
     system: NHDD_GENERIC_PATH,
     code: `40356`,
