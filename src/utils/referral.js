@@ -152,7 +152,7 @@ const echisNHDDValuesCoding = {
     code: `54076`,
     display: `Family Planning Clinic`,
   },
-  pnc_home_visit: {
+  postnatal_care_service: {
     system: NHDD_GENERIC_PATH,
     code: `54077`,
     display: `Postnatal Clinic`,
@@ -161,11 +161,6 @@ const echisNHDDValuesCoding = {
     system: NHDD_GENERIC_PATH,
     code: `54078`,
     display: `Dental Clinic`,
-  },
-  pnc_home_visit: {
-    system: NHDD_GENERIC_PATH,
-    code: `54077`,
-    display: `Postnatal Clinic`,
   },
   gyna: {
     system: NHDD_GENERIC_PATH,
