@@ -249,6 +249,7 @@ const extractReasonCode = (data) => {
   const reasons = [
     ...new Set(
       Object.values(data)
+        .filter((str) => str !== "")
         .map((str) => str.split(" "))
         .flat()
     ),
