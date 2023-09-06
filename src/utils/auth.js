@@ -1,6 +1,6 @@
 const qs = require("qs");
 const axios = require("axios");
-const {logger} = require('../utils/logger');
+const { logger } = require("../utils/logger");
 
 const token = {
   timestamp: null,
