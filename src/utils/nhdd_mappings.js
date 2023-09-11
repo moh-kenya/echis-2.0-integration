@@ -123,6 +123,19 @@ const vaccinesMapping = {
     measles_18_months: codes.measles,
 };
 
+const vitaminAMapping = {
+    vitamin_a_6_months: codes.vitamin_a,
+    vitamin_a_12_months: codes.vitamin_a,
+    vitamin_a_18_months: codes.vitamin_a,
+    vitamin_a_24_months: codes.vitamin_a,
+    vitamin_a_30_months: codes.vitamin_a,
+    vitamin_a_36_months: codes.vitamin_a,
+    vitamin_a_42_months: codes.vitamin_a,
+    vitamin_a_48_months: codes.vitamin_a,
+    vitamin_a_54_months: codes.vitamin_a,
+    vitamin_a_60_months: codes.vitamin_a,
+};
+
 const developmentalMilestones = {
     social_smile: codes.socialSmile,
     head_handling_and_control: codes.holdsHeadUp,
@@ -140,7 +153,8 @@ const serviceMapping = {
         clinic: clinicCodes.child_welfare,
         mapping: {
             ...vaccinesMapping,
-            ...developmentalMilestones
+            ...developmentalMilestones,
+            ...vitaminAMapping
         }
     }
 }
