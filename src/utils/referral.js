@@ -7,6 +7,7 @@ const {
   CHT,
   KHMFL,
 } = require("../../config");
+const { serviceMapping } = require("./nhdd_mappings");
 const NHDD_URL = `${NHDD.url}/orgs/MOH-KENYA/sources`;
 const KHMFL_FACILITY_URL = `${KHMFL.url}/api/facilities/facilities/`;
 const KHMFL_CHUL_URL = `${KHMFL.url}/api/chul/units/`;
@@ -244,7 +245,7 @@ const extractNotes = (data) => {
   return [{ text: notes.join(", ") }];
 };
 
-const extractReasonCode = (data) => {
+const extractReasonCode = (data, service) => {
   let reasonCodes = [];
   const reasons = [
     ...new Set(
@@ -255,7 +256,7 @@ const extractReasonCode = (data) => {
     ),
   ].filter((elem) => elem !== `none`);
   reasons.forEach((reason) => {
-    const coding = echisNHDDValuesCoding[reason];
+    const coding = !!service ? serviceMapping[service].mapping : echisNHDDValuesCoding[reason];
     return reasonCodes.push({
       coding: [coding],
       text: coding?.display,
@@ -280,7 +281,7 @@ const generateFHIRServiceRequest = (dataRecord) => {
     intent: `order`,
     category: [
       {
-        coding: [echisNHDDValuesCoding[dataRecord.service]],
+        coding: [echisNHDDValuesCoding[dataRecord.service] || serviceMapping[dataRecord.service]?.clinic],
         text: `Consultation`,
       },
     ],
@@ -323,7 +324,7 @@ const generateFHIRServiceRequest = (dataRecord) => {
         },
       },
     ],
-    reasonCode: extractReasonCode(dataRecord.screening),
+    reasonCode: extractReasonCode(dataRecord.screening, dataRecord.service),
     note: extractNotes(dataRecord.supportingInfo),
   };
   return FHITServiceRequest;
