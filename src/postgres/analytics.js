@@ -1,31 +1,5 @@
 const { UPSERT_DATA_VALUES_QUERY } = require('../../config');
 
-const withTable = async (connection, tableName) => {
-  return async (createTableQuery) => {
-    const tableExists = await executeQuery(connection, `SELECT 1 FROM pg_catalog.pg_tables WHERE tablename = $1;`, [tableName]);
-
-    if (!tableExists.rows.length) {
-      await executeQuery(connection, createTableQuery);
-    }
-    return async (dataQuery) => {
-      await executeQuery(connection, dataQuery);
-      await closeConnection(connection);
-    }
-  }
-};
-
-const prepareAggregateData = async (connection, tableName, createTableQuery, dataQuery) => {
-  try{
-    const createTableIfNotExist = await withTable(connection, tableName);
-    const table = await createTableIfNotExist(createTableQuery);
-    table(dataQuery);
-  } catch (error) {
-    logger.error(error);
-  }
-};
-
-const extractAggregateData = async (connection, dataQuery) => await executeQuery(connection, dataQuery);
-
 const ANALYTICS_INGEST_TABLE_QUERY = `
   CREATE TABLE IF NOT EXISTS aggregate_data_ingest (
     id SERIAL NOT NULL,
@@ -34,7 +8,8 @@ const ANALYTICS_INGEST_TABLE_QUERY = `
     period VARCHAR(10) NOT NULL,
     is_processed BOOLEAN DEFAULT false,
     last_update TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    PRIMARY KEY(id)
+    PRIMARY KEY(id),
+    UNIQUE(dataSet, orgUnit, period)
   ) 
   WITH (oids = false);`;
 
@@ -50,10 +25,10 @@ const ANALYTICS_DATA_VALUES_TABLE_QUERY = `
 
 const EXTRACT_DATA_QUERY = `
   SELECT
-    v.dataSet AS dataSet,
-    v.orgUnit AS orgUnit,
+    v.dataSet AS "dataSet",
+    v.orgUnit AS "orgUnit",
     v.period AS period,
-    v.dataElement AS dataElement,
+    v.dataElement AS "dataElement",
     v.value AS value
   FROM
     aggregate_data_values v
@@ -89,12 +64,14 @@ const UPSERT_INGEST_TRIGGER_FUNCTION_QUERY = `
   EXECUTE FUNCTION update_aggregate_data_ingest();
   `;
 
-const UPSERT_INGEST_STATUS_QUERY = `
+const getUpsertDataIngestQuery = (values) => {
+  return `
   INSERT INTO aggregate_data_ingest (dataSet, orgUnit, period, is_processed)
-  VALUES
-    ($1, $2, $3, $4)
+  VALUES    
+    ${values.map(item => `('${item.dataSet}', '${item.orgUnit}', '${item.period}', ${item.is_processed})`).join(',')}
   ON CONFLICT (dataSet, orgUnit, period)
   DO UPDATE SET is_processed = EXCLUDED.is_processed;`;
+};
 
 module.exports = {
   ANALYTICS_INGEST_TABLE_QUERY,
@@ -102,6 +79,6 @@ module.exports = {
   UPSERT_INGEST_TRIGGER_FUNCTION_QUERY,
   UPSERT_INGEST_TRIGGER_QUERY,
   EXTRACT_DATA_QUERY,
-  UPSERT_INGEST_STATUS_QUERY,
-  UPSERT_DATA_VALUES_QUERY
+  UPSERT_DATA_VALUES_QUERY,
+  getUpsertDataIngestQuery
 };

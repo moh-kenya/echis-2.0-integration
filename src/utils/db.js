@@ -21,6 +21,7 @@ client.connect((err) => {
 const query = async (preparedStatement, params) => {
   try {
     const result = await client.query(preparedStatement, params);
+    logger.information(`Query executed.`);
     return result.rows;
   } catch (error) {
     logger.error(`Database query error: ${error.message} in ${preparedStatement}`);

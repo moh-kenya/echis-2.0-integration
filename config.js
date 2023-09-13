@@ -14,8 +14,7 @@ const CONFIG = {
 const KHIS = {
   url: process.env.KHIS_URL,
   username: process.env.KHIS_USERNAME,
-  password: process.env.KHIS_PASSWORD,
-  statusEndPoint: process.env.KHIS_STATUS_CHECK_ENDPOINT
+  password: process.env.KHIS_PASSWORD
 };
 
 const DATABASE_PARAMS = {
@@ -23,7 +22,7 @@ const DATABASE_PARAMS = {
   user: process.env.POSTGRES_USERNAME,
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DB_NAME,
-  port: process.env.POSTGRES_PORT
+  port: process.env.POSTGRES_PORT || 5432
 };
 
 const MEDIATOR = {
@@ -36,11 +35,7 @@ const CHANNEL_CONFIG_ENDPOINTS_URL = process.env.CHANNEL_CONFIG_ENDPOINTS_URL;
 
 const UPSERT_DATA_VALUES_QUERY = process.env.UPSERT_DATA_VALUES_QUERY;
 
-const CRON_PARAMS = {
-  unit: process.env.CRON_UNIT,
-  value: process.env.CRON_VALUE,
-  dayOfMonth: process.env.CRON_DAY_OF_MONTH
-};
+const CRON_SCHEDULE = process.env.CRON_SCHEDULE;
 
 module.exports = {
   OPENHIM,
@@ -50,5 +45,5 @@ module.exports = {
   MEDIATOR,
   CHANNEL_CONFIG_ENDPOINTS_URL,
   UPSERT_DATA_VALUES_QUERY,
-  CRON_PARAMS
+  CRON_SCHEDULE
 };
