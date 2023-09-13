@@ -256,7 +256,7 @@ const extractReasonCode = (data, service) => {
     ),
   ].filter((elem) => elem !== `none`);
   reasons.forEach((reason) => {
-    const coding = !!service ? serviceMapping[service].mapping[reason] : echisNHDDValuesCoding[reason];
+    const coding = !!service ? serviceMapping[service]?.mapping[reason] : echisNHDDValuesCoding[reason];
     return reasonCodes.push({
       coding: [coding],
       text: coding?.display,
@@ -269,7 +269,7 @@ const status = [`draft`, `active`, `revoked`, `completed`];
 
 const generateFHIRServiceRequest = (dataRecord) => {
   const reportedDate = DateTime.fromMillis(dataRecord.reported_date);
-  const FHITServiceRequest = {
+  const FHIRServiceRequest = {
     resourceType: `ServiceRequest`,
     identifier: [
       {
@@ -327,7 +327,7 @@ const generateFHIRServiceRequest = (dataRecord) => {
     reasonCode: extractReasonCode(dataRecord.screening, dataRecord.service),
     note: extractNotes(dataRecord.supportingInfo),
   };
-  return FHITServiceRequest;
+  return FHIRServiceRequest;
 };
 
 module.exports = {
