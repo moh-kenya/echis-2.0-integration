@@ -51,7 +51,7 @@ const clientFactory = async (echisClientDoc) => {
     // if they already exist in CR we check if the fields provided match what is in the CR and if they do, update echis with UPI.
     if (response.data.clientExists) {
       logger.information(CLIENT_FOUND);
-      const mismatchedFields = getMismatchedClientFields(echisClientDoc.doc, response.data.client);
+      const mismatchedFields = getMismatchedClientFields(echisClientDoc, response.data.client);
       // if fields do not match, create report on echis for follow up and return error
       if (mismatchedFields.length > 0) {
         // await updateDocWithUpdateError(echisClientDoc);
@@ -234,13 +234,13 @@ const updateEchisDocWithFailedIdentification = async (echisDoc) => {
 };
 
 // compare fields in the echis contact doc and the contact doc we got from Client Registry
-function getMismatchedClientFields(echisContact, crContact) {
+function getMismatchedClientFields(echisContactDoc, crContact) {
   // fields that ideally should be kind of unique across clients
-  const matcherFields = ["firstName", "middleName", "lastName", "gender", "dateOfBirth", "contact.primaryPhone"]
+  const matcherFields = ["firstName", "middleName", "lastName", "gender", "dateOfBirth", "contact.primaryPhone"];
   // where we store our mismatched fields and return them later
   const mismatchedFields = [];
   // the payload we generate here has the same format as what we get back when we query for client existence
-  const crPayload = generateClientRegistryPayload(echisContact);
+  const crPayload = generateClientRegistryPayload(echisContactDoc);
   matcherFields.forEach(key => {
     if (getPropByString(crContact, key) !== getPropByString(crPayload, key)) {
       mismatchedFields.push(key);
