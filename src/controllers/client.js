@@ -130,15 +130,14 @@ const createClientDetailsMismatchReport = async (echisClientDoc, fields) => {
     });
     const body = {
       _meta: {
-        form: "client_details_mismatch",
+        form: "CLIENT_DETAILS_MISMATCH",
       },
       patient_id: echisClientDoc.doc._id,
-      authored_on: echisClientDoc.doc.reported_date,
-      mismatched_fields: fields,
+      mismatched_fields: fields.join(" "),
       source: `Client Registry`,
     };
     const response = await axiosInstance.post(`api/v2/records`, body);
-    logger.information(COMPLETED_SUCCESSFULLY);
+    logger.information(`COMPLETED ${response?.status}`);
     return response;
 
   } catch (error) {
