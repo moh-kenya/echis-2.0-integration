@@ -54,7 +54,7 @@ const clientFactory = async (echisClientDoc) => {
       const mismatchedFields = getMismatchedClientFields(echisClientDoc, response.data.client);
       // if fields do not match, create report on echis for follow up and return error
       if (mismatchedFields.length > 0) {
-        // await updateDocWithUpdateError(echisClientDoc);
+        await createClientDetailsMismatchReport(echisClientDoc, mismatchedFields);
         return {
           error: "client fields mismatch",
           fields: mismatchedFields
@@ -115,24 +115,36 @@ const updateDocWithUPI = async (echisClientDoc, clientNumber) => {
       logger.error(GET_ECHIS_DOC_FAILED);
     });
 };
-const updateDocWithUpdateError = async (echisClientDoc) => {
-  getEchisDocForUpdate(echisClientDoc.doc._id)
-    .then((echisDoc) => {
-      updateEchisDocWithFailedIdentification(echisDoc)
-        .then((echisResponse) => {
-          logger.information(
-            `${CLIENT_UPDATE} ${JSON.stringify(echisResponse)}`
-          );
-          return echisResponse;
-        })
-        .catch((error) => {
-          logger.error(UPDATE_ECHIS_DOC_FAILED);
-          logger.error(error);
-        });
-    })
-    .catch((error) => {
-      logger.error(GET_ECHIS_DOC_FAILED);
+const createClientDetailsMismatchReport = async (echisClientDoc, fields) => {
+  try {
+    logger.information("Creating details mismatch report in echis");
+    const axiosInstance = axios.create({
+      baseURL: CHT.url,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      auth: {
+        username: CHT.username,
+        password: CHT.password,
+      },
     });
+    const body = {
+      _meta: {
+        form: "client_details_mismatch",
+      },
+      patient_id: echisClientDoc.doc._id,
+      authored_on: echisClientDoc.doc.reported_date,
+      mismatched_fields: fields,
+      source: `Client Registry`,
+    };
+    const response = await axiosInstance.post(`api/v2/records`, body);
+    logger.information(COMPLETED_SUCCESSFULLY);
+    return response;
+
+  } catch (error) {
+    logger.error(error);
+    return error;
+  }
 };
 
 const getIdentificationType = (idType) => {
@@ -233,16 +245,16 @@ const updateEchisDocWithFailedIdentification = async (echisDoc) => {
   }
 };
 
-// compare fields in the echis contact doc and the contact doc we got from Client Registry
-function getMismatchedClientFields(echisContactDoc, crContact) {
+// compare fields in the echis client doc and the client doc we got from Client Registry
+function getMismatchedClientFields(echisClientDoc, crClientDoc) {
   // fields that ideally should be kind of unique across clients
   const matcherFields = ["firstName", "middleName", "lastName", "gender", "dateOfBirth", "contact.primaryPhone"];
   // where we store our mismatched fields and return them later
   const mismatchedFields = [];
   // the payload we generate here has the same format as what we get back when we query for client existence
-  const crPayload = generateClientRegistryPayload(echisContactDoc);
+  const crPayload = generateClientRegistryPayload(echisClientDoc);
   matcherFields.forEach(key => {
-    if (getPropByString(crContact, key) !== getPropByString(crPayload, key)) {
+    if (getPropByString(crClientDoc, key) !== getPropByString(crPayload, key)) {
       mismatchedFields.push(key);
     }
   });
