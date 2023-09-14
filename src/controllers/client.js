@@ -1,7 +1,7 @@
 const axios = require("axios");
 const { generateToken } = require("../utils/auth");
 const { CHT, CLIENT_REGISTRY } = require("../../config");
-const { idMap, generateClientRegistryPayload } = require("../utils/client");
+const { idMap, generateClientRegistryPayload, getPropByString } = require("../utils/client");
 const { logger } = require("../utils/logger");
 const { messages } = require("../utils/messages");
 const natural = require("natural");
@@ -34,60 +34,44 @@ const axiosInstance = axios.create({
 
 const clientFactory = async (echisClientDoc) => {
   try {
-    const identificationType = getIdentificationType(
-      echisClientDoc?.doc.identification_type
-    );
-
+    // if doc has upi return early
+    if (echisClientDoc?.doc?.upi) {
+      return {
+        upi: echisClientDoc?.doc.upi,
+      };
+    }
     logger.information(ECHIS_DOCUMENT);
     logger.information(JSON.stringify(echisClientDoc));
     logger.information(CALL_CR);
-
+    // get their ID so we can check if they exist
+    const identificationType = getIdentificationType(echisClientDoc?.doc.identification_type);
     const response = await axiosInstance.get(
       `partners/registry/search/${identificationType}/${echisClientDoc?.doc.identification_number}`
     );
-
+    // if they already exist in CR we check if the fields provided match what is in the CR and if they do, update echis with UPI.
     if (response.data.clientExists) {
       logger.information(CLIENT_FOUND);
-      const matchProbability = calculateNameSimilarity(
-        [
-          echisClientDoc?.doc.first_name,
-          echisClientDoc?.doc.middle_name,
-          echisClientDoc?.doc.last_name,
-        ].join(" "),
-        [
-          response.data.client.firstName,
-          response.data.client.middleName === "NULL"
-            ? ""
-            : response.data.client.middleName,
-          response.data.client.lastName,
-        ]
-          .filter(Boolean)
-          .join(" ")
-      );
-      if (matchProbability > 0.8) {
-        await updateDocWithUPI(
-          echisClientDoc,
-          response.data.client.clientNumber
-        );
+      const mismatchedFields = getMismatchedClientFields(echisClientDoc.doc, response.data.client);
+      // if fields do not match, create report on echis for follow up and return error
+      if (mismatchedFields.length > 0) {
+        // await updateDocWithUpdateError(echisClientDoc);
         return {
-          upi: response.data.client.clientNumber,
-        };
-      } else if (echisClientDoc?.doc.upi) {
-        return {
-          upi: echisClientDoc?.doc.upi,
-        };
-      } else {
-        await updateDocWithUpdateError(echisClientDoc);
+          error: "client fields mismatch",
+          fields: mismatchedFields
+        }
       }
-    } else {
-      logger.information(CLIENT_NOT_FOUND);
-      logger.information(CREATE_IN_CR);
-      const createResponse = await createClientInRegistry(
-        JSON.stringify(generateClientRegistryPayload(echisClientDoc))
-      );
-      await updateDocWithUPI(echisClientDoc, createResponse);
-      return createResponse;
+      // update contact doc with UPI and return UPI
+      await updateDocWithUPI(echisClientDoc, response.data.client.clientNumber);
+      return {
+        upi: response.data.client.clientNumber,
+      };
     }
+    // if we get here, they did not exist in CR, we create them and update echis with the UPI
+    logger.information(CLIENT_NOT_FOUND);
+    logger.information(CREATE_IN_CR);
+    const createResponse = await createClientInRegistry(JSON.stringify(generateClientRegistryPayload(echisClientDoc)));
+    await updateDocWithUPI(echisClientDoc, createResponse);
+    return createResponse;
   } catch (error) {
     if (error?.response?.status === 404) {
       logger.information(CLIENT_NOT_FOUND);
@@ -249,12 +233,20 @@ const updateEchisDocWithFailedIdentification = async (echisDoc) => {
   }
 };
 
-function calculateNameSimilarity(name1, name2) {
-  const similarity = natural.JaroWinklerDistance(name1, name2, {});
-  const threshold = 0.8;
-  const matchProbability = similarity >= threshold ? similarity : 0;
-  return 1;
-  //return matchProbability;
+// compare fields in the echis contact doc and the contact doc we got from Client Registry
+function getMismatchedClientFields(echisContact, crContact) {
+  // fields that ideally should be kind of unique across clients
+  const matcherFields = ["firstName", "middleName", "lastName", "gender", "dateOfBirth", "contact.primaryPhone"]
+  // where we store our mismatched fields and return them later
+  const mismatchedFields = [];
+  // the payload we generate here has the same format as what we get back when we query for client existence
+  const crPayload = generateClientRegistryPayload(echisContact);
+  matcherFields.forEach(key => {
+    if (getPropByString(crContact, key) !== getPropByString(crPayload, key)) {
+      mismatchedFields.push(key);
+    }
+  });
+  return mismatchedFields;
 }
 
 module.exports = {
