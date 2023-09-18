@@ -9,6 +9,7 @@ const {
   ECHIS_DOCUMENT,
   CALL_CR,
   CLIENT_FOUND,
+  CLIENT_DETAILS_MISMATCH,
   CLIENT_NOT_FOUND,
   CREATE_IN_CR,
   GEN_CR_FAILURE,
@@ -56,7 +57,7 @@ const clientFactory = async (echisClientDoc) => {
       if (mismatchedFields.length > 0) {
         await createClientDetailsMismatchReport(echisClientDoc, mismatchedFields);
         return {
-          error: "client fields mismatch",
+          msg: CLIENT_DETAILS_MISMATCH,
           fields: mismatchedFields
         }
       }
