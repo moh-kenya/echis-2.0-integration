@@ -4,18 +4,13 @@ const { generateToken } = require("../utils/auth");
 const { FHIR, CHT } = require("../../config");
 const FHIR_URL = `${FHIR.url}/fhir-server/api/v4`;
 const { logger } = require("../utils/logger");
-const {
-  createClientInRegistry,
-  getEchisDocForUpdate,
-  updateEchisDocWithUpi,
-  generateClientRegistryPayload,
-} = require("../controllers/client");
+const { createCRClient } = require("../controllers/client");
 const { messages } = require("../utils/messages");
+const { getDoc } = require("../utils/echis");
 const {
   CREATE_FACILITY_REFERRAL,
   GENERATE_FHIR_SR,
   ATTRIB_NOT_FOUND,
-  DATA_RECORD,
   CALLING_FHIR_SERVER,
   FHIR_SERVER_RESPONSE,
   SERVICE_REQUEST_ID,
@@ -25,24 +20,23 @@ const {
   COMPLETED_SUCCESSFULLY,
 } = messages;
 
-const getSubjectUpi = async (dataRecord) => {
-  logger.information(DATA_RECORD);
-  logger.information(JSON.stringify(dataRecord));
-  let upi = dataRecord.upi;
-
-  if (!upi) {
-    const echisDoc = await getEchisDocForUpdate(dataRecord._patient_id);
-    upi = echisDoc.upi;
+const getSubjectUpi = async (echisClientId) => {
+  try {
+    const echisClient = await getDoc({ instance: CHT.url, user: CHT.username, password: CHT.password }, echisClientId);
+    if (echisClient.upi) {
+      return echisClient.upi;
+    }
+  } catch (err) {
+    logger.error(`could not get subject upi: ${err.message}`);
   }
-
-  if (!upi) {
-    upi = await createClientInRegistry(
-      JSON.stringify(generateClientRegistryPayload(dataRecord))
-    );
-    await updateEchisDocWithUpi(upi, dataRecord);
+  try {
+    const clientNumber = await createCRClient({ instance: CHT.url, user: CHT.username, password: CHT.password }, echisClient)
+    return clientNumber;
+  } catch (err) {
+    logger.error(`could not get subject upi, err while trying to create client ${err.message}`);
   }
-  return upi;
-};
+  return
+}
 
 const createFacilityReferral = async (CHTDataRecordDoc) => {
   logger.information(CREATE_FACILITY_REFERRAL);
@@ -77,10 +71,13 @@ const createFacilityReferral = async (CHTDataRecordDoc) => {
     );
     logger.information(GENERATE_FHIR_SR);
 
-    CHTDataRecordDoc.upi = await getSubjectUpi(CHTDataRecordDoc);
-    if (!CHTDataRecordDoc.upi) {
-      logger.error(ATTRIB_NOT_FOUND);
-      throw ATTRIB_NOT_FOUND;
+    let upi = CHTDataRecordDoc.upi
+    if (!upi) {
+      upi = await getSubjectUpi(CHTDataRecordDoc._patient_id);
+      if (!upi) {
+        throw new Error(ATTRIB_NOT_FOUND);
+      }
+      CHTDataRecordDoc.upi = upi;
     }
 
     const FHIRServiceRequest = generateFHIRServiceRequest(CHTDataRecordDoc);
@@ -198,30 +195,6 @@ const createTaskReferral = async (serviceRequest) => {
   }
 };
 
-const replicateRequest = (async = (FHIRServiceRequest) => {
-  logger.information("Replicating Request to Alternate FHIR SERVER");
-  const apiUrl =
-    "https://interoperabilitylab.uonbi.ac.ke/test/fhir-server/api/v4/ServiceRequest";
-  const authHeader = {
-    username: "fhiruser",
-    password: "change-password",
-  };
-  axios
-    .post(apiUrl, JSON.stringify(FHIRServiceRequest), {
-      headers: {
-        "Content-Type": "application/fhir+json",
-        Authorization: `Basic ${Buffer.from(
-          `${authHeader.username}:${authHeader.password}`
-        ).toString("base64")}`,
-      },
-    })
-    .then((response) => {
-      logger.information("Response: " + response.data);
-    })
-    .catch((error) => {
-      logger.error(error);
-    });
-});
 
 module.exports = {
   createFacilityReferral,

@@ -57,84 +57,90 @@ const idMap = {
   alien_card: "alien-id",
 };
 
+const getIdentificationType = (idType) => {
+  if (idType in idMap) {
+    return idMap[idType];
+  }
+  return idType;
+};
+
+
 const generateClientRegistryPayload = (echisDoc) => {
-  const nameArray = echisDoc?.doc?.name.split(" ");
+  const nameArray = echisDoc.name.split(" ");
   let result = {
-    firstName: echisDoc?.doc?.first_name || nameArray.at(0),
-    middleName: echisDoc?.doc?.middle_name || nameArray.at(1),
-    lastName: echisDoc?.doc?.last_name || nameArray.at(2),
-    dateOfBirth: echisDoc?.doc?.date_of_birth,
-    maritalStatus: echisDoc?.doc?.marital_status || "",
-    gender: echisDoc?.doc?.sex,
-    occupation: echisDoc?.doc?.occupation || "",
-    religion: echisDoc?.doc?.religion || "",
-    educationLevel: echisDoc?.doc?.education_level || "",
-    country: echisDoc?.doc?.nationality || "KE",
+    firstName: echisDoc.first_name || nameArray.at(0),
+    middleName: echisDoc.middle_name || nameArray.at(1),
+    lastName: echisDoc.last_name || nameArray.at(2),
+    dateOfBirth: echisDoc.date_of_birth,
+    maritalStatus: echisDoc.marital_status || "",
+    gender: echisDoc.sex,
+    occupation: echisDoc.occupation || "",
+    religion: echisDoc.religion || "",
+    educationLevel: echisDoc.education_level || "",
+    country: echisDoc.nationality || "KE",
     countyOfBirth: echisDoc?.country_of_birth || "county-n-a",
     isAlive: true,
     originFacilityKmflCode:
-      echisDoc?.doc?.parent?.parent?.link_facility_code || "",
+      echisDoc.parent?.parent?.link_facility_code || "",
     residence: {
       county:
-        transformCountyCode(echisDoc?.doc?.county_of_residence) ||
+        transformCountyCode(echisDoc.county_of_residence) ||
         transformCountyCode(
-          `${
-            counties.find(
-              (county) =>
-                county.name ===
-                echisDoc?.doc?.parent?.parent?.parent?.parent?.parent?.name
-                  .trim()
-                  .replace("County", "")
-            ).code
+          `${counties.find(
+            (county) =>
+              county.name ===
+              echisDoc.parent?.parent?.parent?.parent?.parent?.name
+                .trim()
+                .replace("County", "")
+          ).code
           }`
         ),
       subCounty:
-        echisDoc?.doc?.subcounty ||
-        echisDoc?.doc?.parent?.parent?.parent?.name
+        echisDoc.subcounty ||
+        echisDoc.parent?.parent?.parent?.name
           .trim()
           .replaceAll(" ", "-")
           .toLowerCase(),
-      ward: echisDoc?.doc?.ward || "",
-      village: echisDoc?.doc?.village || "",
-      landMark: echisDoc?.doc?.land_mark || "",
-      address: echisDoc?.doc?.address || "",
+      ward: echisDoc.ward || "",
+      village: echisDoc.village || "",
+      landMark: echisDoc.land_mark || "",
+      address: echisDoc.address || "",
     },
     identifications: [
       {
-        countryCode: echisDoc?.doc?.country_code || "KE",
+        countryCode: echisDoc.country_code || "KE",
         identificationType:
-          idMap[echisDoc?.doc?.identification_type] || "national-id",
-        identificationNumber: echisDoc?.doc?.identification_number,
+          idMap[echisDoc.identification_type] || "national-id",
+        identificationNumber: echisDoc.identification_number,
       },
     ],
     contact: {
-      primaryPhone: echisDoc?.doc?.phone,
-      secondaryPhone: echisDoc?.doc?.alternate_phone,
-      emailAddress: echisDoc?.doc?.email_address || "",
+      primaryPhone: echisDoc.phone,
+      secondaryPhone: echisDoc.alternate_phone,
+      emailAddress: echisDoc.email_address || "",
     },
     nextOfKins: [
       {
-        name: echisDoc?.doc?.next_of_kin || echisDoc?.doc?.parent.contact.name,
+        name: echisDoc.next_of_kin || echisDoc.parent.contact.name,
         relationship:
-          echisDoc?.doc?.relationship_with_next_of_kin ||
-          echisDoc?.doc?.relationship_to_hh_head,
-        residence: echisDoc?.doc?.next_of_kin_residence,
+          echisDoc.relationship_with_next_of_kin ||
+          echisDoc.relationship_to_hh_head,
+        residence: echisDoc.next_of_kin_residence,
         contact: {
           primaryPhone:
-            echisDoc?.doc?.next_of_kin_phone ||
-            echisDoc?.doc?.parent.contact.phone,
+            echisDoc.next_of_kin_phone ||
+            echisDoc.parent.contact.phone,
           secondaryPhone:
-            echisDoc?.doc?.next_of_kin_alternate_phone ||
-            echisDoc?.doc?.parent.contact.alternate_phone,
+            echisDoc.next_of_kin_alternate_phone ||
+            echisDoc.parent.contact.alternate_phone,
           emailAddress:
-            echisDoc?.doc?.next_of_kin_email ||
-            echisDoc?.doc?.parent.contact.email_address ||
+            echisDoc.next_of_kin_email ||
+            echisDoc.parent.contact.email_address ||
             "",
         },
       },
     ],
   };
-  logger.information(JSON.stringify(result));
   return result;
 };
 
@@ -161,8 +167,24 @@ function getPropByString(obj, propString) {
   return obj[props[i]];
 }
 
+// compare fields in the echis client doc and the client doc we got from Client Registry
+function getMismatchedClientFields(echisClientDoc, crClientDoc) {
+  // fields that ideally should be kind of unique across clients
+  const matcherFields = ["firstName", "middleName", "lastName", "gender", "dateOfBirth", "contact.primaryPhone"];
+  // where we store our mismatched fields and return them later
+  const mismatchedFields = {};
+  // the payload we generate here has the same format as what we get back when we query for client existence
+  const crPayload = generateClientRegistryPayload(echisClientDoc);
+  matcherFields.forEach(key => {
+    if (getPropByString(crClientDoc, key).toUpperCase() !== getPropByString(crPayload, key).toUpperCase()) {
+      mismatchedFields[key] = { Have: crPayload[key], Expected: crClientDoc[key] };
+    }
+  });
+  return mismatchedFields;
+}
+
 module.exports = {
-  idMap,
+  getIdentificationType,
   generateClientRegistryPayload,
-  getPropByString,
+  getMismatchedClientFields,
 };
