@@ -13,7 +13,7 @@ router.post("/", async function (req, res) {
     logger.information(CLIENT_ROUTE_COMPLETED);
 
     if (response?.upi || response?.msg === CLIENT_DETAILS_MISMATCH) {
-      logger.information(`${GENERATED_NUMBER} ${response.upi || response}`);
+      logger.information(`${response.upi || response.msg}`);
       res.setHeader("Content-Type", "application/json");
       res.status(200).send(JSON.stringify(response), null, 3);
     } else {
