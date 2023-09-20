@@ -10,7 +10,12 @@ const clinicCodes = {
         system: NHDD_GENERIC_PATH,
         code: `54085`,
         display: `Child Welfare Clinic`,
-    }
+    },
+    outPatient: {
+        system: NHDD_GENERIC_PATH,
+        code: `28023`,
+        display: `Outpatient Department`,
+    },
 }
 
 const codes = {
@@ -100,6 +105,97 @@ const codes = {
         code: "25047",
         display: "Speaks several words",
     },
+    // treatment followup
+    better: {
+        system: NHDD_GENERIC_PATH,
+        code: "23831",
+        display: "Better",
+    },
+    worse: {
+        system: NHDD_GENERIC_PATH,
+        code: "28847",
+        display: "Deterioration",
+    },
+    noChange: {
+        system: NHDD_GENERIC_PATH,
+        code: "28849",
+        display: "No progress",
+    },
+    consitpation: {
+        system: NHDD_GENERIC_PATH,
+        code: "670",
+        display: "Constipation",
+    },
+    skinRash: {
+        system: NHDD_GENERIC_PATH,
+        code: "40056",
+        display: "Dermatitis",
+    },
+    diarrhea: {
+        system: NHDD_GENERIC_PATH,
+        code: "3792",
+        display: "Diarrhea",
+    },
+    dizziness: {
+        system: NHDD_GENERIC_PATH,
+        code: "4743",
+        display: "Dizziness",
+    },
+    drowsiness: {
+        system: NHDD_GENERIC_PATH,
+        code: "4869",
+        display: "Drowsy",
+    },
+    dryMouth: {
+        system: NHDD_GENERIC_PATH,
+        code: "36672",
+        display: "dry mouth",
+    },
+    fatigue: {
+        system: NHDD_GENERIC_PATH,
+        code: "7087",
+        display: "Fatigue",
+    },
+    headache: {
+        system: NHDD_GENERIC_PATH,
+        code: "9579",
+        display: "Headache",
+    },
+    hives: {
+        system: NHDD_GENERIC_PATH,
+        code: "48339",
+        display: "Hives",
+    },
+    insomnia: {
+        system: NHDD_GENERIC_PATH,
+        code: "42620",
+        display: "Insomnia",
+    },
+    irregularHeartbeat: {
+        system: NHDD_GENERIC_PATH,
+        code: "13351",
+        display: "Irregular Heartbeat",
+    },
+    nausea: {
+        system: NHDD_GENERIC_PATH,
+        code: "12290",
+        display: "Nausea",
+    },
+    upsetStomach: {
+        system: NHDD_GENERIC_PATH,
+        code: "34521",
+        display: "Upset Stomach",
+    },
+    rash: {
+        system: NHDD_GENERIC_PATH,
+        code: "13488",
+        display: "Rash",
+    },
+    vomiting: {
+        system: NHDD_GENERIC_PATH,
+        code: "35599",
+        display: "Vomiting",
+    }
 };
 
 const vaccinesMapping = {
@@ -148,6 +244,24 @@ const developmentalMilestones = {
     none: codes.none
 };
 
+const treatmentFollowUpSideEffect = {
+    constipation: codes.consitpation,
+    skin_rash_or_dermatitis: codes.skinRash,
+    diarrhea: codes.diarrhea,
+    dizziness: codes.dizziness,
+    drowsiness: codes.drowsiness,
+    dry_mouth: codes.dryMouth,
+    fatigue: codes.fatigue,
+    headache: codes.headache,
+    hives: codes.hives,
+    insomnia: codes.insomnia,
+    irregular_heartbeat: codes.irregularHeartbeat,
+    nausea: codes.nausea,
+    upset_stomach: codes.upsetStomach,
+    rash: codes.rash,
+    vomiting: codes.vomiting
+};
+
 const serviceMapping = {
     immunization_service: {
         clinic: clinicCodes.child_welfare,
@@ -155,6 +269,15 @@ const serviceMapping = {
             ...vaccinesMapping,
             ...developmentalMilestones,
             ...vitaminAMapping
+        }
+    },
+    treatment_follow_up: {
+        clinic: clinicCodes.outPatient,
+        mapping: {
+            no_change: codes.noChange,
+            feeling_better: codes.better,
+            worse: codes.worse,
+            ...treatmentFollowUpSideEffect
         }
     }
 }
