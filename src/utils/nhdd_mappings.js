@@ -428,6 +428,7 @@ const serviceMapping = {
             has_fever: codes.fever,
             has_low_temp: codes.lowTemp,
             has_high_temp: codes.highTemp,
+            has_taken_al: codes.medication,
             no_movement: codes.noMovement,
             has_yellow_soles: codes.yellowSoles,
             bleeding_umbilical_stump: codes.umbilicalStumpBleeding,
