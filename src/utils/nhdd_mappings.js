@@ -399,7 +399,7 @@ const codes = {
         display: `Lack of sleep`,
     },
     feelingOfWorthlessness: {
-        system: SNOMED_CT_URL,
+        system: NHDD_GENERIC_PATH,
         code: `247892001`,
         display: `Feeling of worthlessness`,
     },
@@ -409,7 +409,7 @@ const codes = {
         display: `Staying away from people`,
     },
     tearfulness: {
-        system: SNOMED_CT_URL,
+        system: NHDD_GENERIC_PATH,
         code: `271951008`,
         display: `Tearfulness`,
     },
