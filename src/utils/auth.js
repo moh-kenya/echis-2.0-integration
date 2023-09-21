@@ -9,8 +9,8 @@ const token = {
 
 const requestNewToken = async () => {
   const data = qs.stringify({
-    client_id: "partner.test.client",
-    client_secret: "partnerTestPwd",
+    client_id: process.env.CR_CLIENT_ID,
+    client_secret: process.env.CR_CLIENT_SECRET,
     grant_type: "client_credentials",
     scope: "DHP.Gateway DHP.Partners",
   });
