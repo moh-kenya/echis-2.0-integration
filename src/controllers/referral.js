@@ -168,7 +168,7 @@ const createTaskReferral = async (serviceRequest) => {
     if (data.rows.length > 0) {
       logger.information(CLIENT_FOUND_REPORT_IN_ECHIS);
       const patientDoc = data.rows[0].value;
-      const notesDeserialize = JSON.parse(serviceRequest?.note[0].text); //Remove backslash and parse JSON
+      const notesDeserialize = serviceRequest?.note[0].text;
 
       const body = {
         _meta: {
