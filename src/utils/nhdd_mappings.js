@@ -302,6 +302,132 @@ const codes = {
         code: "28784",
         display: "Malaria, confirmed",
     },
+    //over 5 assessment
+    injuries: {
+        system: NHDD_GENERIC_PATH,
+        code: "17508",
+        display: "Multiple Wounds",
+    },
+    difficultyBreathing: {
+        system: NHDD_GENERIC_PATH,
+        code: "36220",
+        display: "Dyspnea",
+    },
+    fainting: {
+        system: NHDD_GENERIC_PATH,
+        code: "46592",
+        display: "Fainting Spells",
+    },
+    burns: {
+        system: NHDD_GENERIC_PATH,
+        code: "50288",
+        display: "Burns",
+    },
+    tbContact: {
+        system: NHDD_GENERIC_PATH,
+        code: "33803",
+        display: "Tuberculosis ",
+    },
+    chestPain: {
+        system: NHDD_GENERIC_PATH,
+        code: "38074",
+        display: "Chest pain",
+    },
+    weightLoss: {
+        system: NHDD_GENERIC_PATH,
+        code: "2900",
+        display: "Weight loss",
+    },
+    nightSweats: {
+        system: NHDD_GENERIC_PATH,
+        code: "18627",
+        display: "Night sweats",
+    },
+    fatigue: {
+        system: NHDD_GENERIC_PATH,
+        code: "7087",
+        display: "Fatigue",
+    },
+    diabetic: {
+        system: NHDD_GENERIC_PATH,
+        code: "41972",
+        display: "Diabetic Hypoglycemia",
+    },
+    excessThirst: {
+        system: NHDD_GENERIC_PATH,
+        code: "6383",
+        display: "Excessive Thirst",
+    },
+    frequentUrination: {
+        system: NHDD_GENERIC_PATH,
+        code: "12205",
+        display: "Increased Frequency of Urination",
+    },
+    weightChange: {
+        system: NHDD_GENERIC_PATH,
+        code: "696",
+        display: "Weight change",
+    },
+    hypertensive: {
+        system: NHDD_GENERIC_PATH,
+        code: "41896",
+        display: "Hypertensive Disorder",
+    },
+    severeHeadache: {
+        system: NHDD_GENERIC_PATH,
+        code: "9585",
+        display: "Severe Headache",
+    },
+    noseBleed: {
+        system: NHDD_GENERIC_PATH,
+        code: "19268",
+        display: "Nosebleed, Symptom",
+    },
+    tired: {
+        system: NHDD_GENERIC_PATH,
+        code: "32780",
+        display: "Tired",
+    },
+    fastHeartbeat: {
+        system: NHDD_GENERIC_PATH,
+        code: "47162",
+        display: "Very Rapid Heartbeat",
+    },
+    lackOfSleep: {
+        system: NHDD_GENERIC_PATH,
+        code: `29541`,
+        display: `Lack of sleep`,
+    },
+    feelingOfWorthlessness: {
+        system: SNOMED_CT_URL,
+        code: `247892001`,
+        display: `Feeling of worthlessness`,
+    },
+    stayingAwayFromPeople: {
+        system: NHDD_GENERIC_PATH,
+        code: `29644`,
+        display: `Staying away from people`,
+    },
+    tearfulness: {
+        system: SNOMED_CT_URL,
+        code: `271951008`,
+        display: `Tearfulness`,
+    },
+    lackOfHygiene: {
+        system: NHDD_GENERIC_PATH,
+        code: `41667`,
+        display: `Lack of hygiene`,
+    },
+    anxiety: {
+        system: NHDD_GENERIC_PATH,
+        code: `15111`,
+        display: `Anxiety/worried for no apparent reason`,
+    },
+    irritability: {
+        system: NHDD_GENERIC_PATH,
+        code: `12218`,
+        display: `Irritability/agitated`,
+    },
 };
 
 const vaccinesMapping = {
@@ -400,6 +526,19 @@ const treatmentFollowUpSideEffect = {
     vomiting: codes.vomiting
 };
 
+const mentalhealthSigns = {
+    lack_of_sleep: codes.lackOfSleep,
+    feeling_of_worthlessness: codes.feelingOfWorthlessness,
+    staying_away_from_people: codes.stayingAwayFromPeople,
+    tearfulness: codes.tearfulness
+};
+
+const observerdMentalhealthSigns = {
+    lack_of_hygiene: codes.lackOfHygiene,
+    anxiety_worried_for_no_apparent_reason: codes.anxiety,
+    irritability_agitated: codes.irritability
+};
+
 const serviceMapping = {
     immunization_service: {
         clinic: clinicCodes.child_welfare,
@@ -448,7 +587,39 @@ const serviceMapping = {
             ...vitaminAMapping,
             ...vaccinesMapping
         }
-    }
+    },
+    over_five_assessment: {
+        clinic: clinicCodes.outPatient,
+        mapping: {
+            none: codes.none,
+            cough_of_any_duration: codes.cough,
+            fever: codes.fever,
+            diarrhea: codes.diarrhea,
+            injuries_and_wounds: codes.injuries,
+            convulsions: codes.convulsions,
+            fainting: codes.fainting,
+            burns: codes.burns,
+            tb_contact: codes.tbContact,
+            chest_pain: codes.chestPain,
+            weight_loss_failure_to_thrive: codes.weightLoss,
+            night_sweats: codes.nightSweats,
+            fatigue: codes.fatigue,
+            blood_in_stool: codes.bloodInStool,
+            diabetic: codes.diabetic,
+            thirst_or_hunger: codes.excessThirst,
+            frequent_urination: codes.frequentUrination,
+            weight_changes: codes.weightChange,
+            hypertensive: codes.hypertensive,
+            dizziness: codes.dizziness,
+            severe_headache: codes.severeHeadache,
+            nose_bleeding: codes.noseBleed,
+            unusual_tiredness: codes.tired,
+            fast_heartbeat: codes.fastHeartbeat,
+            nausea_vomiting: codes.nausea,
+            ...mentalhealthSigns,
+            ...observerdMentalhealthSigns
+        }
+    },
 }
 
 module.exports = {
