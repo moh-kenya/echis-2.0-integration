@@ -7,9 +7,10 @@ const { CLIENT_ROUTE_INIT, CLIENT_ROUTE_COMPLETED, GENERATED_NUMBER } =
 
 const router = Router();
 
-router.post("/", async function (req, res) {
+router.post("/:instance", async function (req, res) {
+  global.instance= req.params.instance || "STAGING";
   logger.information(CLIENT_ROUTE_INIT);
-  clientFactory(req.body).then((response) => {
+  clientFactory(req.body, instance).then((response) => {
     logger.information(CLIENT_ROUTE_COMPLETED);
 
     if (response?.upi) {

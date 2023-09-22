@@ -195,18 +195,19 @@ axiosInstance.interceptors.response.use(
 );
 
 const echisAxiosInstance = axios.create({
-  baseURL: CHT.url,
+  baseURL: CHT(global.instance).url,
   headers: {
     "Content-Type": "application/json",
   },
   auth: {
-    username: CHT.username,
-    password: CHT.password,
+    username: CHT(global.instance).username,
+    password: CHT(global.instance).password,
   },
 });
 
 const getEchisDocForUpdate = async (docId) => {
   try {
+    console.log(CHT(global.instance).url)
     const response = await echisAxiosInstance.get(`medic/${docId}`);
     return response.data;
   } catch (error) {
