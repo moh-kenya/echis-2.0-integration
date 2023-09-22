@@ -9,17 +9,38 @@ const router = Router();
 
 router.post("/community", async function (req, res) {
   const { status, referral } = await createCommunityReferral(req.body);
-  res.status(status).send(referral);
+  res.setHeader("Content-Type", "application/json");
+  res.status(status).send(
+    JSON.stringify(
+    {
+      "data": { referralData: referral},
+      "errors": null
+    },
+    null, 3));
 });
 
 router.post("/facility", async function (req, res) {
   const { status, serviceRequestId } = await createFacilityReferral(req.body);
-  res.status(status).send(serviceRequestId);
-});
+  res.setHeader("Content-Type", "application/json");
+  res.status(status).send(
+    JSON.stringify(
+    {
+      "data": { documentID: serviceRequestId},
+      "errors": null
+    },
+    null, 3));
+  });
 
 router.post("/taskReferral", async function (req, res) {
   const { status, referral } = await createTaskReferral(req.body);
-  res.status(status).send(referral);
+  res.setHeader("Content-Type", "application/json");
+  res.status(status).send(
+    JSON.stringify(
+    {
+      "data": { referralData: referral},
+      "errors": null
+    },
+    null, 3));
 });
 
 module.exports = router;

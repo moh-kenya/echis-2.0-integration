@@ -33,7 +33,14 @@ const getMoh515Data = async (_, response) => {
       throw error;
     }
     const result = results.rows;
-    response.send(result);
+    response.setHeader("Content-Type", "application/json");
+    response.status(200).send(
+      JSON.stringify(
+      {
+        "data": { aggregateResult: result },
+        "errors": null
+      },
+       null, 3));
     sendMoh515Data(JSON.stringify({ dataValues: result }));
   });
 };

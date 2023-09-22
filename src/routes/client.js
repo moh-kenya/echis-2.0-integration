@@ -15,17 +15,48 @@ router.post("/", async function (req, res) {
     if (response?.upi) {
       logger.information(`${GENERATED_NUMBER} ${response.upi || response}`);
       res.setHeader("Content-Type", "application/json");
-      res.status(200).send(JSON.stringify({ upi: response.upi }, null, 3));
+      res.status(200).send(
+        JSON.stringify(
+        {
+          "data": { upi: response.upi },
+          "errors": null
+        },
+         null, 3));
     } else {
-      res.setHeader("Content-Type", "application/json");
-      res.status(400).send(
-        response
-          ? response
-          : {
-              error: "ProcessError",
-              message: "Something Failed on our end! Please try again Later.",
+      if (response.startsWith("MOH")) {
+        res.setHeader("Content-Type", "application/json");
+        res.status(400).send(
+          JSON.stringify(
+            {
+              "data": { upi: response },
+              "errors": [
+                {
+                  "message": "UPI was created however, the document could not be uploaded to eCHIS!",
+                  "path": [
+                    "/client"
+                  ]
+                }
+              ]
+            }, null, 3)
+      );
+      } else {
+        res.setHeader("Content-Type", "application/json");
+        res.status(400).send(
+          response
+            ? response
+            : {
+              "data": null,
+              "errors": [
+                {
+                  "message": "Something Failed on our end! Please try again Later.",
+                  "path": [
+                    "/client"
+                  ]
+                }
+              ]
             }
       );
+      }
     }
   });
 });
