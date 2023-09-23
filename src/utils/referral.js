@@ -286,7 +286,7 @@ const generateFHIRServiceRequest = (dataRecord) => {
     ],
     priority: `urgent`,
     subject: {
-      reference: `${CLIENT_REGISTRY_URL}/${dataRecord.upi}`,
+      reference: `Patient/${dataRecord.upi}`,
       type: `Patient`,
       display: dataRecord.upi,
       identifier: {
