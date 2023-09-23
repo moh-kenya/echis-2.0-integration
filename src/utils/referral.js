@@ -313,7 +313,7 @@ const generateFHIRServiceRequest = (dataRecord) => {
     },
     performer: [
       {
-        reference: `${KHMFL_FACILITY_URL}?format=JSON&code=${dataRecord.referred_to_facility_code}`,
+        reference: `Organization/${dataRecord.referred_to_facility_code}`,
         type: `Organization`,
         display: dataRecord.referred_to_facility_code,
         identifier: {
