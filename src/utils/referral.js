@@ -256,7 +256,7 @@ const extractReasonCode = (data, service) => {
     ),
   ].filter((elem) => elem !== `none`);
   reasons.forEach((reason) => {
-    const coding = !!service ? serviceMapping[service]?.mapping[reason] : echisNHDDValuesCoding[reason];
+    const coding = serviceMapping[service]?.mapping[reason] || echisNHDDValuesCoding[reason];
     return reasonCodes.push({
       coding: [coding],
       text: coding?.display,
