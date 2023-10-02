@@ -1,3 +1,5 @@
+const { logger } = require("./src/utils/logger");
+
 require("dotenv/config");
 
 const OPENHIM = {
@@ -35,11 +37,11 @@ const FHIR = {
   url: process.env.FHIR_URL,
 };
 
-const CHT = (instance)=>{
+const CHT =()=>{
   return ({
-  url: process.env[`CHT_${instance}_URL`],
-  username: process.env[`CHT_${instance}_USERNAME`],
-  password: process.env[`CHT_${instance}_PASSWORD`],
+  url: process.env[`CHT_${global.instance || "STAGING"}_URL`],
+  username: process.env[`CHT_${global.instance || "STAGING"}_USERNAME`],
+  password: process.env[`CHT_${global.instance || "STAGING"}_PASSWORD`],
   });
 };
 

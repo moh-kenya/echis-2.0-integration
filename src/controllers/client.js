@@ -194,21 +194,22 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-const echisAxiosInstance = axios.create({
-  baseURL: CHT(global.instance).url,
+const echisAxiosInstance =()=>{
+  return axios.create({
+  baseURL: CHT().url,
   headers: {
     "Content-Type": "application/json",
   },
   auth: {
-    username: CHT(global.instance).username,
-    password: CHT(global.instance).password,
+    username: CHT().username,
+    password: CHT().password,
   },
-});
+})
+};
 
 const getEchisDocForUpdate = async (docId) => {
   try {
-    console.log(CHT(global.instance).url)
-    const response = await echisAxiosInstance.get(`medic/${docId}`);
+    const response = await echisAxiosInstance().get(`medic/${docId}`);
     return response.data;
   } catch (error) {
     logger.error(AXIOS_GET_DOC_FAILURE);
@@ -219,7 +220,7 @@ const updateEchisDocWithUpi = async (clientUpi, echisDoc) => {
   logger.information(UPDATE_ECHIS_WITH_UPI);
   echisDoc.upi = clientUpi;
   try {
-    const response = await echisAxiosInstance.put(
+    const response = await echisAxiosInstance().put(
       `medic/${echisDoc._id}`,
       JSON.stringify(echisDoc)
     );

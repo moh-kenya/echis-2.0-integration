@@ -15,7 +15,7 @@ const SNOMED_CT_URL = SNOMED_CT.url;
 const CLIENT_REGISTRY_URL = `${CLIENT_REGISTRY.url}/partners/registry/search/upi`;
 const NHDD_GENERIC_PATH = `${NHDD_URL}/nhdd/concepts/`;
 const NHDD_KMHFL_PATH = `${NHDD_URL}/KMHFL/concepts`;
-const CHT_URL = CHT.url;
+const CHT_URL = CHT().url;
 
 const echisNHDDValuesCoding = {
   vaginal_bleeding: {

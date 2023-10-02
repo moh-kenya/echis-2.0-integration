@@ -110,13 +110,13 @@ const createFacilityReferral = async (CHTDataRecordDoc) => {
 const createCommunityReferral = async (serviceRequest) => {
   try {
     const axiosInstance = axios.create({
-      baseURL: CHT.url,
+      baseURL: CHT().url,
       headers: {
         "Content-Type": "application/json",
       },
       auth: {
-        username: CHT.username,
-        password: CHT.password,
+        username: CHT().username,
+        password: CHT().password,
       },
     });
 
@@ -150,13 +150,13 @@ const createTaskReferral = async (serviceRequest) => {
     logger.information(`${PROCESSING_SR_ID} ${serviceRequestId}`);
 
     const axiosInstance = axios.create({
-      baseURL: CHT.url,
+      baseURL: CHT().url,
       headers: {
         "Content-Type": "application/json",
       },
       auth: {
-        username: CHT.username,
-        password: CHT.password,
+        username: CHT().username,
+        password: CHT().password,
       },
     });
 
