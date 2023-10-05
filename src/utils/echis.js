@@ -24,7 +24,7 @@ const updateDoc = (conf, docId, fieldStruct) => {
     return getDoc(conf, docId)
         .then((resp) => {
             return new Promise((resolve) => {
-                const doc = resp.body.doc;
+                const doc = resp.data;
                 Object.keys(fieldStruct).forEach((key) => doc[key] = fieldStruct[key]);
                 resolve(doc);
             })

@@ -99,7 +99,7 @@ async function assignEchisClientUPI(req, res) {
     } else { // else update contact doc with UPI
       try {
         await updateDoc({ instance: CHT.url, user: CHT.username, password: CHT.password }, res.locals.echisClient._id, { upi: res.locals.crClient.clientNumber });
-        success(200, res.locals.echisClient._id, response.data.client.clientNumber)
+        success(200, res.locals.echisClient._id, res.locals.crClient.clientNumber);
       } catch (err) {
         const errString = `could not update doc ${res.locals.echisClient._id} on ${CHT.url}: ${err.message}`
         logger.error(errString)
