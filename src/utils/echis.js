@@ -1,14 +1,14 @@
 const axios = require("axios");
 
-function genRequestConfig(conf) {
+const genRequestConfig = (conf) => {
     return {
         baseURL: conf.instance,
         auth: {
             username: conf.user,
             password: conf.password,
-        },
+        }
     }
-}
+};
 
 const getDoc = (conf, docId) => {
     return axios.get(`medic/${docId}`, {

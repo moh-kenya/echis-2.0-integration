@@ -61,7 +61,7 @@ const createClientDetailsMismatchReport = (conf, echisClientId, fields) => {
     },
     patient_id: echisClientId,
     mismatched_fields: fields.join(" "),
-    source: `Client Registry`,
+    source: "Client Registry",
   };
   return createReport(conf, report);
 };

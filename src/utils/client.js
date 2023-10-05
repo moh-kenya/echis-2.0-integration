@@ -177,7 +177,7 @@ function getMismatchedClientFields(echisClientDoc, crClientDoc) {
   const crPayload = generateClientRegistryPayload(echisClientDoc);
   matcherFields.forEach(key => {
     if (getPropByString(crClientDoc, key).toUpperCase() !== getPropByString(crPayload, key).toUpperCase()) {
-      mismatchedFields[key] = { Have: crPayload[key], Expected: crClientDoc[key] };
+      mismatchedFields[key] = { actual: crPayload[key], expected: crClientDoc[key] };
     }
   });
   return mismatchedFields;
