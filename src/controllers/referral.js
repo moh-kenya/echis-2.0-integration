@@ -21,13 +21,15 @@ const {
 } = messages;
 
 const getSubjectUpi = async (echisClientId) => {
+  var echisClient;
   try {
-    const echisClient = await getDoc({ instance: CHT.url, user: CHT.username, password: CHT.password }, echisClientId);
+    echisClient = await getDoc({ instance: CHT.url, user: CHT.username, password: CHT.password }, echisClientId);
     if (echisClient.upi) {
       return echisClient.upi;
     }
   } catch (err) {
     logger.error(`could not get subject upi: ${err.message}`);
+    return;
   }
   try {
     const clientNumber = await createCRClient({ instance: CHT.url, user: CHT.username, password: CHT.password }, echisClient)
