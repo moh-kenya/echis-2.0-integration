@@ -162,8 +162,10 @@ function getMismatchedClientFields(echisClientDoc, crClientDoc) {
   // the payload we generate here has the same format as what we get back when we query for client existence
   const crPayload = generateClientRegistryPayload(echisClientDoc);
   matcherFields.forEach(key => {
-    if (getPropByString(crClientDoc, key).toUpperCase() !== getPropByString(crPayload, key).toUpperCase()) {
-      mismatchedFields[key] = { actual: crPayload[key], expected: crClientDoc[key] };
+    const actual = getPropByString(crPayload, key);
+    const expected = getPropByString(crClientDoc, key);
+    if (actual.toUpperCase() !== expected.toUpperCase()) {
+      mismatchedFields[key] = { actual: actual, expected: expected };
     }
   });
   return mismatchedFields;
