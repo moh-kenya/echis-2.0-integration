@@ -23,7 +23,7 @@ const {
 const getSubjectUpi = async (echisClientId) => {
   var echisClient;
   try {
-    echisClient = await getDoc({ instance: CHT.url, user: CHT.username, password: CHT.password }, echisClientId);
+    echisClient = await getDoc({ instance: CHT().url, user: CHT().username, password: CHT().password }, echisClientId);
     if (echisClient.upi) {
       return echisClient.upi;
     }
@@ -32,7 +32,7 @@ const getSubjectUpi = async (echisClientId) => {
     return;
   }
   try {
-    const clientNumber = await createCRClient({ instance: CHT.url, user: CHT.username, password: CHT.password }, echisClient)
+    const clientNumber = await createCRClient({ instance: CHT().url, user: CHT().username, password: CHT().password }, echisClient)
     return clientNumber;
   } catch (err) {
     logger.error(`could not get subject upi, err while trying to create client ${err.message}`);
