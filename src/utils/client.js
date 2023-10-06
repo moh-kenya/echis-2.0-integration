@@ -148,24 +148,10 @@ const transformCountyCode = (code) => {
   return code ? code.padStart(3, "0") : "county-n-a";
 };
 
-function getPropByString(obj, propString) {
-  if (!propString)
-    return obj;
-
-  var prop, props = propString.split('.');
-
-  for (var i = 0, iLen = props.length - 1; i < iLen; i++) {
-    prop = props[i];
-
-    var candidate = obj[prop];
-    if (candidate !== undefined) {
-      obj = candidate;
-    } else {
-      break;
-    }
-  }
-  return obj[props[i]];
-}
+const getPropByString = (obj, propString) => propString.split('.').reduce((prev, fieldName) => {
+  if (prev === undefined) { return undefined; }
+  return prev[fieldName];
+}, obj);
 
 // compare fields in the echis client doc and the client doc we got from Client Registry
 function getMismatchedClientFields(echisClientDoc, crClientDoc) {
