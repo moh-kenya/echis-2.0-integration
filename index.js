@@ -6,7 +6,6 @@ const app = express();
 const { registerMediator } = require("openhim-mediator-utils");
 const {OPENHIM, CONFIG, CHANNEL_CONFIG_ENDPOINTS_URL} = require('./config');
 const clientRoutes = require("./src/routes/client");
-const instanceRoutes = require("./src/routes/instance");
 const referralRoutes = require("./src/routes/referral");
 const aggregateRoutes = require("./src/routes/aggregate");
 const { cronService } = require("./src/middlewares/aggregate");
@@ -29,7 +28,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 logger.information(ROUTES_SETUP);
 
-app.use("/instance", instanceRoutes);
 app.use("/client", clientRoutes);
 app.use("/referral", referralRoutes);
 app.use("/aggregate", aggregateRoutes);
