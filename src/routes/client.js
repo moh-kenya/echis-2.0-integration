@@ -2,13 +2,14 @@ const { Router } = require("express");
 const { clientFactory } = require("../controllers/client");
 const { logger } = require("../utils/logger");
 const { messages } = require("../utils/messages");
+const setGlobalInstance = require("../utils/globalInstance");
 const { CLIENT_ROUTE_INIT, CLIENT_ROUTE_COMPLETED, GENERATED_NUMBER } =
   messages;
 
 const router = Router();
 
-router.post("/:instance", async function (req, res) {
-  global.instance= req.params.instance || "STAGING";
+router.post("/", async function (req, res) {
+  setGlobalInstance(req);
   logger.information(CLIENT_ROUTE_INIT);
   clientFactory(req.body, instance).then((response) => {
     logger.information(CLIENT_ROUTE_COMPLETED);

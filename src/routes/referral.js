@@ -4,10 +4,12 @@ const {
   createCommunityReferral,
   createTaskReferral,
 } = require("../controllers/referral");
+const setGlobalInstance = require("../utils/globalInstance");
 
 const router = Router();
 
 router.post("/community", async function (req, res) {
+  setGlobalInstance(req);
   const { status, referral } = await createCommunityReferral(req.body);
   res.setHeader("Content-Type", "application/json");
   res.status(status).send(
@@ -20,6 +22,7 @@ router.post("/community", async function (req, res) {
 });
 
 router.post("/facility", async function (req, res) {
+  setGlobalInstance(req);
   const { status, serviceRequestId } = await createFacilityReferral(req.body);
   res.setHeader("Content-Type", "application/json");
   res.status(status).send(
@@ -32,6 +35,7 @@ router.post("/facility", async function (req, res) {
   });
 
 router.post("/taskReferral", async function (req, res) {
+  setGlobalInstance(req);
   const { status, referral } = await createTaskReferral(req.body);
   res.setHeader("Content-Type", "application/json");
   res.status(status).send(
