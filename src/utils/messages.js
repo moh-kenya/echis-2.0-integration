@@ -10,6 +10,7 @@ const messages = {
   CLIENT_FOUND_REPORT_IN_ECHIS: "Client found. Creating Report in ECHIS...",
   CLIENT_FOUND: "Client found in CR!",
   CLIENT_NOT_FOUND: "Client not found in CR!",
+  CLIENT_DETAILS_MISMATCH: "Client Fields Mismatch",
   CLIENT_ROUTE_COMPLETED: "Client route completed",
   CLIENT_ROUTE_INIT: "Client route initiated",
   CLIENT_UPDATE: "Client update:",
