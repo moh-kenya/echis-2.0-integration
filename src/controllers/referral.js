@@ -20,10 +20,11 @@ const {
   COMPLETED_SUCCESSFULLY,
 } = messages;
 
-const getSubjectUpi = async (echisClientId) => {
+const getSubjectUpi = async (echisClientId,instance) => {
   var echisClient;
+  let instanceObject = { instance: CHT(instance).url, user: CHT(instance).username, password: CHT(instance).password };
   try {
-    echisClient = await getDoc({ instance: CHT().url, user: CHT().username, password: CHT().password }, echisClientId);
+    echisClient = await getDoc(instanceObject, echisClientId);
     if (echisClient.upi) {
       return echisClient.upi;
     }
@@ -32,7 +33,7 @@ const getSubjectUpi = async (echisClientId) => {
     return;
   }
   try {
-    const clientNumber = await createCRClient({ instance: CHT().url, user: CHT().username, password: CHT().password }, echisClient)
+    const clientNumber = await createCRClient(instanceObject, echisClient)
     return clientNumber;
   } catch (err) {
     logger.error(`could not get subject upi, err while trying to create client ${err.message}`);
@@ -40,8 +41,9 @@ const getSubjectUpi = async (echisClientId) => {
   return
 }
 
-const createFacilityReferral = async (CHTDataRecordDoc) => {
+const createFacilityReferral = async (CHTDataRecordDoc, res) => {
   logger.information(CREATE_FACILITY_REFERRAL);
+  const instanceValue = res.locals.instanceValue;
   try {
     const axiosInstance = axios.create({
       baseURL: FHIR.url,
@@ -75,7 +77,7 @@ const createFacilityReferral = async (CHTDataRecordDoc) => {
 
     let upi = CHTDataRecordDoc.upi
     if (!upi) {
-      upi = await getSubjectUpi(CHTDataRecordDoc._patient_id);
+      upi = await getSubjectUpi(CHTDataRecordDoc._patient_id,instanceValue);
       if (!upi) {
         throw new Error(ATTRIB_NOT_FOUND);
       }
@@ -106,16 +108,17 @@ const createFacilityReferral = async (CHTDataRecordDoc) => {
   }
 };
 
-const createCommunityReferral = async (serviceRequest) => {
+const createCommunityReferral = async (serviceRequest,res) => {
   try {
+    const instanceValue = res.locals.instanceValue;
     const axiosInstance = axios.create({
-      baseURL: CHT().url,
+      baseURL: CHT(instanceValue).url,
       headers: {
         "Content-Type": "application/json",
       },
       auth: {
-        username: CHT().username,
-        password: CHT().password,
+        username: CHT(instanceValue).username,
+        password: CHT(instanceValue).password,
       },
     });
 
@@ -143,19 +146,20 @@ const createCommunityReferral = async (serviceRequest) => {
   }
 };
 
-const createTaskReferral = async (serviceRequest) => {
+const createTaskReferral = async (serviceRequest,res) => {
   try {
+    const instanceValue = res.locals.instanceValue;
     const serviceRequestId = serviceRequest?.id;
     logger.information(`${PROCESSING_SR_ID} ${serviceRequestId}`);
 
     const axiosInstance = axios.create({
-      baseURL: CHT().url,
+      baseURL: CHT(instanceValue).url,
       headers: {
         "Content-Type": "application/json",
       },
       auth: {
-        username: CHT().username,
-        password: CHT().password,
+        username: CHT(instanceValue).username,
+        password: CHT(instanceValue).password,
       },
     });
 

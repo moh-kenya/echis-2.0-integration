@@ -68,13 +68,15 @@ const createClientDetailsMismatchReport = (conf, echisClientId, fields) => {
 
 async function assignEchisClientUPI(req, res) {
   const success = (code, echisClientId, clientNumber) => {
-    res.status(code).send({
+    res.status(code || 500).send({
       data: {
         echis_doc: echisClientId,
         upi: clientNumber,
       }
     })
   };
+  const instance = res.locals.instanceValue;
+  const instanceObject = { instance: CHT(instance).url, user: CHT(instance).username, password: CHT(instance).password };
   // if they already exist in CR we check if the fields provided match what is in the CR and if they do, update echis with UPI.
   if (res.locals.crClientExists) {
     const mismatchedFields = getMismatchedClientFields(res.locals.echisClient, res.locals.crClient);
@@ -82,7 +84,7 @@ async function assignEchisClientUPI(req, res) {
     if (Object.keys(mismatchedFields).length > 0) {
       try {
         await createClientDetailsMismatchReport(
-          { instance: CHT().url, user: CHT().username, password: CHT().password },
+          instanceObject,
           res.locals.echisClient._id, Object.keys(mismatchedFields)
         );
         res.status(200).send({
@@ -92,16 +94,16 @@ async function assignEchisClientUPI(req, res) {
           }
         })
       } catch (err) {
-        const errString = `could not create details mismatch report on ${CHT().url}: ${err.message}`
+        const errString = `could not create details mismatch report on ${CHT(instance).url}: ${err.message}`
         logger.error(errString)
         res.status(400).send({ error: errString })
       }
     } else { // else update contact doc with UPI
       try {
-        await updateDoc({ instance: CHT().url, user: CHT().username, password: CHT().password }, res.locals.echisClient._id, { upi: res.locals.crClient.clientNumber });
+        await updateDoc(instanceObject, res.locals.echisClient._id, { upi: res.locals.crClient.clientNumber });
         success(200, res.locals.echisClient._id, res.locals.crClient.clientNumber);
       } catch (err) {
-        const errString = `could not update doc ${res.locals.echisClient._id} on ${CHT().url}: ${err.message}`
+        const errString = `could not update doc ${res.locals.echisClient._id} on ${CHT(instance).url}: ${err.message}`
         logger.error(errString)
         res.status(400).send({ error: errString })
       }
@@ -110,10 +112,10 @@ async function assignEchisClientUPI(req, res) {
   }
   // echis client did not exist in the registry, lets create them
   try {
-    const clientNumber = await createCRClient({ instance: CHT().url, user: CHT().username, password: CHT().password }, res.locals.echisClient);
+    const clientNumber = await createCRClient(instanceObject, res.locals.echisClient);
     success(201, res.locals.echisClient._id, clientNumber)
   } catch (err) {
-    const errStruct = { instance: CHT().url, user: res.locals.echisClient._id, error: err.message };
+    const errStruct = { instance: CHT(instance).url, user: res.locals.echisClient._id, error: err.message };
     const errString = `could not complete creating client ${JSON.stringify(errStruct)})`
     logger.error(errString)
     res.status(400).send({ error: errString })
