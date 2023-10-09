@@ -20,7 +20,7 @@ const {
   COMPLETED_SUCCESSFULLY,
 } = messages;
 
-const getSubjectUpi = async (echisClientId,instance) => {
+const getSubjectUpi = async (instance,echisClientId) => {
   var echisClient;
   let chtInstanceVariables = getCHTValuesFromEnv(instance);
   let instanceObject = { instance: chtInstanceVariables.url, user: chtInstanceVariables.username, password: chtInstanceVariables.password };
@@ -78,14 +78,14 @@ const createFacilityReferral = async (CHTDataRecordDoc, res) => {
 
     let upi = CHTDataRecordDoc.upi
     if (!upi) {
-      upi = await getSubjectUpi(CHTDataRecordDoc._patient_id,instanceValue);
+      upi = await getSubjectUpi(instanceValue,CHTDataRecordDoc._patient_id);
       if (!upi) {
         throw new Error(ATTRIB_NOT_FOUND);
       }
       CHTDataRecordDoc.upi = upi;
     }
 
-    const FHIRServiceRequest = generateFHIRServiceRequest(CHTDataRecordDoc, instanceValue);
+    const FHIRServiceRequest = generateFHIRServiceRequest(instanceValue,CHTDataRecordDoc);
     logger.information(JSON.stringify(FHIRServiceRequest));
     logger.information(CALLING_FHIR_SERVER);
     //replicateRequest(FHIRServiceRequest);
@@ -139,12 +139,12 @@ const createCommunityReferral = async (serviceRequest,res) => {
       };
 
       const response = await axiosInstance.post(`api/v2/records`, body);
-      return response;
+      return {status:200,data:response};
     }
     return { status: 200, data: "done" };
   } catch (error) {
     logger.error(error);
-    return error;
+    return {status:500,errors:error};
   }
 };
 

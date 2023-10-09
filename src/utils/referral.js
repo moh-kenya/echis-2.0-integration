@@ -266,7 +266,7 @@ const extractReasonCode = (data, service) => {
 
 const status = [`draft`, `active`, `revoked`, `completed`];
 
-const generateFHIRServiceRequest = (dataRecord, instance) => {
+const generateFHIRServiceRequest = (instance, dataRecord) => {
   const reportedDate = DateTime.fromMillis(dataRecord.reported_date);
   const FHIRServiceRequest = {
     resourceType: `ServiceRequest`,

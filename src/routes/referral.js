@@ -9,13 +9,13 @@ const setInstance = require("../middlewares/setInstance");
 const router = Router();
 router.use(setInstance());
 router.post("/community", async function (req, res) {
-  const { status, referral } = await createCommunityReferral(req.body, res);
+  const { status, referral, errors } = await createCommunityReferral(req.body, res);
   res.setHeader("Content-Type", "application/json");
   res.status(status).send(
     JSON.stringify(
     {
       "data": { referralData: referral},
-      "errors": null
+      "errors": errors
     },
     null, 3));
 });

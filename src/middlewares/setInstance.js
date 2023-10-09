@@ -1,6 +1,6 @@
 const { logger } = require("../utils/logger");
 
-module.exports = function (instanceValue) {
+module.exports = function () {
     return setInstance=(req, res, next) => {
         if (req.headers['x-openhim-clientid']) {
           const clientId = req.headers['x-openhim-clientid'];
