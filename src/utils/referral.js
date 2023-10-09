@@ -4,7 +4,7 @@ const {
   CLIENT_REGISTRY,
   NHDD,
   SNOMED_CT,
-  getValuesFromEnv,
+  getCHTValuesFromEnv,
   KHMFL,
 } = require("../../config");
 const { serviceMapping } = require("./nhdd_mappings");
@@ -272,7 +272,7 @@ const generateFHIRServiceRequest = (dataRecord, instance) => {
     resourceType: `ServiceRequest`,
     identifier: [
       {
-        system: `${getValuesFromEnv(instance).url}/medic/`,
+        system: `${getCHTValuesFromEnv(instance).url}/medic/`,
         value: dataRecord._id,
       },
     ],

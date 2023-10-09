@@ -1,6 +1,6 @@
 const axios = require("axios");
 const { generateToken } = require("../utils/auth");
-const { getValuesFromEnv, CLIENT_REGISTRY } = require("../../config");
+const { getCHTValuesFromEnv, CLIENT_REGISTRY } = require("../../config");
 const { generateClientRegistryPayload, getMismatchedClientFields } = require("../utils/client");
 const { logger } = require("../utils/logger");
 const { messages } = require("../utils/messages");
@@ -76,7 +76,7 @@ async function assignEchisClientUPI(req, res) {
     })
   };
   const instance = res.locals.instanceValue;
-  const chtInstanceVariables = getValuesFromEnv(instance);
+  const chtInstanceVariables = getCHTValuesFromEnv(instance);
   const instanceObject = { instance: chtInstanceVariables.url, user: chtInstanceVariables.username, password: chtInstanceVariables.password };
   // if they already exist in CR we check if the fields provided match what is in the CR and if they do, update echis with UPI.
   if (res.locals.crClientExists) {
@@ -95,7 +95,7 @@ async function assignEchisClientUPI(req, res) {
           }
         })
       } catch (err) {
-        const errString = `could not create details mismatch report on ${getValuesFromEnv(instance).url}: ${err.message}`
+        const errString = `could not create details mismatch report on ${getCHTValuesFromEnv(instance).url}: ${err.message}`
         logger.error(errString)
         res.status(400).send({ error: errString })
       }
@@ -104,7 +104,7 @@ async function assignEchisClientUPI(req, res) {
         await updateDoc(instanceObject, res.locals.echisClient._id, { upi: res.locals.crClient.clientNumber });
         success(200, res.locals.echisClient._id, res.locals.crClient.clientNumber);
       } catch (err) {
-        const errString = `could not update doc ${res.locals.echisClient._id} on ${getValuesFromEnv(instance).url}: ${err.message}`
+        const errString = `could not update doc ${res.locals.echisClient._id} on ${getCHTValuesFromEnv(instance).url}: ${err.message}`
         logger.error(errString)
         res.status(400).send({ error: errString })
       }
@@ -116,7 +116,7 @@ async function assignEchisClientUPI(req, res) {
     const clientNumber = await createCRClient(instanceObject, res.locals.echisClient);
     success(201, res.locals.echisClient._id, clientNumber)
   } catch (err) {
-    const errStruct = { instance: getValuesFromEnv(instance).url, user: res.locals.echisClient._id, error: err.message };
+    const errStruct = { instance: getCHTValuesFromEnv(instance).url, user: res.locals.echisClient._id, error: err.message };
     const errString = `could not complete creating client ${JSON.stringify(errStruct)})`
     logger.error(errString)
     res.status(400).send({ error: errString })

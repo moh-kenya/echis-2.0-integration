@@ -1,7 +1,7 @@
 const axios = require("axios");
 const { generateFHIRServiceRequest } = require("../utils/referral");
 const { generateToken } = require("../utils/auth");
-const { FHIR, getValuesFromEnv } = require("../../config");
+const { FHIR, getCHTValuesFromEnv } = require("../../config");
 const FHIR_URL = `${FHIR.url}/fhir-server/api/v4`;
 const { logger } = require("../utils/logger");
 const { createCRClient } = require("../controllers/client");
@@ -22,7 +22,7 @@ const {
 
 const getSubjectUpi = async (echisClientId,instance) => {
   var echisClient;
-  let chtInstanceVariables = getValuesFromEnv(instance);
+  let chtInstanceVariables = getCHTValuesFromEnv(instance);
   let instanceObject = { instance: chtInstanceVariables.url, user: chtInstanceVariables.username, password: chtInstanceVariables.password };
   try {
     echisClient = await getDoc(instanceObject, echisClientId);
@@ -112,7 +112,7 @@ const createFacilityReferral = async (CHTDataRecordDoc, res) => {
 const createCommunityReferral = async (serviceRequest,res) => {
   try {
     const instanceValue = res.locals.instanceValue;
-    const chtInstanceVariables = getValuesFromEnv(instanceValue);
+    const chtInstanceVariables = getCHTValuesFromEnv(instanceValue);
     const axiosInstance = axios.create({
       baseURL: chtInstanceVariables.url,
       headers: {
@@ -151,7 +151,7 @@ const createCommunityReferral = async (serviceRequest,res) => {
 const createTaskReferral = async (serviceRequest,res) => {
   try {
     const instanceValue = res.locals.instanceValue;
-    const chtInstanceVariables = getValuesFromEnv(instanceValue);
+    const chtInstanceVariables = getCHTValuesFromEnv(instanceValue);
     const serviceRequestId = serviceRequest?.id;
     logger.information(`${PROCESSING_SR_ID} ${serviceRequestId}`);
 

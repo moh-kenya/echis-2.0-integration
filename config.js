@@ -37,7 +37,7 @@ const FHIR = {
   url: process.env.FHIR_URL,
 };
 
-const getValuesFromEnv =(instance)=>{
+const getCHTValuesFromEnv =(instance)=>{
   return ({
   url: process.env[`CHT_${instance}_URL`],
   username: process.env[`CHT_${instance}_USERNAME`],
@@ -76,5 +76,5 @@ module.exports = {
   OPENHIM,
   POSTGRES,
   SNOMED_CT,
-  getValuesFromEnv
+  getCHTValuesFromEnv
 };
