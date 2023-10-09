@@ -1,7 +1,7 @@
 const axios = require("axios");
 const { generateFHIRServiceRequest } = require("../utils/referral");
 const { generateToken } = require("../utils/auth");
-const { FHIR, CHT } = require("../../config");
+const { FHIR, getValuesFromEnv } = require("../../config");
 const FHIR_URL = `${FHIR.url}/fhir-server/api/v4`;
 const { logger } = require("../utils/logger");
 const { createCRClient } = require("../controllers/client");
@@ -22,7 +22,8 @@ const {
 
 const getSubjectUpi = async (echisClientId,instance) => {
   var echisClient;
-  let instanceObject = { instance: CHT(instance).url, user: CHT(instance).username, password: CHT(instance).password };
+  let chtInstanceVariables = getValuesFromEnv(instance);
+  let instanceObject = { instance: chtInstanceVariables.url, user: chtInstanceVariables.username, password: chtInstanceVariables.password };
   try {
     echisClient = await getDoc(instanceObject, echisClientId);
     if (echisClient.upi) {
@@ -84,7 +85,7 @@ const createFacilityReferral = async (CHTDataRecordDoc, res) => {
       CHTDataRecordDoc.upi = upi;
     }
 
-    const FHIRServiceRequest = generateFHIRServiceRequest(CHTDataRecordDoc);
+    const FHIRServiceRequest = generateFHIRServiceRequest(CHTDataRecordDoc, instanceValue);
     logger.information(JSON.stringify(FHIRServiceRequest));
     logger.information(CALLING_FHIR_SERVER);
     //replicateRequest(FHIRServiceRequest);
@@ -111,14 +112,15 @@ const createFacilityReferral = async (CHTDataRecordDoc, res) => {
 const createCommunityReferral = async (serviceRequest,res) => {
   try {
     const instanceValue = res.locals.instanceValue;
+    const chtInstanceVariables = getValuesFromEnv(instanceValue);
     const axiosInstance = axios.create({
-      baseURL: CHT(instanceValue).url,
+      baseURL: chtInstanceVariables.url,
       headers: {
         "Content-Type": "application/json",
       },
       auth: {
-        username: CHT(instanceValue).username,
-        password: CHT(instanceValue).password,
+        username: chtInstanceVariables.username,
+        password: chtInstanceVariables.password,
       },
     });
 
@@ -149,17 +151,18 @@ const createCommunityReferral = async (serviceRequest,res) => {
 const createTaskReferral = async (serviceRequest,res) => {
   try {
     const instanceValue = res.locals.instanceValue;
+    const chtInstanceVariables = getValuesFromEnv(instanceValue);
     const serviceRequestId = serviceRequest?.id;
     logger.information(`${PROCESSING_SR_ID} ${serviceRequestId}`);
 
     const axiosInstance = axios.create({
-      baseURL: CHT(instanceValue).url,
+      baseURL: chtInstanceVariables.url,
       headers: {
         "Content-Type": "application/json",
       },
       auth: {
-        username: CHT(instanceValue).username,
-        password: CHT(instanceValue).password,
+        username: chtInstanceVariables.username,
+        password: chtInstanceVariables.password,
       },
     });
 

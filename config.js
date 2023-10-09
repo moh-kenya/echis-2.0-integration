@@ -37,7 +37,7 @@ const FHIR = {
   url: process.env.FHIR_URL,
 };
 
-const CHT =(instance)=>{
+const getValuesFromEnv =(instance)=>{
   return ({
   url: process.env[`CHT_${instance}_URL`],
   username: process.env[`CHT_${instance}_USERNAME`],
@@ -65,7 +65,6 @@ const CHANNEL_CONFIG_ENDPOINTS_URL = process.env.CHANNEL_CONFIG_ENDPOINTS_URL;
 
 module.exports = {
   CHANNEL_CONFIG_ENDPOINTS_URL,
-  CHT,
   CLIENT_REGISTRY,
   CONFIG,
   FHIR,
@@ -77,4 +76,5 @@ module.exports = {
   OPENHIM,
   POSTGRES,
   SNOMED_CT,
+  getValuesFromEnv
 };
