@@ -1,38 +1,60 @@
 const bodyParser = require("body-parser");
 const express = require("express");
+const path = require("path");
+
 const app = express();
-const {registerMediator} = require('openhim-mediator-utils')
+
+const { registerMediator } = require('openhim-mediator-utils');
 const {OPENHIM, CONFIG, CHANNEL_CONFIG_ENDPOINTS_URL, CRON_SCHEDULE, MEDIATOR} = require('./config');
+const clientRoutes = require('./src/routes/client');
+const referralRoutes = require('./src/routes/referral');
 const aggregateRoutes = require('./src/routes/aggregate');
-const {scheduleTask} = require('./src/cron/cron');
-const {logger} =require('./src/utils/logger');
+const { scheduleTask } = require('./src/cron/cron');
+const { logger } = require('./src/utils/logger');
+const { messages } = require('./src/utils/messages');
+
+const {
+  ROUTES_SETUP,
+  ROUTES_SETUP_COMPLETE,
+  CRON_SETUP,
+  CRON_SETUP_COMPLETE,
+  SERVER_PORT,
+  MEDIATOR_FAILURE,
+  MEDIATOR_SUCCESS,
+  LOAD_ROOT,
+} = messages;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-logger.information("Setting up routes");
-app.use('/aggregate', aggregateRoutes);
-logger.information("Routes setup complete");
+logger.information(ROUTES_SETUP);
+
+app.use("/client", clientRoutes);
+app.use("/referral", referralRoutes);
+app.use("/aggregate", aggregateRoutes);
+
+logger.information(ROUTES_SETUP_COMPLETE);
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
-logger.information("Setting up cron services");
+app.use(bodyParser.urlencoded({ extended: true }));
+
+logger.information(CRON_SETUP);
 scheduleTask(CRON_SCHEDULE, MEDIATOR);
-logger.information("Cron services setup complete");
+logger.information(CRON_SETUP_COMPLETE);
 
 app.listen(CONFIG.port, () => {
-  logger.information(`Server listening on port ${CONFIG.port}`);
+  logger.information(`${SERVER_PORT} ${CONFIG.port}`);
 });
 
 const registerMediatorCallback = (err) => {
   if (err) {
-    throw new Error(`Mediator Registration Failed: Reason ${err}`);
+    throw new Error(`${MEDIATOR_FAILURE} ${err}`);
   }
-  logger.information('Successfully registered mediator.');
+  logger.information(MEDIATOR_SUCCESS);
 };
 
 const mediatorConfig = {
-  urn: "urn:mediator:echis-mediator",
+  urn: `urn:mediator:${OPENHIM.channel}`,
   version: "1.0.0",
   name: "eCHIS Mediator",
   description:
@@ -40,12 +62,12 @@ const mediatorConfig = {
   defaultChannelConfig: [
     {
       name: "eCHIS Mediator",
-      urlPattern: "^/echis-mediator/.*$",
+      urlPattern: `^/${OPENHIM.channel}/.*$`,
       routes: [
         {
           name: "eCHIS Mediator",
           host: CHANNEL_CONFIG_ENDPOINTS_URL,
-          pathTransform: "s/\\/echis-mediator/",
+          pathTransform: `s/\\/${OPENHIM.channel}/`,          
           port: 22000,
           primary: true,
           type: "http",
@@ -70,13 +92,9 @@ const mediatorConfig = {
 
 registerMediator(OPENHIM, mediatorConfig, registerMediatorCallback);
 
-app.get('/', (req, res) => {
-  logger.information('Loading the root route')
-  res.send('Loaded');
-});
-
 app.get("/", (req, res) => {
-  res.status(200).send("Loaded");
+  logger.information(LOAD_ROOT);
+  res.status(200).sendFile(path.join(__dirname, "./src/html/", "success.html"));
 });
 
 module.exports = app;
