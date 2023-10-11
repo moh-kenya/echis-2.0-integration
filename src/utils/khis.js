@@ -1,73 +1,76 @@
 const axios = require('axios');
 const { logger } = require('./logger');
+const _ = require('lodash');
 
-const generateDataValueSets = async (dataObjects) => {
-  const groupedData = {};
-  dataObjects.forEach((item) => {
-    const key = `${item.dataset}-${item.period}-${item.orgunit}`;
-    if (!groupedData[key]) {
-      groupedData[key] = {
-        dataSet: item.dataset,
-        completeData: item.period + '01',
-        period: item.period,
-        orgUnit: item.orgunit,
-        dataValues: []
-      };
-    }
-    groupedData[key].dataValues.push({ dataElement: item.dataelement, value: item.value });
-  });
-  return Object.values(groupedData);
+const DATA_INGEST_EXTRA_KEYS = {
+  COMPLETION_DATE: 'completeData',
+  IS_PROCESSED: 'is_processed'
 };
 
-const postDataValueSet = async (dataValueSet, authParams) => {
+const getIsoDate = () => new Date().toISOString().slice(0, 10);
+
+const getDataHeaders = (obj) => {
+  const {dataSet, orgUnit, period} = obj;
+  return obj;
+};
+
+const updateData = (obj, key, val) => _.set(obj, key, val);
+
+const preparePostData = (data) => JSON.stringify(data);
+
+const mapData = (item) => (groupedData) => ({
+    ...getDataHeaders(item),
+    dataValues: _.map(groupedData, data => ({
+      dataElement: data.dataElement,
+      value: data.value,
+    })),
+});
+
+const formatData = (dataObjects) => {
+  const formattedData = _.chain(dataObjects)
+  .groupBy(item => `${item.dataSet}-${item.period}-${item.orgUnit}`)
+  .map(groupedItems => {
+    const first = _.first(groupedItems);
+    return mapData(first)(groupedItems);
+  })
+  .value();
+  return formattedData;
+};
+
+const postData = async (data, authParams) => {
   try {
-    const response = await axios.post(`${authParams.url}/dataValueSets?orgUnitIdScheme=CODE`, dataValueSet, {
+    const response = await axios.post(`${authParams.url}/dataValueSets?orgUnitIdScheme=CODE`, data, {
       auth: {username: authParams.username, password: authParams.password},
       headers: {
         'Content-Type': 'application/json',
       }
     });
-    if (response.status === 200) {
-      logger.information(`Data value set posted successfully: ${response.data}`);
-      return true;
-    } else {
-      logger.error(`Failed to post data value set: ${response.data}`);
-      return false;
-    }
+    logger.information(`${response.data.message}`);
+    return true;
   } catch (error) {
-    logger.error(`Error posting data value set: ${error}`);
-    return error;
-  }
-};
-
-const stringifyDataValueSet = (dataValueSet) => JSON.stringify(dataValueSet);
-
-const postDataValueSets = async (dataValueSets, authParams) => {
-  const updateParams = dataValueSets.map((entry) => {
-    const payload = stringifyDataValueSet(entry);
-    const isProcessed = postDataValueSet(payload, authParams);
-    const { dataSet, orgUnit, period } = entry;
-    return [dataSet, orgUnit, period, isProcessed];
-  });
-
-  return updateParams;
-};
-
-async function isDhis2ServerUp(serverParams) {
-  try {
-    const response = await axios.get(`${serverParams.url}${serverParams.statusEndPoint}`, { timeout: 5000 });
-    if (response.status === 200) {
-      return true;
-    } else {
-      return false;
-    }
-  } catch (error) {
+    logger.error(error.response.data.message);
     return false;
   }
 };
 
+const postDataValueSets = async(dataValueSets, authParams) => {
+  try {
+    const processingPromises = dataValueSets.map(async (dataEntry) => {
+      const processingResult = getDataHeaders(dataEntry);
+      const completedPayload = updateData(dataEntry, DATA_INGEST_EXTRA_KEYS.COMPLETION_DATE, getIsoDate());
+      const payloadToPost = preparePostData(completedPayload);
+      const isProcessed = await postData(payloadToPost, authParams);
+      return updateData(processingResult, DATA_INGEST_EXTRA_KEYS.IS_PROCESSED, isProcessed);
+    });
+
+    const results = await Promise.all(processingPromises);
+    return results;
+  } catch (error) {
+    console.error('Error processing data:', error);
+  }
+};
+
 module.exports = {
-  generateDataValueSets,
-  postDataValueSets,
-  isDhis2ServerUp
+  formatData,
+  postDataValueSets
 };
