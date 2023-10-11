@@ -155,8 +155,7 @@ const getPropByString = (obj, propString) => propString.split('.').reduce((prev,
 
 // compare fields in the echis client doc and the client doc we got from Client Registry
 function getMismatchedClientFields(echisClientDoc, crClientDoc) {
-  // fields that ideally should be kind of unique across clients
-  const matcherFields = ["firstName", "middleName", "lastName", "gender", "dateOfBirth", "contact.primaryPhone"];
+  const matcherFields = ["firstName", "middleName", "lastName", "gender", "dateOfBirth"];
   // where we store our mismatched fields and return them later
   const mismatchedFields = {};
   // the payload we generate here has the same format as what we get back when we query for client existence
