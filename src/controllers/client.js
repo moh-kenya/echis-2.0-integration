@@ -117,7 +117,7 @@ async function assignEchisClientUPI(req, res) {
     success(201, res.locals.echisClient._id, clientNumber)
   } catch (err) {
     const errStruct = { instance: getCHTValuesFromEnv(instance).url, user: res.locals.echisClient._id, error: err.message };
-    const errString = `Could not complete creating client. Possible Missing Fields. ${JSON.stringify(errStruct)})`
+    const errString = `could not complete creating client ${JSON.stringify(errStruct)})`
     logger.error(errString)
     res.status(400).send({ error: errString })
   }
