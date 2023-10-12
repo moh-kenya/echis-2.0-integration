@@ -149,7 +149,7 @@ async function assignEchisClientUPI(req, res) {
     const errStruct = {
       instance: getCHTValuesFromEnv(instance).url,
       user: res.locals.echisClient._id,
-      error: error.response.data.errors || err.message,
+      error: err.response.data.errors || err.message,
     };
     const errString = `could not complete creating client ${JSON.stringify(
       errStruct
