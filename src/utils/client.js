@@ -164,7 +164,11 @@ function getMismatchedClientFields(echisClientDoc, crClientDoc) {
   matcherFields.forEach(key => {
     const actual = getPropByString(crPayload, key);
     const expected = getPropByString(crClientDoc, key);
-    if (actual.toUpperCase() !== expected.toUpperCase()) {
+    if (!expected) {
+      // we only compare if we have a value from the client registry
+      return;
+    }
+    if (!actual || actual.toUpperCase() !== expected.toUpperCase()) {
       mismatchedFields[key] = { actual: actual, expected: expected };
     }
   });
