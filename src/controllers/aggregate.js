@@ -1,43 +1,44 @@
-const axios = require("axios");
-const { pool, DATA_QUERY, KHIS } = require("../utils/aggregate");
-const { logger } = require("../utils/logger");
-const { messages } = require("../utils/messages");
-const { GETTING_MOH_515 } = messages;
+const { KHIS } = require('../../config');
 
-const sendMoh515Data = async (data) => {
-  logger.information("Sending MOH 515");
-  try {
-    const res = await axios.post(
-      `${KHIS.url}/dataValueSets?orgUnitIdScheme=CODE`,
-      data,
-      {
-        auth: { username: KHIS.username, password: KHIS.password },
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+const {
+  query,
+  end
+} = require('../utils/db');
 
-    return res;
-  } catch (error) {
-    logger.error(error);
-    return error;
+const {
+  ANALYTICS_INGEST_TABLE_QUERY,
+  ANALYTICS_DATA_VALUES_TABLE_QUERY,
+  UPSERT_INGEST_TRIGGER_FUNCTION_QUERY,
+  UPSERT_INGEST_TRIGGER_QUERY,
+  EXTRACT_DATA_QUERY,
+  UPSERT_DATA_VALUES_QUERY,
+  getUpsertDataIngestQuery
+} = require('../postgres/analytics');
+
+const {
+  formatData,
+  postDataValueSets
+} = require('../utils/khis');
+
+const { logger } = require('../utils/logger');
+
+const prepareDatabase = async (queries) => queries.forEach(async (preparedStatement) => await query(preparedStatement));
+
+const runAggregateSummary = async () => {
+  const queries = [ANALYTICS_INGEST_TABLE_QUERY, ANALYTICS_DATA_VALUES_TABLE_QUERY, UPSERT_INGEST_TRIGGER_FUNCTION_QUERY, UPSERT_INGEST_TRIGGER_QUERY, UPSERT_DATA_VALUES_QUERY];
+    try{
+    await prepareDatabase(queries);
+    const rawData = await query(EXTRACT_DATA_QUERY);
+    const formattedData = formatData(rawData);
+    const postResponseArray = await postDataValueSets(formattedData, KHIS);
+    const updateDataIngestQuery = getUpsertDataIngestQuery(postResponseArray);
+    await query(updateDataIngestQuery);
+  }catch(err){
+    logger.error(err);
   }
 };
 
-const getMoh515Data = async (_, response) => {
-  logger.information(GETTING_MOH_515);
-  pool.query(DATA_QUERY, (error, results) => {
-    if (error) {
-      logger.error(error);
-      throw error;
-    }
-    const result = results.rows;
-    response.send(result);
-    sendMoh515Data(JSON.stringify({ dataValues: result }));
-  });
-};
-
 module.exports = {
-  getMoh515Data,
+  runAggregateSummary,
+  end
 };

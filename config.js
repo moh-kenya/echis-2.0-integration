@@ -18,12 +18,12 @@ const KHIS = {
   password: process.env.KHIS_PASSWORD,
 };
 
-const POSTGRES = {
+const DATABASE_PARAMS = {
   host: process.env.POSTGRES_SERVER_URL,
-  username: process.env.POSTGRES_USERNAME,
+  user: process.env.POSTGRES_USERNAME,
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DB_NAME,
-  port: process.env.POSTGRES_PORT,
+  port: process.env.POSTGRES_PORT || 5432
 };
 
 const MEDIATOR = {
@@ -59,6 +59,10 @@ const KHMFL = {
 
 const CHANNEL_CONFIG_ENDPOINTS_URL = process.env.CHANNEL_CONFIG_ENDPOINTS_URL;
 
+const UPSERT_DATA_VALUES_QUERY = process.env.UPSERT_DATA_VALUES_QUERY;
+
+const CRON_SCHEDULE = process.env.CRON_SCHEDULE;
+
 module.exports = {
   CHANNEL_CONFIG_ENDPOINTS_URL,
   CHT,
@@ -68,9 +72,12 @@ module.exports = {
   KHIS,
   KHMFL,
   MEDIATOR,
-  MEDIATOR,
   NHDD,
   OPENHIM,
-  POSTGRES,
   SNOMED_CT,
+  DATABASE_PARAMS,
+  MEDIATOR,
+  CHANNEL_CONFIG_ENDPOINTS_URL,
+  UPSERT_DATA_VALUES_QUERY,
+  CRON_SCHEDULE
 };
