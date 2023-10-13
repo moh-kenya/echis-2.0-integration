@@ -428,6 +428,11 @@ const codes = {
         code: `12218`,
         display: `Irritability/agitated`,
     },
+    diarrhea: {
+        system: NHDD_GENERIC_PATH,
+        code: `3792`,
+        display: `Diarrhea`,
+      },
 };
 
 const vaccinesMapping = {
