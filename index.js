@@ -3,14 +3,15 @@ const express = require("express");
 const path = require("path");
 
 const app = express();
-const { registerMediator } = require("openhim-mediator-utils");
-const {OPENHIM, CONFIG, CHANNEL_CONFIG_ENDPOINTS_URL} = require('./config');
-const clientRoutes = require("./src/routes/client");
-const referralRoutes = require("./src/routes/referral");
-const aggregateRoutes = require("./src/routes/aggregate");
-const { cronService } = require("./src/middlewares/aggregate");
-const { logger } = require("./src/utils/logger");
-const { messages } = require("./src/utils/messages");
+
+const { registerMediator } = require('openhim-mediator-utils');
+const {OPENHIM, CONFIG, CHANNEL_CONFIG_ENDPOINTS_URL, CRON_SCHEDULE, MEDIATOR} = require('./config');
+const clientRoutes = require('./src/routes/client');
+const referralRoutes = require('./src/routes/referral');
+const aggregateRoutes = require('./src/routes/aggregate');
+const { scheduleTask } = require('./src/cron/cron');
+const { logger } = require('./src/utils/logger');
+const { messages } = require('./src/utils/messages');
 
 const {
   ROUTES_SETUP,
@@ -38,7 +39,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 logger.information(CRON_SETUP);
-cronService();
+scheduleTask(CRON_SCHEDULE, MEDIATOR);
 logger.information(CRON_SETUP_COMPLETE);
 
 app.listen(CONFIG.port, () => {
