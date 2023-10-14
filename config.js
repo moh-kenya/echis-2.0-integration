@@ -1,3 +1,5 @@
+const { logger } = require("./src/utils/logger");
+
 require("dotenv/config");
 
 const OPENHIM = {
@@ -35,10 +37,12 @@ const FHIR = {
   url: process.env.FHIR_URL,
 };
 
-const CHT = {
-  url: process.env.CHT_URL,
-  username: process.env.CHT_USERNAME,
-  password: process.env.CHT_PASSWORD,
+const getCHTValuesFromEnv =(instance)=>{
+  return ({
+  url: process.env[`CHT_${instance}_URL`],
+  username: process.env[`CHT_${instance}_USERNAME`],
+  password: process.env[`CHT_${instance}_PASSWORD`],
+  });
 };
 
 const CLIENT_REGISTRY = {
@@ -65,7 +69,6 @@ const CRON_SCHEDULE = process.env.CRON_SCHEDULE;
 
 module.exports = {
   CHANNEL_CONFIG_ENDPOINTS_URL,
-  CHT,
   CLIENT_REGISTRY,
   CONFIG,
   FHIR,
@@ -75,6 +78,7 @@ module.exports = {
   NHDD,
   OPENHIM,
   SNOMED_CT,
+  getCHTValuesFromEnv,
   DATABASE_PARAMS,
   MEDIATOR,
   CHANNEL_CONFIG_ENDPOINTS_URL,
