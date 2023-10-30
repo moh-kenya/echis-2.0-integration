@@ -3,6 +3,7 @@ services:
   mediator:
     build: .
     container_name: mediator
+    restart: always
     ports:
       - "22000:6000"
     env_file:
