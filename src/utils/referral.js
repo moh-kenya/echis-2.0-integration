@@ -1,5 +1,6 @@
 require("dotenv/config");
 const { DateTime } = require("luxon");
+const moment = require('moment');
 const {
   CLIENT_REGISTRY,
   NHDD,
@@ -300,7 +301,7 @@ const generateFHIRServiceRequest = (instance, dataRecord) => {
       start: reportedDate.toISODate(),
       end: dataRecord.follow_up_date,
     },
-    authoredOn: reportedDate.toISODate(),
+    authoredOn: moment(reportedDate).format('YYYY-MM-DDTHH:mm:ss.SSSSSS[Z]'),
     requester: {
       reference: `${KHMFL_CHUL_URL}?format=JSON&code=${dataRecord.chu_code}`,
       type: `Organization`,
@@ -326,6 +327,7 @@ const generateFHIRServiceRequest = (instance, dataRecord) => {
     reasonCode: extractReasonCode(dataRecord.screening, dataRecord.service),
     note: extractNotes(dataRecord.supportingInfo),
   };
+  console.log(FHIRServiceRequest);
   return FHIRServiceRequest;
 };
 
