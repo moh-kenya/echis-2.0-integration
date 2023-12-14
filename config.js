@@ -61,6 +61,10 @@ const KHMFL = {
   url: process.env.KHMFL_URL,
 };
 
+const SPICE = {
+  url: process.env.SPICE_URL,
+};
+
 const CHANNEL_CONFIG_ENDPOINTS_URL = process.env.CHANNEL_CONFIG_ENDPOINTS_URL;
 
 const UPSERT_DATA_VALUES_QUERY = process.env.UPSERT_DATA_VALUES_QUERY;
@@ -83,5 +87,6 @@ module.exports = {
   MEDIATOR,
   CHANNEL_CONFIG_ENDPOINTS_URL,
   UPSERT_DATA_VALUES_QUERY,
-  CRON_SCHEDULE
+  CRON_SCHEDULE,
+  SPICE
 };

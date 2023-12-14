@@ -1,6 +1,6 @@
 const axios = require("axios");
 const { generateToken } = require("../utils/auth");
-const { getCHTValuesFromEnv, CLIENT_REGISTRY } = require("../../config");
+const { getCHTValuesFromEnv, CLIENT_REGISTRY, SPICE } = require("../../config");
 const {
   generateClientRegistryPayload,
   getMismatchedClientFields,
@@ -41,6 +41,7 @@ const axiosInstance = axios.create({
     "Content-Type": "application/json",
   },
 });
+
 axiosInstance.interceptors.response.use(
   (response) => response,
   tryClientRegistryReauth
@@ -149,7 +150,7 @@ async function assignEchisClientUPI(req, res) {
     const errStruct = {
       instance: getCHTValuesFromEnv(instance).url,
       user: res.locals.echisClient._id,
-      error: err.response.data.errors || err.message,
+      error: err.response?.data?.errors || err.message,
     };
     const errString = `could not complete creating client ${JSON.stringify(
       errStruct

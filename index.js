@@ -9,6 +9,7 @@ const {OPENHIM, CONFIG, CHANNEL_CONFIG_ENDPOINTS_URL, CRON_SCHEDULE, MEDIATOR} =
 const clientRoutes = require('./src/routes/client');
 const referralRoutes = require('./src/routes/referral');
 const aggregateRoutes = require('./src/routes/aggregate');
+const ncdRoutes = require('./src/routes/ncd');
 const { scheduleTask } = require('./src/cron/cron');
 const { logger } = require('./src/utils/logger');
 const { messages } = require('./src/utils/messages');
@@ -32,6 +33,7 @@ logger.information(ROUTES_SETUP);
 app.use("/client", clientRoutes);
 app.use("/referral", referralRoutes);
 app.use("/aggregate", aggregateRoutes);
+app.use("/ncd", ncdRoutes);
 
 logger.information(ROUTES_SETUP_COMPLETE);
 

@@ -49,6 +49,38 @@ const generateToken = async () => {
   }
 };
 
+const requestNewTokenSpice = async () => {
+  const data = qs.stringify({
+    username: process.env.SPICE_CLIENT_ID,
+    password: process.env.SPICE_CLIENT_SECRET,
+  });
+
+  const config = {
+    maxBodyLength: Infinity,
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+  };
+
+  const res = await axios.post(
+    `${process.env.SPICE_URL}/auth-service/session`,
+    data,
+    config
+  );
+  if (!res.headers.authorization.startsWith("Bearer")) {
+    return "Bearer " + res.headers.authorization; 
+  }
+  else{
+  return res.headers.authorization;
+  }
+};
+
+const generateTokenSpice = async () => {
+  const token =await requestNewTokenSpice();
+  return token;
+};
+
 module.exports = {
   generateToken,
+  generateTokenSpice
 };
