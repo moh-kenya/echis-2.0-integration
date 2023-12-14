@@ -53,6 +53,7 @@ const postData = async (data, authParams) => {
     logger.information(`${response.data.message}`);
     return true;
   } catch (error) {
+    console.log(error);
     logger.error('HTTP Status 401 - Bad credentials or Request failed.');
     return false;
   }
