@@ -61,10 +61,20 @@ const postData = async (data, authParams) => {
 const postDataValueSets = async(dataValueSets, authParams) => {
   try {
     const processingPromises = dataValueSets.map(async (dataEntry) => {
+      logger.information("Getting data headers");
       const processingResult = getDataHeaders(dataEntry);
+      logger.information("Done getting data headers");
+      logger.information("Updating data");
       const completedPayload = updateData(dataEntry, DATA_INGEST_EXTRA_KEYS.COMPLETION_DATE, getIsoDate());
+      logger.information("Done updating data");
+      logger.information("Preparing post data");
       const payloadToPost = preparePostData(completedPayload);
+      logger.information("Done preparing post data");
+      logger.information("Posting data");
+      console.log(payloadToPost);
       const isProcessed = await postData(payloadToPost, authParams);
+      logger.information("Done posting data");
+      logger.information("Update posted data");
       return updateData(processingResult, DATA_INGEST_EXTRA_KEYS.IS_PROCESSED, isProcessed);
     });
 
