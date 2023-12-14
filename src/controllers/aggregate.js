@@ -8,11 +8,10 @@ const {
 const {
   ANALYTICS_INGEST_TABLE_QUERY,
   ANALYTICS_DATA_VALUES_TABLE_QUERY,
-  UPSERT_INGEST_TRIGGER_FUNCTION_QUERY,
-  UPSERT_INGEST_TRIGGER_QUERY,
   EXTRACT_DATA_QUERY,
   UPSERT_DATA_VALUES_QUERY,
-  getUpsertDataIngestQuery
+  getUpsertDataIngestQuery,
+  UPSERT_INGEST_DATA_QUERY
 } = require('../postgres/analytics');
 
 const {
@@ -25,7 +24,7 @@ const { logger } = require('../utils/logger');
 const prepareDatabase = async (queries) => queries.forEach(async (preparedStatement) => await query(preparedStatement));
 
 const runAggregateSummary = async () => {
-  const queries = [ANALYTICS_INGEST_TABLE_QUERY, ANALYTICS_DATA_VALUES_TABLE_QUERY, UPSERT_INGEST_TRIGGER_FUNCTION_QUERY, UPSERT_INGEST_TRIGGER_QUERY, UPSERT_DATA_VALUES_QUERY];
+  const queries = [ANALYTICS_INGEST_TABLE_QUERY, ANALYTICS_DATA_VALUES_TABLE_QUERY, UPSERT_DATA_VALUES_QUERY, UPSERT_INGEST_DATA_QUERY];
     try{
     await prepareDatabase(queries);
     const rawData = await query(EXTRACT_DATA_QUERY);

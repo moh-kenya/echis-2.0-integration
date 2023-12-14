@@ -20,7 +20,8 @@ const ANALYTICS_DATA_VALUES_TABLE_QUERY = `
     period VARCHAR(10) NOT NULL,
     dataElement VARCHAR(20) NOT NULL,
     value INTEGER DEFAULT 0 NOT NULL,
-    last_update TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+    last_update TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    UNIQUE(dataSet, orgUnit, period, dataElement)
   );`;
 
 const EXTRACT_DATA_QUERY = `
@@ -34,7 +35,8 @@ const EXTRACT_DATA_QUERY = `
     aggregate_data_values v
     LEFT JOIN aggregate_data_ingest i ON (v.dataSet = i.dataSet AND v.orgUnit = i.orgUnit AND v.period = i.period)
   WHERE
-    i.is_processed IS FALSE;`;
+    i.is_processed IS FALSE
+    AND i."period" = TO_CHAR((CURRENT_DATE - INTERVAL '1 month'), 'YYYYMM');`;
 
 const UPSERT_INGEST_TRIGGER_FUNCTION_QUERY = `
   CREATE OR REPLACE FUNCTION update_aggregate_data_ingest()
@@ -73,6 +75,22 @@ const getUpsertDataIngestQuery = (values) => {
   DO UPDATE SET is_processed = EXCLUDED.is_processed;`;
 };
 
+const UPSERT_INGEST_DATA_QUERY = `INSERT INTO aggregate_data_ingest (dataSet, orgUnit, period)
+SELECT
+  "dataSet" AS dataset,
+  "orgUnit" AS orgunit,
+  period
+FROM
+  aggregateview_moh_515_last_month
+GROUP BY
+  dataset,
+  orgunit,
+  period ON CONFLICT (dataSet,
+    orgUnit,
+    period)
+  DO
+  NOTHING;`;
+
 module.exports = {
   ANALYTICS_INGEST_TABLE_QUERY,
   ANALYTICS_DATA_VALUES_TABLE_QUERY,
@@ -80,5 +98,6 @@ module.exports = {
   UPSERT_INGEST_TRIGGER_QUERY,
   EXTRACT_DATA_QUERY,
   UPSERT_DATA_VALUES_QUERY,
-  getUpsertDataIngestQuery
+  getUpsertDataIngestQuery,
+  UPSERT_INGEST_DATA_QUERY
 };

@@ -2,9 +2,10 @@ version: "3"
 services:
   mediator:
     build: .
-    container_name: mediator
+    container_name: aggregator
+    restart: always
     ports:
-      - "22000:6000"
+      - "22001:6000"
     env_file:
       - .env
     

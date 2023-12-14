@@ -18,13 +18,18 @@ const updateData = (obj, key, val) => _.set(obj, key, val);
 
 const preparePostData = (data) => JSON.stringify(data);
 
-const mapData = (item) => (groupedData) => ({
+const mapData = (item) => (groupedData) => {
+  const payload = {
     ...getDataHeaders(item),
     dataValues: _.map(groupedData, data => ({
       dataElement: data.dataElement,
       value: data.value,
-    })),
-});
+    }))
+  };
+  delete payload.dataElement;
+  delete payload.value;
+  return payload;
+};
 
 const formatData = (dataObjects) => {
   const formattedData = _.chain(dataObjects)
@@ -48,7 +53,7 @@ const postData = async (data, authParams) => {
     logger.information(`${response.data.message}`);
     return true;
   } catch (error) {
-    logger.error(error.response.data.message);
+    logger.error('HTTP Status 401 - Bad credentials or Request failed.');
     return false;
   }
 };

@@ -4,7 +4,7 @@ const { logger } =require('../utils/logger');
 
 const task = (authParams) => {
   try {
-    const res = axios.get(`${authParams.url}/echis-mediator/aggregate/run`, {
+    const res = axios.get(`${authParams.url}/dhis2-mediator/aggregate/run`, {
       auth: {username: authParams.username, password: authParams.password}
     });
     return res;

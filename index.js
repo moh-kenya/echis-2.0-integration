@@ -32,21 +32,21 @@ const registerMediatorCallback = (err) => {
 };
 
 const mediatorConfig = {
-  urn: "urn:mediator:echis-mediator",
+  urn: "urn:mediator:dhis2-mediator",
   version: "1.0.0",
-  name: "eCHIS Mediator",
+  name: "DHIS2 Mediator",
   description:
     "A mediator eCHIS to KHIS integration.",
   defaultChannelConfig: [
     {
-      name: "eCHIS Mediator",
-      urlPattern: "^/echis-mediator/.*$",
+      name: "DHIS2 Mediator",
+      urlPattern: "^/dhis2-mediator/.*$",
       routes: [
         {
           name: "eCHIS Mediator",
           host: CHANNEL_CONFIG_ENDPOINTS_URL,
-          pathTransform: "s/\\/echis-mediator/",
-          port: 22000,
+          pathTransform: "s/\\/dhis2-mediator/",
+          port: 22001,
           primary: true,
           type: "http",
         },
@@ -61,7 +61,7 @@ const mediatorConfig = {
       name: "Mediator",
       host: CHANNEL_CONFIG_ENDPOINTS_URL,
       path: "/",
-      port: "22000",
+      port: "22001",
       primary: true,
       type: "http",
     },

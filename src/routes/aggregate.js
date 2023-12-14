@@ -8,7 +8,7 @@ router.get('/run',
   async () => {
     logger.information("Aggregator task started");
     await runAggregateSummary();
-    end();
+//    end();
     logger.information("Aggregator task completed");
   });
 
