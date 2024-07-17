@@ -1,119 +1,65 @@
 const axios = require("axios");
 const { generateFHIRServiceRequest } = require("../utils/referral");
-const { generateToken } = require("../utils/auth");
-const { FHIR, getCHTValuesFromEnv } = require("../../config");
-const FHIR_URL = `${FHIR.url}/fhir-server/api/v4`;
+const { FHIR, CLIENT_REGISTRY, getCHTValuesFromEnv } = require("../../config");
 const { logger } = require("../utils/logger");
-const { createCRClient } = require("../controllers/client");
 const { messages } = require("../utils/messages");
-const { getDoc } = require("../utils/echis");
+const echis = require("../utils/echis");
+const { updateContactCRID } = require("./client");
 const {
-  CREATE_FACILITY_REFERRAL,
-  GENERATE_FHIR_SR,
-  ATTRIB_NOT_FOUND,
-  CALLING_FHIR_SERVER,
-  FHIR_SERVER_RESPONSE,
-  SERVICE_REQUEST_ID,
   PROCESSING_SR_ID,
   SEARCHING_ECHIS_WITH_UPI,
   CLIENT_FOUND_REPORT_IN_ECHIS,
   COMPLETED_SUCCESSFULLY,
 } = messages;
 
-const getSubjectUpi = async (instance,echisClientId) => {
-  var echisClient;
-  let chtInstanceVariables = getCHTValuesFromEnv(instance);
-  let instanceObject = { instance: chtInstanceVariables.url, user: chtInstanceVariables.username, password: chtInstanceVariables.password };
-  try {
-    echisClient = await getDoc(instanceObject, echisClientId);
-    if (echisClient.upi) {
-      return echisClient.upi;
-    }
-  } catch (err) {
-    logger.error(`could not get subject upi: ${err.message}`);
-    return;
-  }
-  try {
-    const clientNumber = await createCRClient(instanceObject, echisClient)
-    return clientNumber;
-  } catch (err) {
-    logger.error(`could not get subject upi, err while trying to create client ${err.message}`);
-  }
-  return
-}
+const axiosInstance = axios.create({
+  baseURL: FHIR.url,
+  auth: {
+    username: CLIENT_REGISTRY.user,
+    password: CLIENT_REGISTRY.pass,
+  },
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
-const createFacilityReferral = async (CHTDataRecordDoc, res) => {
-  logger.information(CREATE_FACILITY_REFERRAL);
-  const instanceValue = res.locals.instanceValue;
-  try {
-    const axiosInstance = axios.create({
-      baseURL: FHIR.url,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    axiosInstance.interceptors.response.use(
-      (response) => {
-        return response;
-      },
-      async function (error) {
-        const originalRequest = error.config;
-        if (
-          error.response &&
-          error.response.status === 401 &&
-          !originalRequest._retry
-        ) {
-          originalRequest._retry = true;
-          const token = await generateToken();
-          axiosInstance.defaults.headers.common[
-            "Authorization"
-          ] = `Bearer ${token}`;
-          return axiosInstance(originalRequest);
-        }
-        return Promise.reject(error);
-      }
-    );
-    logger.information(GENERATE_FHIR_SR);
-
-    let upi = CHTDataRecordDoc.upi
-    if (!upi) {
-      upi = await getSubjectUpi(instanceValue,CHTDataRecordDoc._patient_id);
-      if (!upi) {
-        throw new Error(ATTRIB_NOT_FOUND);
-      }
-      CHTDataRecordDoc.upi = upi;
-    }
-
-    const FHIRServiceRequest = generateFHIRServiceRequest(instanceValue,CHTDataRecordDoc);
-    logger.information(JSON.stringify(FHIRServiceRequest));
-    logger.information(CALLING_FHIR_SERVER);
-    //replicateRequest(FHIRServiceRequest);
-    const response = await axiosInstance.post(
-      `${FHIR_URL}/ServiceRequest`,
-      JSON.stringify(FHIRServiceRequest)
-    );
-    const location = response.headers.location.split("/");
-    logger.information(FHIR_SERVER_RESPONSE);
-    logger.information(`${SERVICE_REQUEST_ID} ${location.at(-3)}`);
-
-    return { status: response.status, serviceRequestId: location.at(-3) };
-  } catch (error) {
-    logger.error(error.message);
-
-    if (!error.status) {
-      return { status: 400, patient: { message: error.message } };
-    }
-
-    return { status: error.status, patient: error.data };
+const getContactCRID = async (instance, contactID) => {
+  const contact = await echis.getDoc(
+    echis.getInstanceConf(instance),
+    contactID
+  );
+  if (!contact.client_registry?.id) {
+    return await updateContactCRID(instance, contactID);
+  } else {
+    return contact.client_registry.id;
   }
 };
 
-const createCommunityReferral = async (serviceRequest,res) => {
+const sendServiceRequest = async (instance, record) => {
+  let contactCRID = await getContactCRID(instance, record._patient_id);
+  if (!contactCRID) {
+    throw new Error(
+      `CR ID not found for contact ${instance}/${record._patient_id}`
+    );
+  }
+  const serviceRequest = generateFHIRServiceRequest(
+    instance,
+    contactCRID,
+    record
+  );
+  const response = await axiosInstance.post(
+    `${FHIR_URL}/fhir/ServiceRequest`,
+    JSON.stringify(serviceRequest)
+  );
+  const location = response.headers.location.split("/");
+  return { status: response.status, serviceRequestId: location.at(-3) };
+};
+
+const createCommunityReferral = async (serviceRequest, res) => {
   try {
     const instanceValue = res.locals.instanceValue;
     const chtInstanceVariables = getCHTValuesFromEnv(instanceValue);
-    const axiosInstance = axios.create({
+    const axiosInstance = axiosInstance.create({
       baseURL: chtInstanceVariables.url,
       headers: {
         "Content-Type": "application/json",
@@ -139,23 +85,23 @@ const createCommunityReferral = async (serviceRequest,res) => {
       };
 
       const response = await axiosInstance.post(`api/v2/records`, body);
-      return {status:200,data:response};
+      return { status: 200, data: response };
     }
     return { status: 200, data: "done" };
   } catch (error) {
     logger.error(error);
-    return {status:500,errors:error};
+    return { status: 500, errors: error };
   }
 };
 
-const createTaskReferral = async (serviceRequest,res) => {
+const createTaskReferral = async (serviceRequest, res) => {
   try {
     const instanceValue = res.locals.instanceValue;
     const chtInstanceVariables = getCHTValuesFromEnv(instanceValue);
     const serviceRequestId = serviceRequest?.id;
     logger.information(`${PROCESSING_SR_ID} ${serviceRequestId}`);
 
-    const axiosInstance = axios.create({
+    const axiosInstance = axiosInstance.create({
       baseURL: chtInstanceVariables.url,
       headers: {
         "Content-Type": "application/json",
@@ -204,9 +150,8 @@ const createTaskReferral = async (serviceRequest,res) => {
   }
 };
 
-
 module.exports = {
-  createFacilityReferral,
+  sendServiceRequest,
   createCommunityReferral,
   createTaskReferral,
 };

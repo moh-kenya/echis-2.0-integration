@@ -51,19 +51,22 @@ const counties = [
 ];
 
 const idMap = {
-  national_id: "national-id",
-  birth_certificate: "birth-certificate",
+  national_id: "National ID",
+  birth_certificate: "birth_certificate",
   passport: "passport",
-  alien_card: "alien-id",
+  alien_card: "alien_id",
 };
 
-const getIdentificationType = (idType) => {
+const getIdentificationType = (contact) => {
+  const idType = contact.identification_type;
   if (idType in idMap) {
-    return idMap[idType];
+    return {
+      identification_type: idMap[idType],
+      identification_number: contact.identification_number,
+    };
   }
-  return idType;
+  return null;
 };
-
 
 const generateClientRegistryPayload = (echisDoc) => {
   const nameArray = echisDoc.name.split(" ");
@@ -80,19 +83,19 @@ const generateClientRegistryPayload = (echisDoc) => {
     country: echisDoc.nationality || "KE",
     countyOfBirth: echisDoc?.country_of_birth || "county-n-a",
     isAlive: true,
-    originFacilityKmflCode:
-      echisDoc.parent?.parent?.link_facility_code || "",
+    originFacilityKmflCode: echisDoc.parent?.parent?.link_facility_code || "",
     residence: {
       county:
         transformCountyCode(echisDoc.county_of_residence) ||
         transformCountyCode(
-          `${counties.find(
-            (county) =>
-              county.name ===
-              echisDoc.parent?.parent?.parent?.parent?.parent?.name
-                .trim()
-                .replace("County", "")
-          ).code
+          `${
+            counties.find(
+              (county) =>
+                county.name ===
+                echisDoc.parent?.parent?.parent?.parent?.parent?.name
+                  .trim()
+                  .replace("County", "")
+            ).code
           }`
         ),
       subCounty:
@@ -128,8 +131,7 @@ const generateClientRegistryPayload = (echisDoc) => {
         residence: echisDoc.next_of_kin_residence,
         contact: {
           primaryPhone:
-            echisDoc.next_of_kin_phone ||
-            echisDoc.parent.contact.phone,
+            echisDoc.next_of_kin_phone || echisDoc.parent.contact.phone,
           secondaryPhone:
             echisDoc.next_of_kin_alternate_phone ||
             echisDoc.parent.contact.alternate_phone,
@@ -148,19 +150,28 @@ const transformCountyCode = (code) => {
   return code ? code.padStart(3, "0") : "county-n-a";
 };
 
-const getPropByString = (obj, propString) => propString.split('.').reduce((prev, fieldName) => {
-  if (prev === undefined) { return undefined; }
-  return prev[fieldName];
-}, obj);
+const getPropByString = (obj, propString) =>
+  propString.split(".").reduce((prev, fieldName) => {
+    if (prev === undefined) {
+      return undefined;
+    }
+    return prev[fieldName];
+  }, obj);
 
 // compare fields in the echis client doc and the client doc we got from Client Registry
 function getMismatchedClientFields(echisClientDoc, crClientDoc) {
-  const matcherFields = ["firstName", "middleName", "lastName", "gender", "dateOfBirth"];
+  const matcherFields = [
+    "firstName",
+    "middleName",
+    "lastName",
+    "gender",
+    "dateOfBirth",
+  ];
   // where we store our mismatched fields and return them later
   const mismatchedFields = {};
   // the payload we generate here has the same format as what we get back when we query for client existence
   const crPayload = generateClientRegistryPayload(echisClientDoc);
-  matcherFields.forEach(key => {
+  matcherFields.forEach((key) => {
     const actual = getPropByString(crPayload, key);
     const expected = getPropByString(crClientDoc, key);
     if (!expected) {

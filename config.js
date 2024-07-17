@@ -47,6 +47,8 @@ const getCHTValuesFromEnv =(instance)=>{
 
 const CLIENT_REGISTRY = {
   url: process.env.CLIENT_REGISTRY_URL,
+  user: process.env.CLIENT_REGISTRY_USER,
+  pass: process.env.CLIENT_REGISTRY_PASS
 };
 
 const NHDD = {

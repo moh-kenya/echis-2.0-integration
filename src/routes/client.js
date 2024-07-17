@@ -1,11 +1,11 @@
 const { Router } = require("express");
-const { assignEchisClientUPI, crAxiosInstance } = require("../controllers/client");
+const { contactHandler } = require("../controllers/client");
 const setClient = require("../middlewares/setClient");
 const setInstance = require("../middlewares/setInstance");
 
 const router = Router();
-router.use(setClient(crAxiosInstance));
+router.use(setClient());
 router.use(setInstance());
-router.post("/", assignEchisClientUPI);
+router.post("/", contactHandler);
 
 module.exports = router;
