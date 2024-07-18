@@ -52,7 +52,7 @@ const counties = [
 
 const idMap = {
   national_id: "National ID",
-  birth_certificate: "birth_certificate",
+  birth_certificate: "Birth Certificate",
   passport: "passport",
   alien_card: "alien_id",
 };

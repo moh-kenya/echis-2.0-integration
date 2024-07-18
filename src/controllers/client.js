@@ -2,6 +2,7 @@ const axios = require("axios");
 const { TIBERBU_SERVICE } = require("../../config");
 const { getIdentificationType } = require("../utils/client");
 const echis = require("../utils/echis");
+const { logger } = require("../utils/logger");
 
 const axiosInstance = axios.create({
   baseURL: TIBERBU_SERVICE.url,
@@ -18,13 +19,12 @@ const fetchClientFromRegistry = async (contact) => {
       payload: JSON.stringify(params),
     },
   });
-  if (resp.status !== 200 || resp.data.message.total <= 0) {
-    throw new Error(
-      `status: ${resp.status} | matches: ${JSON.stringify(resp.data.message)}`
-    );
+  if (resp.data.message.total <= 0) {
+    throw new Error("no matches");
   }
   if (resp.data.message.total > 1) {
-    throw new Error("multiple matches for id");
+    logger.error(`multiple CR matches for ${params}`);
+    throw new Error(`multiple matches`);
   }
   return resp.data.message.result[0].id;
 };
