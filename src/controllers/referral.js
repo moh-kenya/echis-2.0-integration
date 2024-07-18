@@ -1,6 +1,6 @@
 const axios = require("axios");
 const { generateFHIRServiceRequest } = require("../utils/referral");
-const { FHIR, CLIENT_REGISTRY, getCHTValuesFromEnv } = require("../../config");
+const { TIBERBU_SERVICE, getCHTValuesFromEnv } = require("../../config");
 const { logger } = require("../utils/logger");
 const { messages } = require("../utils/messages");
 const echis = require("../utils/echis");
@@ -13,10 +13,10 @@ const {
 } = messages;
 
 const axiosInstance = axios.create({
-  baseURL: FHIR.url,
+  baseURL: TIBERBU_SERVICE.url,
   auth: {
-    username: CLIENT_REGISTRY.user,
-    password: CLIENT_REGISTRY.pass,
+    username: TIBERBU_SERVICE.user,
+    password: TIBERBU_SERVICE.pass,
   },
   headers: {
     "Content-Type": "application/json",

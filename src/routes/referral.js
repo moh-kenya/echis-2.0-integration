@@ -1,6 +1,5 @@
 const { Router } = require("express");
 const {
-  createFacilityReferral,
   createCommunityReferral,
   createTaskReferral,
   sendServiceRequest,
