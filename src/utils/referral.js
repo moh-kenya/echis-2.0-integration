@@ -2,7 +2,7 @@ require("dotenv/config");
 const { DateTime } = require("luxon");
 const moment = require("moment");
 const {
-  CLIENT_REGISTRY,
+  TIBERBU_SERVICE,
   NHDD,
   SNOMED_CT,
   getCHTValuesFromEnv,
@@ -13,7 +13,7 @@ const NHDD_URL = `${NHDD.url}/orgs/MOH-KENYA/sources`;
 const KHMFL_FACILITY_URL = `${KHMFL.url}/api/facilities/facilities/`;
 const KHMFL_CHUL_URL = `${KHMFL.url}/api/chul/units/`;
 const SNOMED_CT_URL = SNOMED_CT.url;
-const CLIENT_REGISTRY_URL = `${CLIENT_REGISTRY.url}/partners/registry/search/upi`;
+const CLIENT_REGISTRY_URL = `${TIBERBU_SERVICE.url}/partners/registry/search/upi`;
 const NHDD_GENERIC_PATH = `${NHDD_URL}/nhdd/concepts/`;
 const NHDD_KMHFL_PATH = `${NHDD_URL}/KMHFL/concepts`;
 
