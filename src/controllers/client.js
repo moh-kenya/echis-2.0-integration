@@ -12,21 +12,26 @@ const axiosInstance = axios.create({
   },
 });
 
-const fetchClientFromRegistry = async (contact) => {
-  const params = getIdentificationType(contact);
-  const resp = await axiosInstance.get("/client-registry/fetch-client", {
-    params: {
-      payload: JSON.stringify(params),
-    },
-  });
-  if (resp.data.message.total <= 0) {
+const checkErr = (err, resp) => {
+  let issues = resp.data.message?.issue || resp.data.issue;
+  let errString = issues.map((issue) => issue.diagnostics).join(",");
+  if (errString.includes("not found")) {
     throw new Error("no matches");
   }
-  if (resp.data.message.total > 1) {
-    logger.error(`multiple CR matches for ${params}`);
-    throw new Error(`multiple matches`);
+  if (err) throw err;
+};
+
+const fetchClientFromRegistry = async (contact) => {
+  const params = getIdentificationType(contact);
+  let resp;
+  try {
+    resp = await axiosInstance.get("/api/v4/Patient", {
+      params: { ...params },
+    });
+  } catch (err) {
+    checkErr(err, err.response);
   }
-  return resp.data.message.result[0].id;
+  return resp.data.id || checkErr(resp);
 };
 
 const updateContactCRID = async (instance, contact) => {

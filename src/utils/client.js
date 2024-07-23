@@ -51,8 +51,7 @@ const counties = [
 ];
 
 const idMap = {
-  national_id: "National ID",
-  birth_certificate: "Birth Certificate",
+  national_id: "national-id",
   passport: "passport",
   alien_card: "alien_id",
 };
@@ -61,8 +60,7 @@ const getIdentificationType = (contact) => {
   const idType = contact.identification_type;
   if (idType in idMap) {
     return {
-      identification_type: idMap[idType],
-      identification_number: contact.identification_number,
+      [idMap[idType]]: contact.identification_number,
     };
   }
   return null;
