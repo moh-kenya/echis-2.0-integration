@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { contactHandler } = require("../../controllers/client");
+const { contactHandler } = require("../../controllers/v2/client");
 const setClient = require("../../middlewares/v2/setClient");
 const setInstance = require("../../middlewares/setInstance");
 

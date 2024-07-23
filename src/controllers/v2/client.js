@@ -2,6 +2,7 @@ const axios = require("axios");
 const { CLIENT_REGISTRY } = require("../../../config");
 const { supportedIDTypes } = require("../../utils/client");
 const echis = require("../../utils/echis");
+const { logger } = require("../../utils/logger");
 
 const axiosInstance = axios.create({
   baseURL: CLIENT_REGISTRY.url,
@@ -43,15 +44,28 @@ const fetchClientFromRegistry = async (contact) => {
   return resp.data.id || checkErr(resp);
 };
 
+const getCRFields = async (contact) => {
+  try {
+    return {
+      client_registry: {
+        id: await fetchClientFromRegistry(contact),
+        status: "OK",
+      },
+    };
+  } catch (error) {
+    logger.error(error.message);
+    return {
+      client_registry: {
+        error: error.message,
+      },
+    };
+  }
+};
+
 const updateContactCRID = async (instance, contact) => {
-  let id = await fetchClientFromRegistry(contact);
-  await echis.updateDoc(echis.getInstanceConf(instance), contact._id, {
-    client_registry: {
-      id,
-      status: "OK",
-    },
-  });
-  return id;
+  let fields = await getCRFields(contact);
+  await echis.updateDoc(echis.getInstanceConf(instance), contact._id, fields);
+  return fields;
 };
 
 const contactHandler = async (_, response) => {
@@ -59,23 +73,12 @@ const contactHandler = async (_, response) => {
   if (contact.client_registry?.status === "OK") {
     return;
   }
-  try {
-    await updateContactCRID(response.locals.instanceValue, contact);
-  } catch (error) {
-    await echis.updateDoc(
-      echis.getInstanceConf(response.locals.instanceValue),
-      contact._id,
-      {
-        client_registry: {
-          error: error.message,
-        },
-      }
-    );
-  }
+  await updateContactCRID(response.locals.instanceValue, contact);
 };
 
 module.exports = {
   fetchClientFromRegistry,
   updateContactCRID,
+  getCRFields,
   contactHandler,
 };
