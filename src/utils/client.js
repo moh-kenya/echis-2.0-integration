@@ -50,21 +50,20 @@ const counties = [
   { code: 47, name: "Nairobi" },
 ];
 
-const idMap = {
+const supportedIDTypes = {
   national_id: "national-id",
+  birth_certificate: "birth-certificate",
   passport: "passport",
-  alien_card: "alien_id",
+  alien_card: "alien-id",
 };
 
-const getIdentificationType = (contact) => {
-  const idType = contact.identification_type;
-  if (idType in idMap) {
-    return {
-      [idMap[idType]]: contact.identification_number,
-    };
+const getIdentificationType = (idType) => {
+  if (idType in supportedIDTypes) {
+    return supportedIDTypes[idType];
   }
-  return null;
+  return idType;
 };
+
 
 const generateClientRegistryPayload = (echisDoc) => {
   const nameArray = echisDoc.name.split(" ");
@@ -81,19 +80,19 @@ const generateClientRegistryPayload = (echisDoc) => {
     country: echisDoc.nationality || "KE",
     countyOfBirth: echisDoc?.country_of_birth || "county-n-a",
     isAlive: true,
-    originFacilityKmflCode: echisDoc.parent?.parent?.link_facility_code || "",
+    originFacilityKmflCode:
+      echisDoc.parent?.parent?.link_facility_code || "",
     residence: {
       county:
         transformCountyCode(echisDoc.county_of_residence) ||
         transformCountyCode(
-          `${
-            counties.find(
-              (county) =>
-                county.name ===
-                echisDoc.parent?.parent?.parent?.parent?.parent?.name
-                  .trim()
-                  .replace("County", "")
-            ).code
+          `${counties.find(
+            (county) =>
+              county.name ===
+              echisDoc.parent?.parent?.parent?.parent?.parent?.name
+                .trim()
+                .replace("County", "")
+          ).code
           }`
         ),
       subCounty:
@@ -111,7 +110,7 @@ const generateClientRegistryPayload = (echisDoc) => {
       {
         countryCode: echisDoc.country_code || "KE",
         identificationType:
-          idMap[echisDoc.identification_type] || "national-id",
+          supportedIDTypes[echisDoc.identification_type] || "national-id",
         identificationNumber: echisDoc.identification_number,
       },
     ],
@@ -129,7 +128,8 @@ const generateClientRegistryPayload = (echisDoc) => {
         residence: echisDoc.next_of_kin_residence,
         contact: {
           primaryPhone:
-            echisDoc.next_of_kin_phone || echisDoc.parent.contact.phone,
+            echisDoc.next_of_kin_phone ||
+            echisDoc.parent.contact.phone,
           secondaryPhone:
             echisDoc.next_of_kin_alternate_phone ||
             echisDoc.parent.contact.alternate_phone,
@@ -148,28 +148,19 @@ const transformCountyCode = (code) => {
   return code ? code.padStart(3, "0") : "county-n-a";
 };
 
-const getPropByString = (obj, propString) =>
-  propString.split(".").reduce((prev, fieldName) => {
-    if (prev === undefined) {
-      return undefined;
-    }
-    return prev[fieldName];
-  }, obj);
+const getPropByString = (obj, propString) => propString.split('.').reduce((prev, fieldName) => {
+  if (prev === undefined) { return undefined; }
+  return prev[fieldName];
+}, obj);
 
 // compare fields in the echis client doc and the client doc we got from Client Registry
 function getMismatchedClientFields(echisClientDoc, crClientDoc) {
-  const matcherFields = [
-    "firstName",
-    "middleName",
-    "lastName",
-    "gender",
-    "dateOfBirth",
-  ];
+  const matcherFields = ["firstName", "middleName", "lastName", "gender", "dateOfBirth"];
   // where we store our mismatched fields and return them later
   const mismatchedFields = {};
   // the payload we generate here has the same format as what we get back when we query for client existence
   const crPayload = generateClientRegistryPayload(echisClientDoc);
-  matcherFields.forEach((key) => {
+  matcherFields.forEach(key => {
     const actual = getPropByString(crPayload, key);
     const expected = getPropByString(crClientDoc, key);
     if (!expected) {
@@ -185,6 +176,7 @@ function getMismatchedClientFields(echisClientDoc, crClientDoc) {
 
 module.exports = {
   getIdentificationType,
+  supportedIDTypes,
   generateClientRegistryPayload,
   getMismatchedClientFields,
 };
