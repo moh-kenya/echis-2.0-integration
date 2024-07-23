@@ -1,4 +1,3 @@
-const { getIdentificationType } = require("../../utils/client");
 const { logger } = require("../../utils/logger");
 
 module.exports = function () {

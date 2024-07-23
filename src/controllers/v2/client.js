@@ -1,8 +1,10 @@
 const axios = require("axios");
 const { CLIENT_REGISTRY } = require("../../../config");
-const { getIdentificationType } = require("../../utils/client");
+const {
+  getIdentificationType,
+  supportedIDTypes,
+} = require("../../utils/client");
 const echis = require("../../utils/echis");
-const { logger } = require("../../utils/logger");
 
 const axiosInstance = axios.create({
   baseURL: CLIENT_REGISTRY.url,
@@ -21,8 +23,18 @@ const checkErr = (resp, err) => {
   if (err) throw err;
 };
 
+const parseID = (contact) => {
+  const idType = contact.identification_type;
+  if (idType in supportedIDTypes) {
+    return {
+      [supportedIDTypes[idType]]: contact.identification_number,
+    };
+  }
+  return null;
+};
+
 const fetchClientFromRegistry = async (contact) => {
-  const params = getIdentificationType(contact);
+  const params = parseID(contact);
   let resp;
   try {
     resp = await axiosInstance.get("/api/v4/Patient", {
