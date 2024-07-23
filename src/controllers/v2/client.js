@@ -1,9 +1,6 @@
 const axios = require("axios");
 const { CLIENT_REGISTRY } = require("../../../config");
-const {
-  getIdentificationType,
-  supportedIDTypes,
-} = require("../../utils/client");
+const { supportedIDTypes } = require("../../utils/client");
 const echis = require("../../utils/echis");
 
 const axiosInstance = axios.create({
