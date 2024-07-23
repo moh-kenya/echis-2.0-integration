@@ -3,6 +3,7 @@ const { generateFHIRServiceRequest } = require("../../utils/referral");
 const { CLIENT_REGISTRY } = require("../../../config");
 const echis = require("../../utils/echis");
 const { updateContactCRID } = require("./client");
+const { logger } = require("../../utils/logger");
 
 const axiosInstance = axios.create({
   baseURL: CLIENT_REGISTRY.url,
@@ -20,31 +21,30 @@ const getContactCRID = async (instance, contactID) => {
     echis.getInstanceConf(instance),
     contactID
   );
-  if (!contact.client_registry?.id) {
-    return await updateContactCRID(instance, contactID);
-  } else {
-    return contact.client_registry.id;
+  if (contact.client_registry?.id) {
+    return { id: contact.client_registry.id };
+  }
+  try {
+    let fields = await updateContactCRID(instance, contactID);
+    return { id: fields.client_registry.id };
+  } catch (err) {
+    logger.error(err.message);
+    return { err };
   }
 };
 
 const sendServiceRequest = async (instance, record) => {
-  let contactCRID = await getContactCRID(instance, record._patient_id);
-  if (!contactCRID) {
+  let { id, err } = await getContactCRID(instance, record._patient_id);
+  if (!id) {
     throw new Error(
-      `CR ID not found for contact ${instance}/${record._patient_id}`
+      `CR ID not found for contact ${instance}/${record._patient_id}: ${err}}`
     );
   }
-  const serviceRequest = generateFHIRServiceRequest(
-    instance,
-    contactCRID,
-    record
-  );
-  const response = await axiosInstance.post(
+  const serviceRequest = generateFHIRServiceRequest(instance, id, record);
+  return axiosInstance.post(
     `${FHIR_URL}/fhir/ServiceRequest`,
     JSON.stringify(serviceRequest)
   );
-  const location = response.headers.location.split("/");
-  return { status: response.status, serviceRequestId: location.at(-3) };
 };
 
 module.exports = {
