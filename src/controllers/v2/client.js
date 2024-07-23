@@ -1,14 +1,14 @@
 const axios = require("axios");
-const { TIBERBU_SERVICE } = require("../../../config");
+const { CLIENT_REGISTRY } = require("../../../config");
 const { getIdentificationType } = require("../../utils/client");
 const echis = require("../../utils/echis");
 const { logger } = require("../../utils/logger");
 
 const axiosInstance = axios.create({
-  baseURL: TIBERBU_SERVICE.url,
+  baseURL: CLIENT_REGISTRY.url,
   auth: {
-    username: TIBERBU_SERVICE.user,
-    password: TIBERBU_SERVICE.pass,
+    username: CLIENT_REGISTRY.user,
+    password: CLIENT_REGISTRY.pass,
   },
 });
 

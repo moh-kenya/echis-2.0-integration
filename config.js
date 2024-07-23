@@ -45,10 +45,10 @@ const getCHTValuesFromEnv =(instance)=>{
   });
 };
 
-const TIBERBU_SERVICE = {
-  url: process.env.TIBERBU_URL,
+const CLIENT_REGISTRY = {
+  url: process.env.CLIENT_REGISTRY_URL,
   user: process.env.TIBERBU_USER,
-  pass: process.env.TIBERBU_PASS
+  pass: process.env.TIBERBU_PASS,
 };
 
 const NHDD = {
@@ -71,7 +71,7 @@ const CRON_SCHEDULE = process.env.CRON_SCHEDULE;
 
 module.exports = {
   CHANNEL_CONFIG_ENDPOINTS_URL,
-  TIBERBU_SERVICE,
+  CLIENT_REGISTRY,
   CONFIG,
   FHIR,
   KHIS,
