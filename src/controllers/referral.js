@@ -20,10 +20,14 @@ const {
   COMPLETED_SUCCESSFULLY,
 } = messages;
 
-const getSubjectUpi = async (instance,echisClientId) => {
+const getSubjectUpi = async (instance, echisClientId) => {
   var echisClient;
   let chtInstanceVariables = getCHTValuesFromEnv(instance);
-  let instanceObject = { instance: chtInstanceVariables.url, user: chtInstanceVariables.username, password: chtInstanceVariables.password };
+  let instanceObject = {
+    instance: chtInstanceVariables.url,
+    user: chtInstanceVariables.username,
+    password: chtInstanceVariables.password,
+  };
   try {
     echisClient = await getDoc(instanceObject, echisClientId);
     if (echisClient.upi) {
@@ -34,13 +38,15 @@ const getSubjectUpi = async (instance,echisClientId) => {
     return;
   }
   try {
-    const clientNumber = await createCRClient(instanceObject, echisClient)
+    const clientNumber = await createCRClient(instanceObject, echisClient);
     return clientNumber;
   } catch (err) {
-    logger.error(`could not get subject upi, err while trying to create client ${err.message}`);
+    logger.error(
+      `could not get subject upi, err while trying to create client ${err.message}`
+    );
   }
-  return
-}
+  return;
+};
 
 const createFacilityReferral = async (CHTDataRecordDoc, res) => {
   logger.information(CREATE_FACILITY_REFERRAL);
@@ -76,11 +82,12 @@ const createFacilityReferral = async (CHTDataRecordDoc, res) => {
     );
     logger.information(GENERATE_FHIR_SR);
 
-    let upi = CHTDataRecordDoc.upi
+    let upi = CHTDataRecordDoc.upi;
     if (!upi) {
       upi = await getSubjectUpi(instanceValue, CHTDataRecordDoc._patient_id);
       if (!upi) {
-        throw new Error(ATTRIB_NOT_FOUND);
+        // throw new Error(ATTRIB_NOT_FOUND);
+        logger.error(ATTRIB_NOT_FOUND);
       }
       CHTDataRecordDoc.upi = upi;
     }
@@ -109,7 +116,7 @@ const createFacilityReferral = async (CHTDataRecordDoc, res) => {
   }
 };
 
-const createCommunityReferral = async (serviceRequest,res) => {
+const createCommunityReferral = async (serviceRequest, res) => {
   try {
     const instanceValue = res.locals.instanceValue;
     const chtInstanceVariables = getCHTValuesFromEnv(instanceValue);
@@ -148,7 +155,7 @@ const createCommunityReferral = async (serviceRequest,res) => {
   }
 };
 
-const createTaskReferral = async (serviceRequest,res) => {
+const createTaskReferral = async (serviceRequest, res) => {
   try {
     const instanceValue = res.locals.instanceValue;
     const chtInstanceVariables = getCHTValuesFromEnv(instanceValue);
@@ -204,7 +211,6 @@ const createTaskReferral = async (serviceRequest,res) => {
     return error;
   }
 };
-
 
 module.exports = {
   createFacilityReferral,
