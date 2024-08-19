@@ -48,7 +48,7 @@ app.listen(CONFIG.port, () => {
 
 const registerMediatorCallback = (err) => {
   if (err) {
-    throw new Error(`${MEDIATOR_FAILURE} ${err}`);
+    //throw new Error(`${MEDIATOR_FAILURE} ${err}`);
   }
   logger.information(MEDIATOR_SUCCESS);
 };
@@ -57,8 +57,7 @@ const mediatorConfig = {
   urn: `urn:mediator:${OPENHIM.channel}`,
   version: "1.0.0",
   name: "eCHIS Mediator",
-  description:
-    "A mediator eCHIS to KHIS integration.",
+  description: "A mediator eCHIS to KHIS integration.",
   defaultChannelConfig: [
     {
       name: "eCHIS Mediator",
@@ -67,7 +66,7 @@ const mediatorConfig = {
         {
           name: "eCHIS Mediator",
           host: CHANNEL_CONFIG_ENDPOINTS_URL,
-          pathTransform: `s/\\/${OPENHIM.channel}/`,          
+          pathTransform: `s/\\/${OPENHIM.channel}/`,
           port: 22000,
           primary: true,
           type: "http",
