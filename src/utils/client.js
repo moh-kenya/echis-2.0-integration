@@ -50,7 +50,7 @@ const counties = [
   { code: 47, name: "Nairobi" },
 ];
 
-const idMap = {
+const supportedIDTypes = {
   national_id: "national-id",
   birth_certificate: "birth-certificate",
   passport: "passport",
@@ -58,8 +58,8 @@ const idMap = {
 };
 
 const getIdentificationType = (idType) => {
-  if (idType in idMap) {
-    return idMap[idType];
+  if (idType in supportedIDTypes) {
+    return supportedIDTypes[idType];
   }
   return idType;
 };
@@ -110,7 +110,7 @@ const generateClientRegistryPayload = (echisDoc) => {
       {
         countryCode: echisDoc.country_code || "KE",
         identificationType:
-          idMap[echisDoc.identification_type] || "national-id",
+          supportedIDTypes[echisDoc.identification_type] || "national-id",
         identificationNumber: echisDoc.identification_number,
       },
     ],
@@ -176,6 +176,7 @@ function getMismatchedClientFields(echisClientDoc, crClientDoc) {
 
 module.exports = {
   getIdentificationType,
+  supportedIDTypes,
   generateClientRegistryPayload,
   getMismatchedClientFields,
 };

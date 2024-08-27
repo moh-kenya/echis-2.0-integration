@@ -96,7 +96,9 @@ const mediatorConfig = {
   ],
 };
 
-registerMediator(OPENHIM, mediatorConfig, registerMediatorCallback);
+if (process.env.ENV !== "dev") {
+  registerMediator(OPENHIM, mediatorConfig, registerMediatorCallback);
+}
 
 app.get("/", (req, res) => {
   logger.information(LOAD_ROOT);
