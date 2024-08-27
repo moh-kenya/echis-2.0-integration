@@ -3,11 +3,14 @@ const express = require("express");
 const path = require("path");
 
 const app = express();
+const morgan = require("morgan");
 
 const { registerMediator } = require('openhim-mediator-utils');
 const {OPENHIM, CONFIG, CHANNEL_CONFIG_ENDPOINTS_URL, CRON_SCHEDULE, MEDIATOR} = require('./config');
 const clientRoutes = require('./src/routes/client');
+const clientv2Routes = require('./src/routes/v2/client');
 const referralRoutes = require('./src/routes/referral');
+const referralv2Routes = require('./src/routes/v2/referral');
 const aggregateRoutes = require('./src/routes/aggregate');
 const { scheduleTask } = require('./src/cron/cron');
 const { logger } = require('./src/utils/logger');
@@ -26,17 +29,17 @@ const {
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(morgan('tiny'));
 
 logger.information(ROUTES_SETUP);
 
 app.use("/client", clientRoutes);
+app.use("/v2/client", clientv2Routes);
 app.use("/referral", referralRoutes);
+app.use("/v2/referral", referralv2Routes);
 app.use("/aggregate", aggregateRoutes);
 
 logger.information(ROUTES_SETUP_COMPLETE);
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
 logger.information(CRON_SETUP);
 scheduleTask(CRON_SCHEDULE, MEDIATOR);
