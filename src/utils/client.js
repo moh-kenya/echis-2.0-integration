@@ -1,4 +1,5 @@
 const { logger } = require("../utils/logger");
+const { distance } = require("fastest-levenshtein");
 
 const counties = [
   { code: 1, name: "Mombasa" },
@@ -153,14 +154,28 @@ const getPropByString = (obj, propString) => propString.split('.').reduce((prev,
   return prev[fieldName];
 }, obj);
 
+function areNamesSimilar(contact, client) {
+  const contactName = contact.first_name
+    .concat(" ", contact.middle_name ?? "", " ", contact.last_name ?? "")
+    .trim()
+    .toLowerCase();
+  const clientName = client.firstName
+    .concat(" ", client.middleName ?? "", " ", client.lastName ?? "")
+    .trim()
+    .toLowerCase();
+  return distance(contactName, clientName) / Math.max(contactName.length, clientName.length) < 0.3;
+}
+
 // compare fields in the echis client doc and the client doc we got from Client Registry
 function getMismatchedClientFields(echisClientDoc, crClientDoc) {
-  const matcherFields = ["firstName", "middleName", "lastName", "gender", "dateOfBirth"];
-  // where we store our mismatched fields and return them later
+  const matcherFields = ["gender", "dateOfBirth"];
+  if (!areNamesSimilar(echisClientDoc, crClientDoc)) {
+    matcherFields.push("firstName", "middleName", "lastName");
+  }
   const mismatchedFields = {};
   // the payload we generate here has the same format as what we get back when we query for client existence
   const crPayload = generateClientRegistryPayload(echisClientDoc);
-  matcherFields.forEach(key => {
+  matcherFields.forEach((key) => {
     const actual = getPropByString(crPayload, key);
     const expected = getPropByString(crClientDoc, key);
     if (!expected) {
@@ -176,6 +191,7 @@ function getMismatchedClientFields(echisClientDoc, crClientDoc) {
 
 module.exports = {
   getIdentificationType,
+  areNamesSimilar,
   supportedIDTypes,
   generateClientRegistryPayload,
   getMismatchedClientFields,
