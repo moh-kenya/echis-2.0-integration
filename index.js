@@ -1,9 +1,8 @@
 const bodyParser = require("body-parser");
-const express = require("express");
-const path = require("path");
-
-const app = express();
 const morgan = require("morgan");
+const express = require("express");
+const promBundle = require("express-prom-bundle");
+const path = require("path");
 
 const { registerMediator } = require('openhim-mediator-utils');
 const {OPENHIM, CONFIG, CHANNEL_CONFIG_ENDPOINTS_URL, CRON_SCHEDULE, MEDIATOR} = require('./config');
@@ -27,11 +26,10 @@ const {
   LOAD_ROOT,
 } = messages;
 
+const app = express();
+app.use(promBundle({ includeMethod: true, includePath: true }));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan('tiny'));
-
-logger.information(ROUTES_SETUP);
 
 app.use("/client", clientRoutes);
 app.use("/v2/client", clientv2Routes);
