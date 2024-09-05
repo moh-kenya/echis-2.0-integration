@@ -1,7 +1,6 @@
 const axios = require("axios");
 const { CLIENT_REGISTRY } = require("../../../config");
 const { supportedIDTypes } = require("../../utils/client");
-const echis = require("../../utils/echis");
 const { logger } = require("../../utils/logger");
 
 const axiosInstance = axios.create({
@@ -10,15 +9,18 @@ const axiosInstance = axios.create({
     username: CLIENT_REGISTRY.user,
     password: CLIENT_REGISTRY.pass,
   },
+  timeout: 10000,
 });
 
-const checkErr = (resp, err) => {
+const err = (resp, err) => {
+  if (err) throw err;
   let issues = resp.data.message?.issue || resp.data.issue;
   let errString = issues.map((issue) => issue.diagnostics).join(",");
   if (errString.includes("not found")) {
     throw new Error("no matches");
+  } else {
+    throw new Error(errString);
   }
-  if (err) throw err;
 };
 
 const parseID = (contact) => {
@@ -28,27 +30,29 @@ const parseID = (contact) => {
       [supportedIDTypes[idType]]: contact.identification_number,
     };
   }
-  return null;
+  throw new Error(
+    "Invalid identification type: " + contact.identification_type
+  );
 };
 
 const fetchClientFromRegistry = async (contact) => {
   const params = parseID(contact);
-  let resp;
   try {
-    resp = await axiosInstance.get("/api/v4/Patient", {
+    const resp = await axiosInstance.get("/api/v4/Patient", {
       params: { ...params },
     });
+    return resp.data.id ?? err(resp);
   } catch (err) {
-    checkErr(err.response, err);
+    err(err.response, err);
   }
-  return resp.data.id || checkErr(resp);
 };
 
 const getCRFields = async (contact) => {
   try {
+    const id = await fetchClientFromRegistry(contact);
     return {
       client_registry: {
-        id: await fetchClientFromRegistry(contact),
+        id,
         status: "OK",
       },
     };
@@ -62,23 +66,7 @@ const getCRFields = async (contact) => {
   }
 };
 
-const updateContactCRID = async (instance, contact) => {
-  let fields = await getCRFields(contact);
-  await echis.updateDoc(echis.getInstanceConf(instance), contact._id, fields);
-  return fields;
-};
-
-const contactHandler = async (_, response) => {
-  const contact = response.locals.contact;
-  if (contact.client_registry?.status === "OK") {
-    return;
-  }
-  await updateContactCRID(response.locals.instanceValue, contact);
-};
-
 module.exports = {
   fetchClientFromRegistry,
-  updateContactCRID,
   getCRFields,
-  contactHandler,
 };

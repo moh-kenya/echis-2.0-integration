@@ -17,6 +17,7 @@ const genRequestConfig = (conf) => {
       username: conf.user,
       password: conf.password,
     },
+    timeout: 10000,
   };
 };
 

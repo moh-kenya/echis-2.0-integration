@@ -9,6 +9,7 @@ router.post("/facility", async function (req, res) {
   const instance = response.locals.instanceValue;
   try {
     await sendServiceRequest(instance, req.body);
+    res.status(200).send();
   } catch (error) {
     logger.err(error.message);
     res.status(400).send(JSON.stringify(error));

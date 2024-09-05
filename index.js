@@ -1,4 +1,3 @@
-const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const express = require("express");
 const promBundle = require("express-prom-bundle");
@@ -27,9 +26,9 @@ const {
 } = messages;
 
 const app = express();
+app.use(morgan());
 app.use(promBundle({ includeMethod: true, includePath: true }));
-app.use(bodyParser.json());
-app.use(morgan('tiny'));
+app.use(express.json());
 
 app.use("/client", clientRoutes);
 app.use("/v2/client", clientv2Routes);
