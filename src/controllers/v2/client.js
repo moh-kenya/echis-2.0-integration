@@ -1,7 +1,6 @@
 const axios = require("axios");
 const { CLIENT_REGISTRY } = require("../../../config");
-const { supportedIDTypes } = require("../../utils/client");
-const { logger } = require("../../utils/logger");
+const { supportedIDTypes, areSimilar } = require("../../utils/client");
 
 const axiosInstance = axios.create({
   baseURL: CLIENT_REGISTRY.url,
@@ -41,32 +40,40 @@ const fetchClientFromRegistry = async (contact) => {
     const resp = await axiosInstance.get("/api/v4/Patient", {
       params: { ...params },
     });
-    return resp.data.id ?? err(resp);
+    return (
+      {
+        id: resp.data.id,
+        name: resp.data.name[0].text,
+        date_of_birth: resp.data.birthDate,
+        sex: resp.data.gender,
+      } ?? err(resp)
+    );
   } catch (err) {
     err(err.response, err);
   }
 };
 
-const getCRFields = async (contact) => {
-  try {
-    const id = await fetchClientFromRegistry(contact);
-    return {
-      client_registry: {
-        id,
-        status: "OK",
-      },
-    };
-  } catch (error) {
-    logger.error(error.message);
-    return {
-      client_registry: {
-        error: error.message,
-      },
-    };
+const compareAttrs = (contact, client) => {
+  const errors = [];
+  const contactName = contact.first_name
+    .concat(" ", contact.middle_name ?? "", " ", contact.last_name ?? "")
+    .trim();
+  const attrs = [
+    { label: "Date of birth", attr: "date_of_birth" },
+    { label: "Gender", attr: "sex" },
+  ];
+  if (!areSimilar(contactName, client.name)) {
+    errors.push("Fullname");
   }
+  attrs.forEach((attr) => {
+    if (contact[attr.attr] != client[attr.attr]) {
+      errors.push(attr.label);
+    }
+  });
+  return errors;
 };
 
 module.exports = {
   fetchClientFromRegistry,
-  getCRFields,
+  compareAttrs,
 };

@@ -154,6 +154,10 @@ const getPropByString = (obj, propString) => propString.split('.').reduce((prev,
   return prev[fieldName];
 }, obj);
 
+function areSimilar(contactName, clientName) {
+  return distance(contactName, clientName) / Math.max(contactName.length, clientName.length) < 0.3;
+}
+
 function areNamesSimilar(contact, client) {
   const contactName = contact.first_name
     .concat(" ", contact.middle_name ?? "", " ", contact.last_name ?? "")
@@ -163,7 +167,7 @@ function areNamesSimilar(contact, client) {
     .concat(" ", client.middleName ?? "", " ", client.lastName ?? "")
     .trim()
     .toLowerCase();
-  return distance(contactName, clientName) / Math.max(contactName.length, clientName.length) < 0.3;
+  return areSimilar(contactName, clientName);
 }
 
 // compare fields in the echis client doc and the client doc we got from Client Registry
@@ -191,7 +195,7 @@ function getMismatchedClientFields(echisClientDoc, crClientDoc) {
 
 module.exports = {
   getIdentificationType,
-  areNamesSimilar,
+  areSimilar,
   supportedIDTypes,
   generateClientRegistryPayload,
   getMismatchedClientFields,
