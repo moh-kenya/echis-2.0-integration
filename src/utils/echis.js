@@ -63,4 +63,5 @@ module.exports = {
   updateDoc,
   createReport,
   getInstanceConf,
+  genRequestConfig
 };

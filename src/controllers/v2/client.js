@@ -1,6 +1,7 @@
 const axios = require("axios");
 const { CLIENT_REGISTRY } = require("../../../config");
 const { supportedIDTypes, areSimilar } = require("../../utils/client");
+const { getDoc, genRequestConfig } = require("../../utils/echis");
 
 const axiosInstance = axios.create({
   baseURL: CLIENT_REGISTRY.url,
@@ -30,7 +31,7 @@ const parseID = (contact) => {
     };
   }
   throw new Error(
-    "Invalid identification type: " + contact.identification_type
+    "Client has an invalid identification type: " + contact.identification_type
   );
 };
 
@@ -53,6 +54,31 @@ const fetchClientFromRegistry = async (contact) => {
   }
 };
 
+const updateContactUPI = (conf, docId, obj) => {
+  return getDoc(conf, docId)
+    .then((resp) => {
+      const doc = resp.data;
+      if (doc.upi && !doc.cr_hie_id) {
+        doc.moh_upi = doc.upi;
+      }
+      return doc;
+    })
+    .then((doc) => {
+      return new Promise((resolve) => {
+        Object.keys(obj).forEach((key) => (doc[key] = obj[key]));
+        resolve(doc);
+      });
+    })
+    .then((doc) => {
+      return axios.put(`medic/${doc._id}`, JSON.stringify(doc), {
+        ...genRequestConfig(conf),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    });
+};
+
 const compareAttrs = (contact, client) => {
   const errors = [];
   const contactName = contact.first_name
@@ -62,7 +88,7 @@ const compareAttrs = (contact, client) => {
     { label: "Date of birth", attr: "date_of_birth" },
     { label: "Gender", attr: "sex" },
   ];
-  if (!areSimilar(contactName, client.name)) {
+  if (!areSimilar(contactName.toLowerCase(), client.name.toLowerCase())) {
     errors.push("Fullname");
   }
   attrs.forEach((attr) => {
@@ -76,4 +102,5 @@ const compareAttrs = (contact, client) => {
 module.exports = {
   fetchClientFromRegistry,
   compareAttrs,
+  updateContactUPI
 };
