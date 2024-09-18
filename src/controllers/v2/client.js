@@ -49,8 +49,8 @@ const fetchClientFromRegistry = async (contact) => {
         sex: resp.data.gender,
       } ?? err(resp)
     );
-  } catch (err) {
-    err(err.response, err);
+  } catch (error) {
+    err(error.response, error);
   }
 };
 
