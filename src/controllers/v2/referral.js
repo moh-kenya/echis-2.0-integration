@@ -1,14 +1,13 @@
 const axios = require("axios");
 const { generateFHIRServiceRequest } = require("../../utils/referral");
-const { CLIENT_REGISTRY } = require("../../../config");
+const { HIE } = require("../../../config");
 const echis = require("../../utils/echis");
-const { logger } = require("../../utils/logger");
 
 const axiosInstance = axios.create({
-  baseURL: CLIENT_REGISTRY.url,
+  baseURL: HIE.url,
   auth: {
-    username: CLIENT_REGISTRY.user,
-    password: CLIENT_REGISTRY.pass,
+    username: HIE.user,
+    password: HIE.pass,
   },
   headers: {
     "Content-Type": "application/json",

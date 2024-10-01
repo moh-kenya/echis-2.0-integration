@@ -1,13 +1,13 @@
 const axios = require("axios");
-const { CLIENT_REGISTRY } = require("../../../config");
+const { HIE } = require("../../../config");
 const { supportedIDTypes, areSimilar } = require("../../utils/client");
 const { getDoc, genRequestConfig } = require("../../utils/echis");
 
 const axiosInstance = axios.create({
-  baseURL: CLIENT_REGISTRY.url,
+  baseURL: HIE.url,
   auth: {
-    username: CLIENT_REGISTRY.user,
-    password: CLIENT_REGISTRY.pass,
+    username: HIE.user,
+    password: HIE.pass,
   },
   timeout: 10000,
 });
