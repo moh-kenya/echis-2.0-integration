@@ -22,7 +22,8 @@ module.exports = function (axiosInstance) {
             res.locals.crClient = response.data?.client;
         } catch (err) {
             logger.error(`Error while searching Client Registry: ${err.message}`);
-            throw err;
+            res.status(400).send('err while searching client registry');
+            return;
         }
 
         next()
