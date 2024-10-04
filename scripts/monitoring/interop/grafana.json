@@ -256,32 +256,7 @@
                         ]
                     }
                 },
-                "overrides": [
-                    {
-                        "__systemRef": "hideSeriesFrom",
-                        "matcher": {
-                            "id": "byNames",
-                            "options": {
-                                "mode": "exclude",
-                                "names": [
-                                    "{method=\"POST\", path=\"/v2/client\"}"
-                                ],
-                                "prefix": "All except:",
-                                "readOnly": true
-                            }
-                        },
-                        "properties": [
-                            {
-                                "id": "custom.hideFrom",
-                                "value": {
-                                    "legend": false,
-                                    "tooltip": false,
-                                    "viz": true
-                                }
-                            }
-                        ]
-                    }
-                ]
+                "overrides": []
             },
             "gridPos": {
                 "h": 12,
@@ -316,7 +291,7 @@
                     "refId": "A"
                 }
             ],
-            "title": "Requests per minute",
+            "title": "Avg Requests per second",
             "type": "timeseries"
         },
         {
@@ -412,7 +387,7 @@
             "type": "timeseries"
         }
     ],
-    "refresh": false,
+    "refresh": "30m",
     "schemaVersion": 38,
     "style": "dark",
     "tags": [],
@@ -420,13 +395,13 @@
         "list": []
     },
     "time": {
-        "from": "now-12h",
+        "from": "now-6h",
         "to": "now"
     },
     "timepicker": {},
     "timezone": "",
     "title": "General",
     "uid": "a4cf33cb-84a3-46cd-bda3-9dd969043309",
-    "version": 7,
+    "version": 8,
     "weekStart": ""
 }
