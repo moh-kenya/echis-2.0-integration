@@ -9,7 +9,7 @@ module.exports = function (axiosInstance) {
             return
         }
         if (contactDoc?.upi) {
-            res.status(304).send();
+            res.status(200).send();
             return
         }
 

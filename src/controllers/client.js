@@ -144,7 +144,7 @@ async function assignEchisClientUPI(req, res) {
       instanceObject,
       res.locals.echisClient
     );
-    success(201, res.locals.echisClient._id, clientNumber);
+    success(200, res.locals.echisClient._id, clientNumber);
   } catch (err) {
     const errStruct = {
       instance: getCHTValuesFromEnv(instance).url,
