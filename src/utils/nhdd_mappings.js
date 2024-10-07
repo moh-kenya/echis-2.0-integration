@@ -1,6 +1,4 @@
-const {
-    NHDD,
-} = require("../../config");
+const { NHDD } = require("../../config");
 
 const NHDD_URL = `${NHDD.url}/orgs/MOH-KENYA/sources`;
 const NHDD_GENERIC_PATH = `${NHDD_URL}/nhdd/concepts/`;
@@ -16,27 +14,27 @@ const clinicCodes = {
         code: `28023`,
         display: `Outpatient Department`,
     },
-}
+};
 
 const codes = {
     none: {
         system: NHDD_GENERIC_PATH,
-        code: `48590`,
+        code: "260413007",
         display: `None`,
     },
     bcg: {
         system: NHDD_GENERIC_PATH,
-        code: "10512",
+        code: "1861000221106",
         display: "BCG Vaccine",
     },
     opv: {
         system: NHDD_GENERIC_PATH,
-        code: "6032",
+        code: "1051000221104",
         display: "Polio Vaccination, Oral",
     },
     pcv: {
         system: NHDD_GENERIC_PATH,
-        code: "24499",
+        code: "981000221107",
         display: "Decavalent Pneumococcal Vaccine (Pneumococcal Conjugate Vaccine)",
     },
     penta: {
@@ -56,12 +54,12 @@ const codes = {
     },
     vitamin_a: {
         system: NHDD_GENERIC_PATH,
-        code: "1107",
+        code: "82622003",
         display: "Vitamin A",
     },
     measles: {
         system: NHDD_GENERIC_PATH,
-        code: "5456",
+        code: "871765008",
         display: "Measles Vaccine",
     },
     //part of 25030 Developmental milestones
@@ -123,118 +121,118 @@ const codes = {
     },
     consitpation: {
         system: NHDD_GENERIC_PATH,
-        code: "670",
+        code: "14760008",
         display: "Constipation",
     },
     skinRash: {
         system: NHDD_GENERIC_PATH,
-        code: "40056",
+        code: "703938007",
         display: "Dermatitis",
     },
     diarrhea: {
         system: NHDD_GENERIC_PATH,
-        code: "3792",
+        code: "62315008",
         display: "Diarrhea",
     },
     dizziness: {
         system: NHDD_GENERIC_PATH,
-        code: "4743",
+        code: "404640003",
         display: "Dizziness",
     },
     drowsiness: {
         system: NHDD_GENERIC_PATH,
-        code: "4869",
+        code: "271782001",
         display: "Drowsy",
     },
     dryMouth: {
         system: NHDD_GENERIC_PATH,
-        code: "36672",
+        code: "87715008",
         display: "dry mouth",
     },
     fatigue: {
         system: NHDD_GENERIC_PATH,
-        code: "7087",
+        code: "84229001",
         display: "Fatigue",
     },
     headache: {
         system: NHDD_GENERIC_PATH,
-        code: "9579",
+        code: "25064002",
         display: "Headache",
     },
     hives: {
         system: NHDD_GENERIC_PATH,
-        code: "48339",
+        code: "247472004",
         display: "Hives",
     },
     insomnia: {
         system: NHDD_GENERIC_PATH,
-        code: "42620",
+        code: "193462001",
         display: "Insomnia",
     },
     irregularHeartbeat: {
         system: NHDD_GENERIC_PATH,
-        code: "13351",
+        code: "361137007",
         display: "Irregular Heartbeat",
     },
     nausea: {
         system: NHDD_GENERIC_PATH,
-        code: "12290",
+        code: "422587007",
         display: "Nausea",
     },
     upsetStomach: {
         system: NHDD_GENERIC_PATH,
-        code: "34521",
+        code: "95516005",
         display: "Upset Stomach",
     },
     rash: {
         system: NHDD_GENERIC_PATH,
-        code: "13488",
+        code: "271807003",
         display: "Rash",
     },
     vomiting: {
         system: NHDD_GENERIC_PATH,
-        code: "35599",
+        code: "422400008",
         display: "Vomiting",
     },
     //under 5 assessment
     notFeeding: {
         system: NHDD_GENERIC_PATH,
-        code: "12229",
+        code: "72552008",
         display: "Refusal to Feed",
     },
     convulsions: {
         system: NHDD_GENERIC_PATH,
-        code: `46463`,
+        code: "91175000",
         display: `Convulsions`,
     },
     convulsionsNewborn: {
         system: NHDD_GENERIC_PATH,
-        code: `2108`,
+        code: `87476004`,
         display: `Convulsions in the newborn`,
     },
     fast_breathing: {
         system: NHDD_GENERIC_PATH,
-        code: "31922",
+        code: "271823003",
         display: "Tachypnea",
     },
     chestIndrawn: {
         system: NHDD_GENERIC_PATH,
-        code: "13073",
+        code: "247389006", // sus
         display: "Intercostal Recession",
     },
     fever: {
         system: NHDD_GENERIC_PATH,
-        code: "7579",
+        code: "386661006",
         display: "Fever",
     },
     lowTemp: {
         system: NHDD_GENERIC_PATH,
-        code: "42008",
+        code: "386689009",
         display: "Decreased Body Temperature",
     },
     highTemp: {
         system: NHDD_GENERIC_PATH,
-        code: "49442",
+        code: "85623003",
         display: "Body Temperature Above Normal",
     },
     noMovement: {
@@ -264,42 +262,42 @@ const codes = {
     },
     lowBirthWeight: {
         system: NHDD_GENERIC_PATH,
-        code: "43203",
+        code: "276610007",
         display: "Low Birth Weight",
     },
     cough: {
         system: NHDD_GENERIC_PATH,
-        code: "2326",
+        code: "49727002",
         display: "Cough",
     },
     bloodInStool: {
         system: NHDD_GENERIC_PATH,
-        code: "41550",
+        code: "405729008",
         display: "Hematochezia",
     },
     medication: {
         system: NHDD_GENERIC_PATH,
-        code: "26741",
+        code: "182832007",
         display: "Medication",
     },
     unconscious: {
         system: NHDD_GENERIC_PATH,
-        code: "34266",
+        code: "418107008",
         display: "Unconscious",
     },
     vomittingEverything: {
         system: NHDD_GENERIC_PATH,
-        code: "20238",
+        code: "196746003",
         display: "Vomiting everything",
     },
     swollenFeet: {
         system: NHDD_GENERIC_PATH,
-        code: "31660",
+        code: "65124004",
         display: "Swollen Feet",
     },
     malariaConfirmed: {
         system: NHDD_GENERIC_PATH,
-        code: "28784",
+        code: "61462000",
         display: "Malaria, confirmed",
     },
     //over 5 assessment
@@ -310,12 +308,12 @@ const codes = {
     },
     difficultyBreathing: {
         system: NHDD_GENERIC_PATH,
-        code: "36220",
+        code: "267036007",
         display: "Dyspnea",
     },
     fainting: {
         system: NHDD_GENERIC_PATH,
-        code: "46592",
+        code: "271594007",
         display: "Fainting Spells",
     },
     burns: {
@@ -325,77 +323,77 @@ const codes = {
     },
     tbContact: {
         system: NHDD_GENERIC_PATH,
-        code: "33803",
-        display: "Tuberculosis ",
+        code: "56717001",
+        display: "Tuberculosis",
     },
     chestPain: {
         system: NHDD_GENERIC_PATH,
-        code: "38074",
+        code: "29857009",
         display: "Chest pain",
     },
     weightLoss: {
         system: NHDD_GENERIC_PATH,
-        code: "2900",
+        code: "262285001",
         display: "Weight loss",
     },
     nightSweats: {
         system: NHDD_GENERIC_PATH,
-        code: "18627",
+        code: "42984000",
         display: "Night sweats",
     },
     fatigue: {
         system: NHDD_GENERIC_PATH,
-        code: "7087",
+        code: "84229001",
         display: "Fatigue",
     },
     diabetic: {
         system: NHDD_GENERIC_PATH,
-        code: "41972",
+        code: "302866003",
         display: "Diabetic Hypoglycemia",
     },
     excessThirst: {
         system: NHDD_GENERIC_PATH,
-        code: "6383",
+        code: "249477003",
         display: "Excessive Thirst",
     },
     frequentUrination: {
         system: NHDD_GENERIC_PATH,
-        code: "12205",
+        code: "162116003",
         display: "Increased Frequency of Urination",
     },
     weightChange: {
         system: NHDD_GENERIC_PATH,
-        code: "696",
+        code: "301336003",
         display: "Weight change",
     },
     hypertensive: {
         system: NHDD_GENERIC_PATH,
-        code: "41896",
+        code: "38341003",
         display: "Hypertensive Disorder",
     },
     severeHeadache: {
         system: NHDD_GENERIC_PATH,
-        code: "9585",
+        code: "25064002",
         display: "Severe Headache",
     },
     noseBleed: {
         system: NHDD_GENERIC_PATH,
-        code: "19268",
+        code: "249366005",
         display: "Nosebleed, Symptom",
     },
     tired: {
         system: NHDD_GENERIC_PATH,
-        code: "32780",
+        code: "224960004",
         display: "Tired",
     },
     fastHeartbeat: {
         system: NHDD_GENERIC_PATH,
-        code: "47162",
+        code: "3424008",
         display: "Very Rapid Heartbeat",
     },
     lackOfSleep: {
         system: NHDD_GENERIC_PATH,
-        code: `29541`,
+        code: `301345002`,
         display: `Lack of sleep`,
     },
     feelingOfWorthlessness: {
@@ -420,19 +418,19 @@ const codes = {
     },
     anxiety: {
         system: NHDD_GENERIC_PATH,
-        code: `15111`,
+        code: `48694002`,
         display: `Anxiety/worried for no apparent reason`,
     },
     irritability: {
         system: NHDD_GENERIC_PATH,
-        code: `12218`,
+        code: `55929007`,
         display: `Irritability/agitated`,
     },
     diarrhea: {
         system: NHDD_GENERIC_PATH,
         code: `3792`,
         display: `Diarrhea`,
-      },
+    },
 };
 
 const vaccinesMapping = {
@@ -528,20 +526,20 @@ const treatmentFollowUpSideEffect = {
     nausea: codes.nausea,
     upset_stomach: codes.upsetStomach,
     rash: codes.rash,
-    vomiting: codes.vomiting
+    vomiting: codes.vomiting,
 };
 
 const mentalhealthSigns = {
     lack_of_sleep: codes.lackOfSleep,
     feeling_of_worthlessness: codes.feelingOfWorthlessness,
     staying_away_from_people: codes.stayingAwayFromPeople,
-    tearfulness: codes.tearfulness
+    tearfulness: codes.tearfulness,
 };
 
 const observerdMentalhealthSigns = {
     lack_of_hygiene: codes.lackOfHygiene,
     anxiety_worried_for_no_apparent_reason: codes.anxiety,
-    irritability_agitated: codes.irritability
+    irritability_agitated: codes.irritability,
 };
 
 const serviceMapping = {
@@ -550,8 +548,8 @@ const serviceMapping = {
         mapping: {
             ...vaccinesMapping,
             ...developmentalMilestones,
-            ...vitaminAMapping
-        }
+            ...vitaminAMapping,
+        },
     },
     treatment_follow_up: {
         clinic: clinicCodes.outPatient,
@@ -559,8 +557,8 @@ const serviceMapping = {
             no_change: codes.noChange,
             feeling_better: codes.better,
             worse: codes.worse,
-            ...treatmentFollowUpSideEffect
-        }
+            ...treatmentFollowUpSideEffect,
+        },
     },
     u5_assessment: {
         clinic: clinicCodes.child_welfare,
@@ -590,8 +588,8 @@ const serviceMapping = {
             malaria_positive: codes.malariaConfirmed,
             ...developmentalMilestones,
             ...vitaminAMapping,
-            ...vaccinesMapping
-        }
+            ...vaccinesMapping,
+        },
     },
     over_five_assessment: {
         clinic: clinicCodes.outPatient,
@@ -622,10 +620,10 @@ const serviceMapping = {
             fast_heartbeat: codes.fastHeartbeat,
             nausea_vomiting: codes.nausea,
             ...mentalhealthSigns,
-            ...observerdMentalhealthSigns
-        }
+            ...observerdMentalhealthSigns,
+        },
     },
-}
+};
 
 module.exports = {
     serviceMapping,
