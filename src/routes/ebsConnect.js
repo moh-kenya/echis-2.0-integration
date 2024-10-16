@@ -8,17 +8,17 @@ const axios = require("axios");
 
 router.post("/", async (req, res) => {
   const options = {
-    uri: "http://102.220.22.137:8111/rest/v1/ebs_connect",
+    url: "http://102.220.22.137:8111/rest/v1/ebs_connect",
     method: req.method,
-    body: req.body,
+    data: req.body,
     headers: {
-      ...req.headers,
+      Authorization:
+        "Basic c3VwYWJhc2U6Z0c4dml5WmVsZUFYZUI5ZGJtcTg1M05GZVBkSDFa",
       apiKey:
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ewogICJyb2xlIjogImFub24iLAogICJpc3MiOiAic3VwYWJhc2UiLAogICJpYXQiOiAxNzI3ODE2NDAwLAogICJleHAiOiAxODg1NTgyODAwCn0.xGLBHldwAvyuPZbymuWIbpsIVVUF6FWuv5LeJUXyjTQ", // Add custom header
-    },
-    json: true, // Automatically stringify the body to JSON
+    }, // Automatically stringify the body to JSON
   };
-
+  console.log(options);
   axios(options)
     .then((response) => {
       // Send the upstream server's response back to the client

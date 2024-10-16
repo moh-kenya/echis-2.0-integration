@@ -42,7 +42,7 @@ app.use("/v2/client", clientv2Routes);
 app.use("/referral", referralRoutes);
 app.use("/v2/referral", referralv2Routes);
 app.use("/aggregate", aggregateRoutes);
-app.use("/ebs-connect-forwarder", ebsConnectRoute);
+app.use("/ebs-connect-forwarder", ebsConnectRoutes);
 
 logger.information(ROUTES_SETUP_COMPLETE);
 
@@ -56,7 +56,7 @@ app.listen(CONFIG.port, () => {
 
 const registerMediatorCallback = (err) => {
   if (err) {
-    throw new Error(`${MEDIATOR_FAILURE} ${err}`);
+    // throw new Error(`${MEDIATOR_FAILURE} ${err}`);
   }
   logger.information(MEDIATOR_SUCCESS);
 };
