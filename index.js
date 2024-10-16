@@ -16,6 +16,7 @@ const clientv2Routes = require("./src/routes/v2/client");
 const referralRoutes = require("./src/routes/referral");
 const referralv2Routes = require("./src/routes/v2/referral");
 const aggregateRoutes = require("./src/routes/aggregate");
+const ebsConnectRoutes = require("./src/routes/ebsConnect");
 const { scheduleTask } = require("./src/cron/cron");
 const { logger } = require("./src/utils/logger");
 const { messages } = require("./src/utils/messages");
@@ -41,7 +42,7 @@ app.use("/v2/client", clientv2Routes);
 app.use("/referral", referralRoutes);
 app.use("/v2/referral", referralv2Routes);
 app.use("/aggregate", aggregateRoutes);
-app.use("/ebs-connect-forwarder", aggregateRoutes);
+app.use("/ebs-connect-forwarder", ebsConnectRoute);
 
 logger.information(ROUTES_SETUP_COMPLETE);
 
