@@ -5,8 +5,15 @@ const { messages } = require("../utils/messages");
 const { AGGREG_TASK_STARTED, AGGREG_TASK_COMPLETED } = messages;
 const router = Router();
 const axios = require("axios");
+const { DateTime } = require("luxon");
+const moment = require("moment");
 
 router.post("/", async (req, res) => {
+  let request = req.body;
+  const reportedDate = DateTime.fromMillis(req.body.DATE_REPORTED);
+  request.DATE_REPORTED = moment(reportedDate).format(
+    "YYYY-MM-DDTHH:mm:ss.SSSSSS[Z]"
+  );
   const options = {
     url: "http://102.220.22.137:8111/rest/v1/ebs_connect",
     method: req.method,
@@ -18,7 +25,6 @@ router.post("/", async (req, res) => {
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ewogICJyb2xlIjogImFub24iLAogICJpc3MiOiAic3VwYWJhc2UiLAogICJpYXQiOiAxNzI3ODE2NDAwLAogICJleHAiOiAxODg1NTgyODAwCn0.xGLBHldwAvyuPZbymuWIbpsIVVUF6FWuv5LeJUXyjTQ", // Add custom header
     }, // Automatically stringify the body to JSON
   };
-  console.log(options);
   axios(options)
     .then((response) => {
       // Send the upstream server's response back to the client
