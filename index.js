@@ -3,16 +3,22 @@ const express = require("express");
 const promBundle = require("express-prom-bundle");
 const path = require("path");
 
-const { registerMediator } = require('openhim-mediator-utils');
-const {OPENHIM, CONFIG, CHANNEL_CONFIG_ENDPOINTS_URL, CRON_SCHEDULE, MEDIATOR} = require('./config');
-const clientRoutes = require('./src/routes/client');
-const clientv2Routes = require('./src/routes/v2/client');
-const referralRoutes = require('./src/routes/referral');
-const referralv2Routes = require('./src/routes/v2/referral');
-const aggregateRoutes = require('./src/routes/aggregate');
-const { scheduleTask } = require('./src/cron/cron');
-const { logger } = require('./src/utils/logger');
-const { messages } = require('./src/utils/messages');
+const { registerMediator } = require("openhim-mediator-utils");
+const {
+  OPENHIM,
+  CONFIG,
+  CHANNEL_CONFIG_ENDPOINTS_URL,
+  CRON_SCHEDULE,
+  MEDIATOR,
+} = require("./config");
+const clientRoutes = require("./src/routes/client");
+const clientv2Routes = require("./src/routes/v2/client");
+const referralRoutes = require("./src/routes/referral");
+const referralv2Routes = require("./src/routes/v2/referral");
+const aggregateRoutes = require("./src/routes/aggregate");
+const { scheduleTask } = require("./src/cron/cron");
+const { logger } = require("./src/utils/logger");
+const { messages } = require("./src/utils/messages");
 
 const {
   ROUTES_SETUP,
@@ -35,6 +41,7 @@ app.use("/v2/client", clientv2Routes);
 app.use("/referral", referralRoutes);
 app.use("/v2/referral", referralv2Routes);
 app.use("/aggregate", aggregateRoutes);
+app.use("/ebs-connect-forwarder", aggregateRoutes);
 
 logger.information(ROUTES_SETUP_COMPLETE);
 
@@ -57,8 +64,7 @@ const mediatorConfig = {
   urn: `urn:mediator:${OPENHIM.channel}`,
   version: "1.0.0",
   name: "eCHIS Mediator",
-  description:
-    "A mediator eCHIS to KHIS integration.",
+  description: "A mediator eCHIS to KHIS integration.",
   defaultChannelConfig: [
     {
       name: "eCHIS Mediator",
@@ -67,7 +73,7 @@ const mediatorConfig = {
         {
           name: "eCHIS Mediator",
           host: CHANNEL_CONFIG_ENDPOINTS_URL,
-          pathTransform: `s/\\/${OPENHIM.channel}/`,          
+          pathTransform: `s/\\/${OPENHIM.channel}/`,
           port: 22000,
           primary: true,
           type: "http",
