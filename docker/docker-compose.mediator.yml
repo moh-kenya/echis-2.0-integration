@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+  mediator:
+    build:
+      context: ../
+      dockerfile: ./Dockerfile
+    container_name: mediator
+    restart: always
+    networks:
+      - cht-net
+    ports:
+      - "6000:6000"
+    env_file:
+      - ../.env
+
+networks:
+  cht-net:
+    name: ${CHT_NETWORK:-cht-net}
