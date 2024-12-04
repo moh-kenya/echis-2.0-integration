@@ -78,14 +78,14 @@ const createFacilityReferral = async (CHTDataRecordDoc, res) => {
 
     let upi = CHTDataRecordDoc.upi
     if (!upi) {
-      upi = await getSubjectUpi(instanceValue,CHTDataRecordDoc._patient_id);
+      upi = await getSubjectUpi(instanceValue, CHTDataRecordDoc._patient_id);
       if (!upi) {
         throw new Error(ATTRIB_NOT_FOUND);
       }
       CHTDataRecordDoc.upi = upi;
     }
 
-    const FHIRServiceRequest = generateFHIRServiceRequest(instanceValue,CHTDataRecordDoc);
+    const FHIRServiceRequest = generateFHIRServiceRequest(instanceValue, upi, CHTDataRecordDoc);
     logger.information(JSON.stringify(FHIRServiceRequest));
     logger.information(CALLING_FHIR_SERVER);
     //replicateRequest(FHIRServiceRequest);
@@ -127,7 +127,7 @@ const createCommunityReferral = async (serviceRequest, res) => {
 
     const UPI = serviceRequest?.subject?.reference?.split("/").pop();
     const { data } = await axiosInstance.get(
-      `medic/_design/medic/_view/contacts_by_upi?key="${UPI}"`
+      `medic/_design/medic-client/_view/contacts_by_freetext?key="${UPI.toLowerCase()}"`
     );
     if (data.rows.length > 0) {
       const patientDoc = data.rows[0].value;
@@ -141,12 +141,10 @@ const createCommunityReferral = async (serviceRequest, res) => {
 
       const response = await axiosInstance.post(`api/v2/records`, body);
       return { status: 200, data: response };
-      return { status: 200, data: response };
     }
     return { status: 200, data: "done" };
   } catch (error) {
     logger.error(error);
-    return { status: 500, errors: error };
     return { status: 500, errors: error };
   }
 };
@@ -172,8 +170,9 @@ const createTaskReferral = async (serviceRequest, res) => {
 
     const UPI = serviceRequest?.subject?.reference?.split("/").pop();
     logger.information(`${SEARCHING_ECHIS_WITH_UPI} ${UPI}`);
+    const params = { key: JSON.stringify([UPI.toLowerCase()]) }
     const { data } = await axiosInstance.get(
-      `medic/_design/medic/_view/contacts_by_upi?key="${UPI}"`
+      `medic/_design/medic-client/_view/contacts_by_freetext`, { params }
     );
     if (data.rows.length > 0) {
       logger.information(CLIENT_FOUND_REPORT_IN_ECHIS);
@@ -184,7 +183,7 @@ const createTaskReferral = async (serviceRequest, res) => {
         _meta: {
           form: "REFERRAL_FOLLOWUP_AFYA_KE",
         },
-        patient_id: patientDoc._id,
+        patient_id: patientDoc.id,
         subject: UPI,
         authored_on: serviceRequest?.authoredOn,
         date_service_offered: serviceRequest?.authoredOn,

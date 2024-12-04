@@ -2,15 +2,14 @@ const axios = require("axios");
 const { HIE } = require("../../../config");
 const { supportedIDTypes, areSimilar } = require("../../utils/client");
 const { getDoc, genRequestConfig } = require("../../utils/echis");
+const { reauthenticate } = require("../../middlewares/v2/auth");
 
-const axiosInstance = axios.create({
-  baseURL: HIE.url,
-  auth: {
-    username: HIE.user,
-    password: HIE.pass,
-  },
-  timeout: 10000,
-});
+const axiosInstance = axios.create({ baseURL: HIE.url, timeout: 10000 });
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    return reauthenticate(axiosInstance, error)
+  });
 
 const err = (resp, err) => {
   if (err) throw err;
@@ -27,7 +26,8 @@ const parseID = (contact) => {
   const idType = contact.identification_type;
   if (idType in supportedIDTypes) {
     return {
-      [supportedIDTypes[idType]]: contact.identification_number,
+      identifierType: supportedIDTypes[idType],
+      identifierNumber: contact.identification_number
     };
   }
   throw new Error(
@@ -38,15 +38,19 @@ const parseID = (contact) => {
 const fetchClientFromRegistry = async (contact) => {
   const params = parseID(contact);
   try {
-    const resp = await axiosInstance.get("/api/v4/Patient", {
+    const resp = await axiosInstance.get("/v1/fhir/Patient", {
       params: { ...params },
     });
+    if (resp.data.total <= 0) {
+      throw new Error("client not found");
+    }
+    const client = resp.data.entry[0].resource;
     return (
       {
-        id: resp.data.id,
-        name: resp.data.name[0].text,
-        date_of_birth: resp.data.birthDate,
-        sex: resp.data.gender,
+        id: client.id,
+        name: client.name[0].text,
+        date_of_birth: client.birthDate,
+        sex: client.gender,
       } ?? err(resp)
     );
   } catch (error) {

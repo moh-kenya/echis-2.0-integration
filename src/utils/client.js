@@ -52,7 +52,7 @@ const counties = [
 ];
 
 const supportedIDTypes = {
-  national_id: "national-id",
+  national_id: "National ID",
   birth_certificate: "birth-certificate",
   passport: "passport",
   alien_card: "alien-id",
