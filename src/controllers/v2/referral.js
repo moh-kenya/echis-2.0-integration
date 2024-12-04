@@ -3,17 +3,7 @@ const { generateFHIRServiceRequest } = require("../../utils/referral");
 const { HIE } = require("../../../config");
 const echis = require("../../utils/echis");
 
-const axiosInstance = axios.create({
-  baseURL: HIE.url,
-  auth: {
-    username: HIE.user,
-    password: HIE.pass,
-  },
-  headers: {
-    "Content-Type": "application/json",
-  },
-  timeout: 10000,
-});
+const axiosInstance = axios.create({ baseURL: HIE.url, timeout: 10000 });
 
 const sendServiceRequest = async (instance, record) => {
   const { data } = await echis.getDoc(
