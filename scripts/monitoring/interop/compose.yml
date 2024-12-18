@@ -1,0 +1,8 @@
+services:
+  prometheus:
+    volumes:
+      - ./interop/prometheus.yml:/etc/prometheus/scrape_configs/mediator-prometheus.yml:ro
+  grafana:
+    volumes:
+      - ./interop/grafana.json:/etc/grafana/provisioning/dashboards/interop/mediator-grafana.json:ro
+  

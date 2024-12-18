@@ -144,15 +144,12 @@ async function assignEchisClientUPI(req, res) {
       instanceObject,
       res.locals.echisClient
     );
-    success(201, res.locals.echisClient._id, clientNumber);
+    success(200, res.locals.echisClient._id, clientNumber);
   } catch (err) {
     const errStruct = {
       instance: getCHTValuesFromEnv(instance).url,
       user: res.locals.echisClient._id,
-      error:
-        err?.response?.data?.errors ||
-        err?.message ||
-        "Could not create Client in CR",
+      error: err.response?.data?.errors || err.message,
     };
     const errString = `could not complete creating client ${JSON.stringify(
       errStruct

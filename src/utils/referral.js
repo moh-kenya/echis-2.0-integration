@@ -1,6 +1,6 @@
 require("dotenv/config");
 const { DateTime } = require("luxon");
-const moment = require('moment');
+const moment = require("moment");
 const {
   CLIENT_REGISTRY,
   NHDD,
@@ -256,7 +256,8 @@ const extractReasonCode = (data, service) => {
     ),
   ].filter((elem) => elem !== `none`);
   reasons.forEach((reason) => {
-    const coding = serviceMapping[service]?.mapping[reason] || echisNHDDValuesCoding[reason];
+    const coding =
+      serviceMapping[service]?.mapping[reason] || echisNHDDValuesCoding[reason];
     return reasonCodes.push({
       coding: [coding],
       text: coding?.display,
@@ -267,13 +268,13 @@ const extractReasonCode = (data, service) => {
 
 const status = [`draft`, `active`, `revoked`, `completed`];
 
-const generateFHIRServiceRequest = (instance, dataRecord) => {
+const generateFHIRServiceRequest = (instance, contactCRID, dataRecord) => {
   const reportedDate = DateTime.fromMillis(dataRecord.reported_date);
   const FHIRServiceRequest = {
     resourceType: `ServiceRequest`,
     identifier: [
       {
-        system: `${getCHTValuesFromEnv(instance).url}/medic/`,
+        system: `${getCHTValuesFromEnv(instance).url}`,
         value: dataRecord._id,
       },
     ],
@@ -281,19 +282,22 @@ const generateFHIRServiceRequest = (instance, dataRecord) => {
     intent: `order`,
     category: [
       {
-        coding: [echisNHDDValuesCoding[dataRecord.service] || serviceMapping[dataRecord.service]?.clinic],
+        coding: [
+          echisNHDDValuesCoding[dataRecord.service] ||
+            serviceMapping[dataRecord.service]?.clinic,
+        ],
         text: `Consultation`,
       },
     ],
     priority: `urgent`,
     subject: {
-      reference: `${CLIENT_REGISTRY_URL}/${dataRecord.upi}`,
+      reference: `${CLIENT_REGISTRY_URL}/${contactCRID}`,
       type: `Patient`,
-      display: dataRecord.upi,
+      display: contactCRID,
       identifier: {
         use: `official`,
-        system: `${CLIENT_REGISTRY_URL}/${dataRecord.upi}`,
-        value: dataRecord.upi,
+        system: `${CLIENT_REGISTRY_URL}/${contactCRID}`,
+        value: contactCRID,
       },
     },
     occurrencePeriod: {
@@ -301,7 +305,7 @@ const generateFHIRServiceRequest = (instance, dataRecord) => {
       start: reportedDate.toISODate(),
       end: dataRecord.follow_up_date,
     },
-    authoredOn: moment(reportedDate).format('YYYY-MM-DDTHH:mm:ss.SSSSSS[Z]'),
+    authoredOn: moment(reportedDate).format("YYYY-MM-DDTHH:mm:ss.SSSSSS[Z]"),
     requester: {
       reference: `${KHMFL_CHUL_URL}?format=JSON&code=${dataRecord.chu_code}`,
       type: `Organization`,
@@ -327,7 +331,6 @@ const generateFHIRServiceRequest = (instance, dataRecord) => {
     reasonCode: extractReasonCode(dataRecord.screening, dataRecord.service),
     note: extractNotes(dataRecord.supportingInfo),
   };
-  console.log(FHIRServiceRequest);
   return FHIRServiceRequest;
 };
 

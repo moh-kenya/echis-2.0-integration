@@ -1,4 +1,5 @@
 const { logger } = require("../utils/logger");
+const { distance } = require("fastest-levenshtein");
 
 const counties = [
   { code: 1, name: "Mombasa" },
@@ -50,16 +51,16 @@ const counties = [
   { code: 47, name: "Nairobi" },
 ];
 
-const idMap = {
-  national_id: "national-id",
+const supportedIDTypes = {
+  national_id: "National ID",
   birth_certificate: "birth-certificate",
   passport: "passport",
   alien_card: "alien-id",
 };
 
 const getIdentificationType = (idType) => {
-  if (idType in idMap) {
-    return idMap[idType];
+  if (idType in supportedIDTypes) {
+    return supportedIDTypes[idType];
   }
   return idType;
 };
@@ -110,7 +111,7 @@ const generateClientRegistryPayload = (echisDoc) => {
       {
         countryCode: echisDoc.country_code || "KE",
         identificationType:
-          idMap[echisDoc.identification_type] || "national-id",
+          supportedIDTypes[echisDoc.identification_type] || "national-id",
         identificationNumber: echisDoc.identification_number,
       },
     ],
@@ -153,14 +154,32 @@ const getPropByString = (obj, propString) => propString.split('.').reduce((prev,
   return prev[fieldName];
 }, obj);
 
+function areSimilar(contactName, clientName) {
+  return distance(contactName, clientName) / Math.max(contactName.length, clientName.length) < 0.3;
+}
+
+function areNamesSimilar(contact, client) {
+  const contactName = contact.first_name
+    .concat(" ", contact.middle_name ?? "", " ", contact.last_name ?? "")
+    .trim()
+    .toLowerCase();
+  const clientName = client.firstName
+    .concat(" ", client.middleName ?? "", " ", client.lastName ?? "")
+    .trim()
+    .toLowerCase();
+  return areSimilar(contactName, clientName);
+}
+
 // compare fields in the echis client doc and the client doc we got from Client Registry
 function getMismatchedClientFields(echisClientDoc, crClientDoc) {
-  const matcherFields = ["firstName", "middleName", "lastName", "gender", "dateOfBirth"];
-  // where we store our mismatched fields and return them later
+  const matcherFields = ["gender", "dateOfBirth"];
+  if (!areNamesSimilar(echisClientDoc, crClientDoc)) {
+    matcherFields.push("firstName", "middleName", "lastName");
+  }
   const mismatchedFields = {};
   // the payload we generate here has the same format as what we get back when we query for client existence
   const crPayload = generateClientRegistryPayload(echisClientDoc);
-  matcherFields.forEach(key => {
+  matcherFields.forEach((key) => {
     const actual = getPropByString(crPayload, key);
     const expected = getPropByString(crClientDoc, key);
     if (!expected) {
@@ -176,6 +195,8 @@ function getMismatchedClientFields(echisClientDoc, crClientDoc) {
 
 module.exports = {
   getIdentificationType,
+  areSimilar,
+  supportedIDTypes,
   generateClientRegistryPayload,
   getMismatchedClientFields,
 };

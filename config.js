@@ -46,7 +46,13 @@ const getCHTValuesFromEnv =(instance)=>{
 };
 
 const CLIENT_REGISTRY = {
-  url: process.env.CLIENT_REGISTRY_URL,
+  url: process.env.CLIENT_REGISTRY_URL
+};
+
+const HIE = {
+  url: process.env.HIE_URL,
+  user: process.env.HIE_USER,
+  pass: process.env.HIE_PASS,
 };
 
 const NHDD = {
@@ -70,6 +76,7 @@ const CRON_SCHEDULE = process.env.CRON_SCHEDULE;
 module.exports = {
   CHANNEL_CONFIG_ENDPOINTS_URL,
   CLIENT_REGISTRY,
+  HIE,
   CONFIG,
   FHIR,
   KHIS,

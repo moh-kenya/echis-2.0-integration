@@ -20,14 +20,10 @@ const {
   COMPLETED_SUCCESSFULLY,
 } = messages;
 
-const getSubjectUpi = async (instance, echisClientId) => {
+const getSubjectUpi = async (instance,echisClientId) => {
   var echisClient;
   let chtInstanceVariables = getCHTValuesFromEnv(instance);
-  let instanceObject = {
-    instance: chtInstanceVariables.url,
-    user: chtInstanceVariables.username,
-    password: chtInstanceVariables.password,
-  };
+  let instanceObject = { instance: chtInstanceVariables.url, user: chtInstanceVariables.username, password: chtInstanceVariables.password };
   try {
     echisClient = await getDoc(instanceObject, echisClientId);
     if (echisClient.upi) {
@@ -38,15 +34,13 @@ const getSubjectUpi = async (instance, echisClientId) => {
     return;
   }
   try {
-    const clientNumber = await createCRClient(instanceObject, echisClient);
+    const clientNumber = await createCRClient(instanceObject, echisClient)
     return clientNumber;
   } catch (err) {
-    logger.error(
-      `could not get subject upi, err while trying to create client ${err.message}`
-    );
+    logger.error(`could not get subject upi, err while trying to create client ${err.message}`);
   }
-  return;
-};
+  return
+}
 
 const createFacilityReferral = async (CHTDataRecordDoc, res) => {
   logger.information(CREATE_FACILITY_REFERRAL);
@@ -82,20 +76,16 @@ const createFacilityReferral = async (CHTDataRecordDoc, res) => {
     );
     logger.information(GENERATE_FHIR_SR);
 
-    let upi = CHTDataRecordDoc.upi;
+    let upi = CHTDataRecordDoc.upi
     if (!upi) {
       upi = await getSubjectUpi(instanceValue, CHTDataRecordDoc._patient_id);
       if (!upi) {
-        // throw new Error(ATTRIB_NOT_FOUND);
-        logger.error(ATTRIB_NOT_FOUND);
+        throw new Error(ATTRIB_NOT_FOUND);
       }
       CHTDataRecordDoc.upi = upi;
     }
 
-    const FHIRServiceRequest = generateFHIRServiceRequest(
-      instanceValue,
-      CHTDataRecordDoc
-    );
+    const FHIRServiceRequest = generateFHIRServiceRequest(instanceValue, upi, CHTDataRecordDoc);
     logger.information(JSON.stringify(FHIRServiceRequest));
     logger.information(CALLING_FHIR_SERVER);
     //replicateRequest(FHIRServiceRequest);
@@ -136,7 +126,7 @@ const createCommunityReferral = async (serviceRequest, res) => {
 
     const UPI = serviceRequest?.subject?.reference?.split("/").pop();
     const { data } = await axiosInstance.get(
-      `medic/_design/medic/_view/contacts_by_upi?key="${UPI}"`
+      `medic/_design/medic-client/_view/contacts_by_freetext?key="${UPI.toLowerCase()}"`
     );
     if (data.rows.length > 0) {
       const patientDoc = data.rows[0].value;
@@ -178,8 +168,9 @@ const createTaskReferral = async (serviceRequest, res) => {
 
     const UPI = serviceRequest?.subject?.reference?.split("/").pop();
     logger.information(`${SEARCHING_ECHIS_WITH_UPI} ${UPI}`);
+    const params = { key: JSON.stringify([UPI.toLowerCase()]) }
     const { data } = await axiosInstance.get(
-      `medic/_design/medic/_view/contacts_by_upi?key="${UPI}"`
+      `medic/_design/medic-client/_view/contacts_by_freetext`, { params }
     );
     if (data.rows.length > 0) {
       logger.information(CLIENT_FOUND_REPORT_IN_ECHIS);
@@ -190,7 +181,7 @@ const createTaskReferral = async (serviceRequest, res) => {
         _meta: {
           form: "REFERRAL_FOLLOWUP_AFYA_KE",
         },
-        patient_id: patientDoc._id,
+        patient_id: patientDoc.id,
         subject: UPI,
         authored_on: serviceRequest?.authoredOn,
         date_service_offered: serviceRequest?.authoredOn,
@@ -213,6 +204,7 @@ const createTaskReferral = async (serviceRequest, res) => {
     return error;
   }
 };
+
 
 module.exports = {
   createFacilityReferral,
