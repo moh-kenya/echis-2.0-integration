@@ -1,3 +1,4 @@
+const axios = require("axios");
 const { supportedIDTypes, areSimilar } = require("../../utils/client");
 const { getDoc, genRequestConfig } = require("../../utils/echis");
 const { AuthenticatedInstance } = require("./auth");
