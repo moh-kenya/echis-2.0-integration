@@ -26,9 +26,6 @@ module.exports = function (axiosInstance) {
             return;
         }
 
-        next()
-    }
-
     next();
   };
 };

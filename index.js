@@ -4,7 +4,7 @@ const promBundle = require("express-prom-bundle");
 const path = require("path");
 
 const { registerMediator } = require('openhim-mediator-utils');
-const {OPENHIM, CONFIG, CHANNEL_CONFIG_ENDPOINTS_URL, CRON_SCHEDULE, MEDIATOR} = require('./config');
+const { OPENHIM, CONFIG, CHANNEL_CONFIG_ENDPOINTS_URL, CRON_SCHEDULE, MEDIATOR } = require('./config');
 const clientRoutes = require('./src/routes/client');
 const clientv2Routes = require('./src/routes/v2/client');
 const referralRoutes = require('./src/routes/referral');
@@ -89,9 +89,7 @@ const mediatorConfig = {
   ],
 };
 
-if (process.env.ENV !== "dev") {
-  registerMediator(OPENHIM, mediatorConfig, registerMediatorCallback);
-}
+registerMediator(OPENHIM, mediatorConfig, registerMediatorCallback);
 
 app.get("/", (req, res) => {
   logger.information(LOAD_ROOT);

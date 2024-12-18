@@ -110,7 +110,6 @@ const createFacilityReferral = async (CHTDataRecordDoc, res) => {
 };
 
 const createCommunityReferral = async (serviceRequest, res) => {
-const createCommunityReferral = async (serviceRequest, res) => {
   try {
     const instanceValue = res.locals.instanceValue;
     const chtInstanceVariables = getCHTValuesFromEnv(instanceValue);
@@ -149,7 +148,6 @@ const createCommunityReferral = async (serviceRequest, res) => {
   }
 };
 
-const createTaskReferral = async (serviceRequest, res) => {
 const createTaskReferral = async (serviceRequest, res) => {
   try {
     const instanceValue = res.locals.instanceValue;
