@@ -53,6 +53,8 @@ const HIE = {
   url: process.env.HIE_URL,
   user: process.env.HIE_USER,
   pass: process.env.HIE_PASS,
+  consumerKey: process.env.HIE_CONSUMER_KEY,
+  consumerSecret: process.env.HIE_CONSUMER_SECRET,
 };
 
 const NHDD = {

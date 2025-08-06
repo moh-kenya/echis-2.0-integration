@@ -3,7 +3,7 @@ const { logger } = require("../../utils/logger");
 const { HIE } = require("../../../config");
 
 const getToken = async () => {
-    const resp = await axios.get(HIE.url + '/v1/hie-auth?key=echis', {
+    const resp = await axios.get(HIE.url + '/v1/hie-auth?key=' + HIE.consumerKey, {
         auth: {
             username: HIE.user,
             password: HIE.pass
