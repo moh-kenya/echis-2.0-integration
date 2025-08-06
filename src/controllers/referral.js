@@ -43,7 +43,7 @@ const getSubjectUpi = async (instance,echisClientId) => {
 }
 
 const createFacilityReferral = async (CHTDataRecordDoc, res) => {
-  logger.information(CREATE_FACILITY_REFERRAL);
+  logger.info(CREATE_FACILITY_REFERRAL);
   const instanceValue = res.locals.instanceValue;
   try {
     const axiosInstance = axios.create({
@@ -74,7 +74,7 @@ const createFacilityReferral = async (CHTDataRecordDoc, res) => {
         return Promise.reject(error);
       }
     );
-    logger.information(GENERATE_FHIR_SR);
+    logger.info(GENERATE_FHIR_SR);
 
     let upi = CHTDataRecordDoc.upi
     if (!upi) {
@@ -86,16 +86,16 @@ const createFacilityReferral = async (CHTDataRecordDoc, res) => {
     }
 
     const FHIRServiceRequest = generateFHIRServiceRequest(instanceValue, upi, CHTDataRecordDoc);
-    logger.information(JSON.stringify(FHIRServiceRequest));
-    logger.information(CALLING_FHIR_SERVER);
+    logger.info(JSON.stringify(FHIRServiceRequest));
+    logger.info(CALLING_FHIR_SERVER);
     //replicateRequest(FHIRServiceRequest);
     const response = await axiosInstance.post(
       `${FHIR_URL}/ServiceRequest`,
       JSON.stringify(FHIRServiceRequest)
     );
     const location = response.headers.location.split("/");
-    logger.information(FHIR_SERVER_RESPONSE);
-    logger.information(`${SERVICE_REQUEST_ID} ${location.at(-3)}`);
+    logger.info(FHIR_SERVER_RESPONSE);
+    logger.info(`${SERVICE_REQUEST_ID} ${location.at(-3)}`);
 
     return { status: response.status, serviceRequestId: location.at(-3) };
   } catch (error) {
@@ -153,7 +153,7 @@ const createTaskReferral = async (serviceRequest, res) => {
     const instanceValue = res.locals.instanceValue;
     const chtInstanceVariables = getCHTValuesFromEnv(instanceValue);
     const serviceRequestId = serviceRequest?.id;
-    logger.information(`${PROCESSING_SR_ID} ${serviceRequestId}`);
+    logger.info(`${PROCESSING_SR_ID} ${serviceRequestId}`);
 
     const axiosInstance = axios.create({
       baseURL: chtInstanceVariables.url,
@@ -167,13 +167,13 @@ const createTaskReferral = async (serviceRequest, res) => {
     });
 
     const UPI = serviceRequest?.subject?.reference?.split("/").pop();
-    logger.information(`${SEARCHING_ECHIS_WITH_UPI} ${UPI}`);
+    logger.info(`${SEARCHING_ECHIS_WITH_UPI} ${UPI}`);
     const params = { key: JSON.stringify([UPI.toLowerCase()]) }
     const { data } = await axiosInstance.get(
       `medic/_design/medic-client/_view/contacts_by_freetext`, { params }
     );
     if (data.rows.length > 0) {
-      logger.information(CLIENT_FOUND_REPORT_IN_ECHIS);
+      logger.info(CLIENT_FOUND_REPORT_IN_ECHIS);
       const patientDoc = data.rows[0].value;
       const notesDeserialize = serviceRequest?.note[0].text;
 
@@ -195,7 +195,7 @@ const createTaskReferral = async (serviceRequest, res) => {
       };
 
       const response = await axiosInstance.post(`api/v2/records`, body);
-      logger.information(COMPLETED_SUCCESSFULLY);
+      logger.info(COMPLETED_SUCCESSFULLY);
       return response;
     }
     return { status: 200, serviceRequestId: serviceRequestId };

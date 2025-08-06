@@ -18,7 +18,7 @@ class AuthenticatedInstance {
         while (true) {
             this.accesstoken = await getToken();
             await new Promise(resolve => setTimeout(resolve, 20000));
-            logger.information("Re-authenticating");
+            logger.info("Re-authenticating");
         }
     }
 
@@ -27,6 +27,7 @@ class AuthenticatedInstance {
     }
     
     instance() {
+        console.log(this.accesstoken);
         return axios.create({
             baseURL: HIE.url,
             headers: { 'Authorization': `Bearer ${this.accesstoken}` },

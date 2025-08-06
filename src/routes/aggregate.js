@@ -6,10 +6,10 @@ const { AGGREG_TASK_STARTED, AGGREG_TASK_COMPLETED } = messages;
 const router = Router();
 
 router.get("/run", async (req, res) => {
-  logger.information(AGGREG_TASK_STARTED);
+  logger.info(AGGREG_TASK_STARTED);
   await runAggregateSummary();
   end();
-  logger.information(AGGREG_TASK_COMPLETED);
+  logger.info(AGGREG_TASK_COMPLETED);
 });
 
 module.exports = router;

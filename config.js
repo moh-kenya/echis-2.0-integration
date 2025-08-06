@@ -55,6 +55,9 @@ const HIE = {
   pass: process.env.HIE_PASS,
   consumerKey: process.env.HIE_CONSUMER_KEY,
   consumerSecret: process.env.HIE_CONSUMER_SECRET,
+  agent: process.env.HIE_AGENT,   
+  privateKey: process.env.HIE_PRIVATE_KEY,
+  publicKey: process.env.HIE_PUBLIC_KEY,  
 };
 
 const NHDD = {

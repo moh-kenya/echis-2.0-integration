@@ -45,7 +45,7 @@ const postData = async (data, authParams) => {
         'Content-Type': 'application/json',
       }
     });
-    logger.information(`${response.data.message}`);
+    logger.info(`${response.data.message}`);
     return true;
   } catch (error) {
     logger.error(error.response.data.message);

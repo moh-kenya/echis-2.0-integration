@@ -3,7 +3,7 @@ const logger = {
      * Logs a message with the INFO stamp in Green
      * @param {string} message The message
      */
-    information : (message) => {
+    info : (message) => {
         const timestamp = new Date().toISOString().slice(0, 19).replace("T", " ");
         console.info(`${timestamp} \x1b[32mINFO:\x1b[0m ${message}`);
     },

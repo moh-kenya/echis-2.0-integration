@@ -17,7 +17,7 @@ const task = (authParams) => {
 const scheduleTask = (schedule, authParams) => {
   if (cron.validate(schedule)) {
     cron.schedule(schedule, () => task(authParams));
-    logger.information('Task scheduled successfully.');
+    logger.info('Task scheduled successfully.');
   } else {
     logger.error('Invalid cron schedule.');
   }

@@ -7,6 +7,7 @@ const { registerMediator } = require('openhim-mediator-utils');
 const { OPENHIM, CONFIG, CHANNEL_CONFIG_ENDPOINTS_URL, CRON_SCHEDULE, MEDIATOR } = require('./config');
 const clientRoutes = require('./src/routes/client');
 const clientv2Routes = require('./src/routes/v2/client');
+const clientv3Routes = require('./src/routes/v3/client');
 const referralRoutes = require('./src/routes/referral');
 const referralv2Routes = require('./src/routes/v2/referral');
 const aggregateRoutes = require('./src/routes/aggregate');
@@ -32,25 +33,26 @@ app.use(express.json());
 
 app.use("/client", clientRoutes);
 app.use("/v2/client", clientv2Routes);
+app.use("/v3/client", clientv3Routes);
 app.use("/referral", referralRoutes);
 app.use("/v2/referral", referralv2Routes);
 app.use("/aggregate", aggregateRoutes);
 
-logger.information(ROUTES_SETUP_COMPLETE);
+logger.info(ROUTES_SETUP_COMPLETE);
 
-logger.information(CRON_SETUP);
+logger.info(CRON_SETUP);
 scheduleTask(CRON_SCHEDULE, MEDIATOR);
-logger.information(CRON_SETUP_COMPLETE);
+logger.info(CRON_SETUP_COMPLETE);
 
 app.listen(CONFIG.port, () => {
-  logger.information(`${SERVER_PORT} ${CONFIG.port}`);
+  logger.info(`${SERVER_PORT} ${CONFIG.port}`);
 });
 
 const registerMediatorCallback = (err) => {
   if (err) {
     throw new Error(`${MEDIATOR_FAILURE} ${err}`);
   }
-  logger.information(MEDIATOR_SUCCESS);
+  logger.info(MEDIATOR_SUCCESS);
 };
 
 const mediatorConfig = {
@@ -92,7 +94,7 @@ const mediatorConfig = {
 registerMediator(OPENHIM, mediatorConfig, registerMediatorCallback);
 
 app.get("/", (req, res) => {
-  logger.information(LOAD_ROOT);
+  logger.info(LOAD_ROOT);
   res.status(200).sendFile(path.join(__dirname, "./src/html/", "success.html"));
 });
 

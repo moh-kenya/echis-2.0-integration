@@ -15,13 +15,13 @@ client.connect((err) => {
     logger.error(`Database connection error: ${err.message}`);
     return err;
   }
-  logger.information(`Connected to the database`);
+  logger.info(`Connected to the database`);
 });
 
 const query = async (preparedStatement, params) => {
   try {
     const result = await client.query(preparedStatement, params);
-    logger.information(`Query executed.`);
+    logger.info(`Query executed.`);
     return result.rows;
   } catch (error) {
     logger.error(`Database query error: ${error.message} in ${preparedStatement}`);

@@ -20,7 +20,7 @@ const tryClientRegistryReauth = async (error) => {
     return Promise.reject(error);
   }
 
-  logger.information("Re-authenticating with Client Registry");
+  logger.info("Re-authenticating with Client Registry");
   try {
     originalRequest._retry = true;
     const token = await generateToken();

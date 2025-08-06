@@ -1,6 +1,7 @@
 // Import required Node.js modules
 const crypto = require('crypto');
 const fs = require('fs');
+const { HIE } = require("../../config");
 
 async function decryptPIIData(combinedBase64, privateKeyPem) {
   try {
@@ -56,14 +57,9 @@ function saveJsonToFile(data, filename = "decrypted_data.json") {
   }
 }
 
-// Main execution
-async function main() {
-  // Combined base64 string from encryption (use your actual combined base64 string)
-  const combinedBase64 = "";
-  
+async function decryptCRClient(combinedBase64) {
   // Your RSA private key (use your actual private key)
-  const privateKeyPem = `-----BEGIN PRIVATE KEY-----
------END PRIVATE KEY-----`;
+  const privateKeyPem = HIE.privateKey;
 
   try {
     // Decrypt the data
@@ -71,15 +67,16 @@ async function main() {
     
     // Output the decrypted JSON data
     console.log("Decrypted JSON Data:", JSON.stringify(decryptedData, null, 2));
+
+    return decryptedData;
     
     // Save to file
-    saveJsonToFile(decryptedData);
+    // saveJsonToFile(decryptedData);
   } catch (error) {
     console.error("Main execution failed:", error);
   }
 }
 
-// Run the main function
-if (require.main === module) {
-  main();
+module.exports = {
+  decryptCRClient
 }
