@@ -36,11 +36,11 @@ const fetchCRClient = async (nationalID) => {
           agent: HIE.agent,
         },
       });
-    console.log('Fetch client response', JSON.stringify(resp.data, null, 2));
 
-    if (resp.data.total <= 0) {
-      throw new Error('client not found');
+    if (resp.data.message.total === 0) {
+      return null;
     }
+
     const encodedClient = resp.data.message.result[0]._pii;
 
     const client = await decryptCRClient(encodedClient);
@@ -97,7 +97,7 @@ const updateCRClient = async (data) => {
     };
     const resp = await authenticatedInstance
       .instance()
-      .post('/v3/update-client', reqBody);
+      .put('/v3/update-client', reqBody);
     return resp.data;
   } catch (error) {
     err(error.response, error);

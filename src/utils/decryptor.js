@@ -1,8 +1,17 @@
-// Import required Node.js modules
+// Utility module for decrypting PII data using hybrid RSA-AES encryption
+// Handles decryption of client data encrypted with RSA for key exchange and AES for data
 const crypto = require('crypto');
 const fs = require('fs');
 const { HIE } = require("../../config");
 
+/**
+ * Decrypts PII data that was encrypted using hybrid RSA-AES encryption.
+ * The combined base64 string contains: encrypted AES key, encrypted IV, and encrypted data.
+ * @param {string} combinedBase64 - Base64 encoded string containing encrypted key:iv:data
+ * @param {string} privateKeyPem - RSA private key in PEM format for decrypting AES key and IV
+ * @returns {Object} - The decrypted JSON data
+ * @throws {Error} - If decryption fails at any stage
+ */
 async function decryptPIIData(combinedBase64, privateKeyPem) {
   try {
     // Decode the combined base64 string
@@ -32,6 +41,13 @@ async function decryptPIIData(combinedBase64, privateKeyPem) {
   }
 }
 
+/**
+ * Decrypts RSA-encrypted AES keys and initialization vectors.
+ * Uses OAEP padding with SHA-1 hash for secure RSA decryption.
+ * @param {string} encryptedBase64 - Base64 encoded RSA-encrypted data (AES key or IV)
+ * @param {string} privateKeyPem - RSA private key in PEM format
+ * @returns {Buffer} - Decrypted AES key or IV as a Buffer
+ */
 function decryptRSA(encryptedBase64, privateKeyPem) {
   const encryptedData = Buffer.from(encryptedBase64, 'base64');
   const decrypted = crypto.privateDecrypt(
@@ -43,11 +59,16 @@ function decryptRSA(encryptedBase64, privateKeyPem) {
     encryptedData
   );
   
-  // The key difference: return the decrypted data as a Buffer, 
-  // then decode it as base64 to get the actual AES key/IV
+  // Convert decrypted string back to Buffer - the AES key/IV was base64 encoded before RSA encryption
   return Buffer.from(decrypted.toString(), 'base64');
 }
 
+/**
+ * Utility function to save decrypted JSON data to a file.
+ * Primarily used for debugging and data inspection purposes.
+ * @param {Object} data - The JSON data to save
+ * @param {string} filename - Output filename (defaults to "decrypted_data.json")
+ */
 function saveJsonToFile(data, filename = "decrypted_data.json") {
   try {
     fs.writeFileSync(filename, JSON.stringify(data, null, 4), 'utf8');
@@ -57,21 +78,21 @@ function saveJsonToFile(data, filename = "decrypted_data.json") {
   }
 }
 
+/**
+ * Main function to decrypt client referral (CR) data using the configured HIE private key.
+ * This is the primary entry point for decrypting PII data from external systems.
+ * @param {string} combinedBase64 - Base64 encoded encrypted client data
+ * @returns {Object} - Decrypted client data as JSON object
+ * @throws {Error} - If decryption fails or HIE private key is not configured
+ */
 async function decryptCRClient(combinedBase64) {
-  // Your RSA private key (use your actual private key)
+  // Use the configured HIE private key from application config
   const privateKeyPem = HIE.privateKey;
 
   try {
     // Decrypt the data
     const decryptedData = await decryptPIIData(combinedBase64, privateKeyPem);
-    
-    // Output the decrypted JSON data
-    console.log("Decrypted JSON Data:", JSON.stringify(decryptedData, null, 2));
-
-    return decryptedData;
-    
-    // Save to file
-    // saveJsonToFile(decryptedData);
+    return decryptedData;   
   } catch (error) {
     console.error("Main execution failed:", error);
   }
