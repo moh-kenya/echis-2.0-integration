@@ -58,6 +58,7 @@ const HIE = {
   agent: process.env.HIE_AGENT,   
   privateKey: process.env.HIE_PRIVATE_KEY,
   publicKey: process.env.HIE_PUBLIC_KEY,  
+  defaultPin: process.env.HIE_DEFAULT_PIN,
 };
 
 const NHDD = {

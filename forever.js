@@ -14,7 +14,7 @@ const child = new forever.Monitor("index.js", {
 });
 
 child.on("exit", function () {
-  logger.information(EXIT_AFTER_X_RUNS);
+  logger.info(EXIT_AFTER_X_RUNS);
 });
 
 child.on("watch:restart", function (info) {
@@ -26,7 +26,7 @@ child.on("restart", function () {
 });
 
 child.on("start", function () {
-  logger.information(START_SERVICE);
+  logger.info(START_SERVICE);
 });
 
 child.start();
